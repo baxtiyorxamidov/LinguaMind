@@ -4,12 +4,6 @@ __pycache__/
 .venv/
 venv/
 .vscode/
-.env
-__pycache__/
-*.pyc
-.venv/
-venv/
-.vscode/
 
 database.db
 backup_before_route_repair/
