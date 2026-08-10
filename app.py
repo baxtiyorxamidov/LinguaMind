@@ -64,12 +64,7 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-# ===========================
-# SUBSCRIPTION SYSTEM
-# ===========================
-
 def create_subscription_system():
-
     conn = get_db()
     cursor = conn.cursor()
 
@@ -115,6 +110,40 @@ def create_subscription_system():
         SET subscription_status = 'inactive'
         WHERE subscription_status IS NULL
            OR TRIM(subscription_status) = ''
+    """)
+
+    conn.commit()
+    conn.close()
+
+def create_core_tables():
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            full_name TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            plan TEXT NOT NULL DEFAULT 'free',
+            subscription_status TEXT NOT NULL DEFAULT 'inactive',
+            subscription_started_at TEXT,
+            subscription_expires_at TEXT
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS vocabulary (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            english_word TEXT NOT NULL,
+            uzbek_word TEXT NOT NULL,
+            example_sentence TEXT,
+            status TEXT NOT NULL DEFAULT 'New',
+            favorite INTEGER NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
     """)
 
     conn.commit()
@@ -6178,17 +6207,25 @@ def dev_preview_500():
         "500.html"
     ), 500
 
+# ===========================
+# PRODUCTION DATABASE SETUP
+# ===========================
+
+# ===========================
+# PRODUCTION DATABASE SETUP
+# ===========================
+
+create_core_tables()
+create_ai_history_tables()
+create_quiz_tables()
+create_study_plan_tables()
+create_subscription_system()
+create_gamification_tables()
+
+print("LinguaMind database ready!")
+
 
 if __name__ == "__main__":
-
-    create_ai_history_tables()
-    create_quiz_tables()
-    create_study_plan_tables()
-    create_subscription_system()
-    create_gamification_tables()
-
-    print("LinguaMind database ready!")
-
     app.run(
         debug=True,
         port=8000
