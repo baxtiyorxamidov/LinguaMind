@@ -1,0 +1,17 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+.vscode/
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+.vscode/
+
+database.db
+backup_before_route_repair/
+app_STABLE_BACKUP.py
+test_gemini.py

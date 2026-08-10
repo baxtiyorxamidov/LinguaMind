@@ -1,0 +1,3449 @@
+/* ==========================================================
+   LINGUAMIND — MIDNIGHT ROYAL NEON V2
+   Dark product UI. White is mainly text, not surface.
+   ========================================================== */
+
+:root {
+    --lmx-bg: #040612;
+    --lmx-bg-2: #070a1d;
+    --lmx-bg-3: #0a0e29;
+
+    --lmx-card: rgba(10, 14, 39, .95);
+    --lmx-card-2: rgba(13, 18, 49, .94);
+    --lmx-card-3: rgba(17, 21, 58, .88);
+
+    --lmx-text: #f7f4ff;
+    --lmx-text-2: #d8def5;
+    --lmx-muted: #8791b5;
+
+    --lmx-purple: #8754ff;
+    --lmx-violet: #ae63ff;
+    --lmx-blue: #4a85ff;
+    --lmx-cyan: #3ed8df;
+    --lmx-pink: #ff5bc7;
+    --lmx-gold: #ffca63;
+    --lmx-green: #55daa0;
+    --lmx-red: #ff6c88;
+
+    --lmx-line: rgba(138, 105, 236, .18);
+    --lmx-line-soft: rgba(255, 255, 255, .065);
+
+    --lmx-shadow:
+        0 24px 64px rgba(0, 0, 0, .34);
+}
+
+
+/* =========================
+   GLOBAL APP
+   ========================= */
+
+html {
+    background: var(--lmx-bg) !important;
+}
+
+body.lmx-page {
+    min-height: 100vh;
+
+    color: var(--lmx-text) !important;
+
+    background:
+        radial-gradient(
+            circle at 10% 4%,
+            rgba(117, 66, 255, .19),
+            transparent 23%
+        ),
+        radial-gradient(
+            circle at 93% 8%,
+            rgba(51, 111, 255, .13),
+            transparent 22%
+        ),
+        radial-gradient(
+            circle at 73% 92%,
+            rgba(199, 55, 255, .075),
+            transparent 25%
+        ),
+        linear-gradient(
+            145deg,
+            #040612 0%,
+            #07091b 44%,
+            #080c23 100%
+        ) !important;
+
+    background-attachment: fixed !important;
+}
+
+body.lmx-page::before {
+    content: "";
+
+    position: fixed;
+    inset: 0;
+
+    z-index: -1;
+
+    pointer-events: none;
+
+    opacity: .21;
+
+    background-image:
+        radial-gradient(
+            rgba(255,255,255,.21) .55px,
+            transparent .7px
+        );
+
+    background-size:
+        27px 27px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent 78%
+        );
+}
+
+body.lmx-page,
+body.lmx-page button,
+body.lmx-page input,
+body.lmx-page textarea,
+body.lmx-page select,
+body.lmx-page a {
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+body.lmx-authenticated {
+    padding-left:
+        292px !important;
+}
+
+body.lmx-authenticated .main {
+    margin-left:
+        0 !important;
+}
+
+body.lmx-page ::selection {
+    color: white;
+    background:
+        rgba(128, 75, 255, .58);
+}
+
+
+/* =========================
+   UNIVERSAL FIXED SIDEBAR
+   ========================= */
+
+.lmx-sidebar {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    z-index: 5000;
+
+    width: 292px;
+
+    display: flex;
+    flex-direction: column;
+
+    padding:
+        18px
+        13px
+        18px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    color: var(--lmx-text);
+
+    border-right:
+        1px solid
+        rgba(150, 113, 255, .18);
+
+    background:
+        radial-gradient(
+            circle at 15% 3%,
+            rgba(127, 72, 255, .29),
+            transparent 22%
+        ),
+        radial-gradient(
+            circle at 90% 15%,
+            rgba(53, 103, 255, .15),
+            transparent 22%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(8, 9, 29, .99),
+            rgba(5, 7, 23, .995)
+        );
+
+    box-shadow:
+        18px 0 58px rgba(0,0,0,.40),
+        inset -1px 0 0 rgba(255,255,255,.025);
+
+    backdrop-filter:
+        blur(28px);
+}
+
+.lmx-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.lmx-sidebar::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            #8c57ff,
+            #436dff
+        );
+}
+
+.lmx-brand {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    padding:
+        12px
+        12px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.07);
+
+    border-radius:
+        18px;
+
+    color: white;
+
+    background:
+        radial-gradient(
+            circle at 90% 8%,
+            rgba(89,140,255,.10),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.058),
+            rgba(255,255,255,.018)
+        );
+
+    box-shadow:
+        0 16px 32px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.05);
+
+    text-decoration: none;
+}
+
+.lmx-logo {
+    width: 48px;
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border-radius:
+        15px;
+
+    background:
+        radial-gradient(
+            circle at 25% 20%,
+            rgba(255,255,255,.23),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #7146ea,
+            #9b5dff 55%,
+            #4a89ff
+        );
+
+    box-shadow:
+        0 14px 28px rgba(111,64,235,.35);
+
+    font-size: 22px;
+}
+
+.lmx-brand-copy {
+    min-width: 0;
+}
+
+.lmx-brand-copy strong {
+    display: block;
+
+    color: white;
+
+    font-size: 20px;
+    font-weight: 950;
+
+    letter-spacing: -.55px;
+}
+
+.lmx-brand-copy strong span {
+    color:
+        #a76aff;
+}
+
+.lmx-brand-copy small {
+    display: block;
+
+    margin-top: 2px;
+
+    color:
+        #7f89ad;
+
+    font-size: 7.5px;
+    font-weight: 900;
+
+    letter-spacing: 1.2px;
+}
+
+.lmx-nav-section {
+    margin-top:
+        14px;
+}
+
+.lmx-nav-label {
+    margin:
+        0
+        8px
+        7px;
+
+    color:
+        #687395;
+
+    font-size:
+        8px;
+
+    font-weight:
+        950;
+
+    letter-spacing:
+        1.6px;
+}
+
+.lmx-nav-label.premium {
+    color:
+        #b893ff;
+}
+
+.lmx-nav {
+    display: grid;
+
+    gap:
+        6px;
+}
+
+.lmx-nav-item {
+    position: relative;
+
+    min-height:
+        49px;
+
+    display: grid;
+
+    grid-template-columns:
+        33px
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap:
+        10px;
+
+    overflow: hidden;
+
+    padding:
+        0
+        10px;
+
+    border:
+        1px solid
+        rgba(126, 112, 195, .13);
+
+    border-radius:
+        12px;
+
+    color:
+        #d8dff4;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(13,17,46,.86),
+            rgba(8,11,32,.83)
+        );
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.02);
+
+    text-decoration:
+        none;
+
+    transition:
+        .18s ease;
+}
+
+.lmx-nav-item:hover {
+    color: white;
+
+    border-color:
+        rgba(143,94,255,.38);
+
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(255,202,101,.08),
+            transparent 31%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(51,31,123,.76),
+            rgba(20,28,75,.86)
+        );
+
+    box-shadow:
+        0 13px 28px rgba(0,0,0,.22),
+        0 0 21px rgba(130,72,255,.09);
+
+    transform:
+        translateX(3px);
+}
+
+.lmx-nav-item.active {
+    color:
+        #ffffff;
+
+    border-color:
+        rgba(176,130,255,.55);
+
+    background:
+        radial-gradient(
+            circle at 90% 8%,
+            rgba(255,205,108,.18),
+            transparent 31%
+        ),
+        linear-gradient(
+            135deg,
+            #5427bd 0%,
+            #7738dc 50%,
+            #4136a7 100%
+        );
+
+    box-shadow:
+        0 15px 32px rgba(75,34,179,.36),
+        0 0 26px rgba(140,71,255,.20),
+        inset 0 1px 0 rgba(255,255,255,.11);
+}
+
+.lmx-nav-item.active::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+
+    width:
+        3px;
+
+    border-radius:
+        999px;
+
+    background:
+        linear-gradient(
+            #fff0aa,
+            #ffbd4f
+        );
+
+    box-shadow:
+        0 0 14px
+        rgba(255,204,91,.65);
+}
+
+.lmx-nav-icon {
+    width:
+        33px;
+
+    height:
+        33px;
+
+    display:
+        grid;
+
+    place-items:
+        center;
+
+    border:
+        1px solid
+        rgba(255,255,255,.065);
+
+    border-radius:
+        10px;
+
+    color:
+        white;
+
+    font-size:
+        14px;
+
+    font-weight:
+        900;
+}
+
+.lmx-nav-icon.purple {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(132,78,255,.53),
+            rgba(80,97,255,.23)
+        );
+}
+
+.lmx-nav-icon.cyan {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(42,211,198,.47),
+            rgba(52,120,255,.24)
+        );
+}
+
+.lmx-nav-icon.blue {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(66,127,255,.52),
+            rgba(112,67,245,.28)
+        );
+}
+
+.lmx-nav-icon.pink {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,72,193,.49),
+            rgba(137,66,240,.28)
+        );
+}
+
+.lmx-nav-icon.violet {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(178,80,255,.51),
+            rgba(90,84,238,.28)
+        );
+}
+
+.lmx-nav-icon.slate {
+    background:
+        linear-gradient(
+            135deg,
+            rgba(120,132,168,.48),
+            rgba(96,75,218,.24)
+        );
+}
+
+.lmx-nav-icon.gold {
+    color:
+        #342653;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffe69c,
+            #ffba4a
+        );
+}
+
+.lmx-nav-text {
+    min-width: 0;
+
+    font-size:
+        11.5px;
+
+    font-weight:
+        830;
+
+    line-height:
+        1.24;
+}
+
+.lmx-nav-arrow {
+    color:
+        #606b8d;
+
+    font-size:
+        16px;
+}
+
+.lmx-nav-item.active
+.lmx-nav-arrow,
+.lmx-nav-item:hover
+.lmx-nav-arrow {
+    color:
+        #ffd779;
+}
+
+.lmx-premium-section {
+    margin-top:
+        15px;
+}
+
+.lmx-premium-card {
+    min-height:
+        68px;
+
+    display: grid;
+
+    grid-template-columns:
+        40px
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+
+    gap:
+        10px;
+
+    padding:
+        10px
+        11px;
+
+    border:
+        1px solid
+        rgba(255,196,77,.31);
+
+    border-radius:
+        14px;
+
+    color: white;
+
+    background:
+        radial-gradient(
+            circle at 90% 9%,
+            rgba(255,194,77,.16),
+            transparent 31%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(43,25,95,.95),
+            rgba(17,18,54,.95)
+        );
+
+    box-shadow:
+        0 14px 30px rgba(0,0,0,.22);
+
+    text-decoration:
+        none;
+}
+
+.lmx-premium-card.active,
+.lmx-premium-card:hover {
+    border-color:
+        rgba(255,216,111,.68);
+
+    box-shadow:
+        0 16px 34px rgba(0,0,0,.26),
+        0 0 25px rgba(255,181,53,.09);
+}
+
+.lmx-premium-icon {
+    width:
+        40px;
+
+    height:
+        40px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius:
+        11px;
+
+    color:
+        #432e5d;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff0a3,
+            #ffb93d
+        );
+
+    font-size:
+        18px;
+}
+
+.lmx-premium-card strong {
+    display: block;
+
+    color:
+        #ffd675;
+
+    font-size:
+        13px;
+
+    font-weight:
+        950;
+}
+
+.lmx-premium-card span {
+    display: block;
+
+    margin-top:
+        2px;
+
+    color:
+        #8991ad;
+
+    font-size:
+        8.5px;
+}
+
+.lmx-premium-card b {
+    color:
+        #ffcc66;
+
+    font-size:
+        18px;
+}
+
+.lmx-user {
+    display: flex;
+
+    align-items: center;
+
+    gap:
+        9px;
+
+    margin-top:
+        14px;
+
+    padding:
+        11px
+        9px
+        1px;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,.05);
+}
+
+.lmx-user-avatar {
+    width:
+        35px;
+
+    height:
+        35px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius:
+        10px;
+
+    color:
+        #322356;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff0a5,
+            #ffc34e
+        );
+
+    font-size:
+        12px;
+
+    font-weight:
+        950;
+}
+
+.lmx-user strong {
+    display: block;
+
+    color:
+        #edf0ff;
+
+    font-size:
+        10.5px;
+
+    font-weight:
+        850;
+}
+
+.lmx-user span {
+    display: block;
+
+    margin-top:
+        2px;
+
+    color:
+        #65708f;
+
+    font-size:
+        7.5px;
+}
+
+.lmx-mobile-menu,
+.lmx-backdrop {
+    display:
+        none;
+}
+
+
+/* =========================
+   REMOVE REDUNDANT BACK BUTTONS
+   ========================= */
+
+body.lmx-authenticated
+.dashboard-button,
+
+body.lmx-authenticated
+.back-dashboard,
+
+body.lmx-authenticated
+.back-button,
+
+body.lmx-authenticated
+.top-link.primary {
+    display:
+        none !important;
+}
+
+
+/* =========================
+   UNIVERSAL DARK SURFACES
+   ========================= */
+
+body.lmx-page {
+    --text:
+        var(--lmx-text) !important;
+
+    --muted:
+        var(--lmx-muted) !important;
+
+    --border:
+        var(--lmx-line) !important;
+
+    --surface:
+        var(--lmx-card) !important;
+
+    --background:
+        var(--lmx-bg) !important;
+
+    --ink:
+        var(--lmx-text) !important;
+
+    --ink-2:
+        var(--lmx-text-2) !important;
+
+    --line:
+        var(--lmx-line) !important;
+}
+
+body.lmx-page input,
+body.lmx-page textarea,
+body.lmx-page select {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(128,99,218,.22) !important;
+
+    background:
+        rgba(5,9,27,.93) !important;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.018) !important;
+}
+
+body.lmx-page input::placeholder,
+body.lmx-page textarea::placeholder {
+    color:
+        #616d91 !important;
+}
+
+body.lmx-page input:focus,
+body.lmx-page textarea:focus,
+body.lmx-page select:focus {
+    border-color:
+        rgba(148,91,255,.58) !important;
+
+    outline:
+        none !important;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(126,66,255,.10),
+        0 0 24px
+        rgba(126,66,255,.06) !important;
+}
+
+body.lmx-page
+.topbar,
+
+body.lmx-page
+.vocab-topbar,
+
+body.lmx-page
+.quiz-topbar,
+
+body.lmx-page
+.scan-topbar,
+
+body.lmx-page
+.coach-topbar {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(131,98,229,.17) !important;
+
+    background:
+        radial-gradient(
+            circle at 91% 9%,
+            rgba(75,106,255,.08),
+            transparent 29%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(11,15,42,.95),
+            rgba(7,11,33,.94)
+        ) !important;
+
+    box-shadow:
+        0 18px 44px rgba(0,0,0,.24),
+        inset 0 1px 0 rgba(255,255,255,.025) !important;
+
+    backdrop-filter:
+        blur(20px) !important;
+}
+
+
+/* =========================
+   DASHBOARD
+   ========================= */
+
+body.lmx-dashboard
+.main {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-dashboard
+.topbar-copy h1,
+
+body.lmx-dashboard
+.profile-info strong {
+    color:
+        white !important;
+}
+
+body.lmx-dashboard
+.topbar-copy small,
+
+body.lmx-dashboard
+.profile-info span {
+    color:
+        var(--lmx-muted) !important;
+}
+
+body.lmx-dashboard
+.profile {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(124,94,213,.18) !important;
+
+    background:
+        rgba(10,14,39,.86) !important;
+}
+
+body.lmx-dashboard
+.command-center {
+    position:
+        relative;
+
+    overflow:
+        hidden;
+
+    border-color:
+        rgba(149,91,255,.28) !important;
+
+    background:
+        radial-gradient(
+            circle at 83% 18%,
+            rgba(123,57,255,.35),
+            transparent 22%
+        ),
+        radial-gradient(
+            circle at 62% 82%,
+            rgba(55,105,255,.17),
+            transparent 28%
+        ),
+        linear-gradient(
+            135deg,
+            #090d29 0%,
+            #141038 49%,
+            #09102e 100%
+        ) !important;
+
+    box-shadow:
+        0 28px 72px rgba(0,0,0,.36),
+        0 0 42px rgba(121,60,255,.08) !important;
+}
+
+body.lmx-dashboard
+.command-center::before {
+    content: "";
+
+    position:
+        absolute;
+
+    right:
+        2%;
+
+    bottom:
+        -18%;
+
+    width:
+        43%;
+
+    height:
+        88%;
+
+    opacity:
+        .55;
+
+    clip-path:
+        polygon(
+            50% 3%,
+            100% 100%,
+            0 100%
+        );
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(118,67,255,.03),
+            rgba(114,63,255,.40) 48%,
+            rgba(34,46,124,.10) 49%,
+            rgba(8,12,37,.10)
+        );
+
+    filter:
+        drop-shadow(
+            0 0 29px
+            rgba(128,68,255,.30)
+        );
+
+    pointer-events:
+        none;
+}
+
+body.lmx-dashboard
+.command-center::after {
+    content: "";
+
+    position:
+        absolute;
+
+    right:
+        14%;
+
+    bottom:
+        1%;
+
+    width:
+        23%;
+
+    height:
+        55%;
+
+    opacity:
+        .40;
+
+    clip-path:
+        polygon(
+            50% 0,
+            100% 100%,
+            0 100%
+        );
+
+    background:
+        linear-gradient(
+            145deg,
+            transparent,
+            rgba(72,119,255,.32)
+        );
+
+    pointer-events:
+        none;
+}
+
+body.lmx-dashboard
+.xp-zone,
+
+body.lmx-dashboard
+.command-card,
+
+body.lmx-dashboard
+.achievement,
+
+body.lmx-dashboard
+.analytics-launch,
+
+body.lmx-dashboard
+.stat-card,
+
+body.lmx-dashboard
+.panel,
+
+body.lmx-dashboard
+.quick-card,
+
+body.lmx-dashboard
+.latest-quiz-card {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(122,97,210,.17) !important;
+
+    background:
+        radial-gradient(
+            circle at 91% 8%,
+            rgba(110,65,255,.07),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(12,17,47,.95),
+            rgba(7,11,33,.95)
+        ) !important;
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.24),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-dashboard
+.stat-number,
+
+body.lmx-dashboard
+.panel h3,
+
+body.lmx-dashboard
+.quick-card strong,
+
+body.lmx-dashboard
+.analytics-launch-copy strong {
+    color:
+        white !important;
+}
+
+body.lmx-dashboard
+.stat-label,
+
+body.lmx-dashboard
+.quick-card span,
+
+body.lmx-dashboard
+.analytics-launch-copy p {
+    color:
+        var(--lmx-muted) !important;
+}
+
+
+/* =========================
+   VOCABULARY
+   ========================= */
+
+body.lmx-vocabulary
+.vocabulary-page {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-vocabulary
+.vocab-hero {
+    border-color:
+        rgba(55,216,218,.18) !important;
+
+    background:
+        radial-gradient(
+            circle at 84% 13%,
+            rgba(48,213,222,.15),
+            transparent 24%
+        ),
+        radial-gradient(
+            circle at 16% 92%,
+            rgba(123,61,255,.24),
+            transparent 29%
+        ),
+        linear-gradient(
+            135deg,
+            #08102a,
+            #10153e 49%,
+            #082832
+        ) !important;
+
+    box-shadow:
+        0 28px 70px rgba(0,0,0,.34) !important;
+}
+
+body.lmx-vocabulary
+.vocab-stat,
+
+body.lmx-vocabulary
+.vocab-toolbar,
+
+body.lmx-vocabulary
+.word-card,
+
+body.lmx-vocabulary
+.empty-vocabulary {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(53,194,203,.13) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10,17,43,.96),
+            rgba(6,13,31,.95)
+        ) !important;
+
+    box-shadow:
+        0 18px 44px rgba(0,0,0,.24),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-vocabulary
+.vocab-stat strong,
+
+body.lmx-vocabulary
+.word-english {
+    color:
+        white !important;
+}
+
+body.lmx-vocabulary
+.vocab-stat span,
+
+body.lmx-vocabulary
+.word-example {
+    color:
+        var(--lmx-muted) !important;
+}
+
+body.lmx-vocabulary
+.word-example,
+
+body.lmx-vocabulary
+.filter-btn,
+
+body.lmx-vocabulary
+.favorite-button,
+
+body.lmx-vocabulary
+.word-action {
+    border-color:
+        rgba(84,125,162,.17) !important;
+
+    background:
+        rgba(5,11,29,.91) !important;
+}
+
+
+/* =========================
+   AI TEACHER
+   ========================= */
+
+body.lmx-ai-teacher {
+    overflow:
+        hidden !important;
+}
+
+body.lmx-ai-teacher
+.page {
+    background:
+        transparent !important;
+}
+
+body.lmx-ai-teacher
+.chat-history,
+
+body.lmx-ai-teacher
+.chat-card {
+    border-color:
+        rgba(124,89,228,.19) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10,14,41,.98),
+            rgba(6,10,29,.98)
+        ) !important;
+
+    box-shadow:
+        0 24px 56px rgba(0,0,0,.31),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-ai-teacher
+.history-header,
+
+body.lmx-ai-teacher
+.history-footer,
+
+body.lmx-ai-teacher
+.chat-topbar,
+
+body.lmx-ai-teacher
+.mode-bar,
+
+body.lmx-ai-teacher
+.chat-input-area {
+    border-color:
+        rgba(117,91,201,.14) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(13,18,49,.97),
+            rgba(8,12,34,.97)
+        ) !important;
+}
+
+body.lmx-ai-teacher
+.chat-messages {
+    background:
+        radial-gradient(
+            circle at 14% 13%,
+            rgba(116,60,255,.11),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 86% 82%,
+            rgba(62,106,255,.07),
+            transparent 27%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(5,9,27,.98),
+            rgba(7,11,31,.99)
+        ) !important;
+}
+
+body.lmx-ai-teacher
+.message.ai
+.message-bubble {
+    color:
+        #e8ecfa !important;
+
+    border-color:
+        rgba(95,109,174,.14) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(16,22,54,.97),
+            rgba(10,15,40,.98)
+        ) !important;
+}
+
+body.lmx-ai-teacher
+.message.user
+.message-bubble {
+    background:
+        linear-gradient(
+            135deg,
+            #5727c7,
+            #7838e0 52%,
+            #4751c2
+        ) !important;
+
+    box-shadow:
+        0 12px 30px
+        rgba(80,38,186,.31) !important;
+}
+
+body.lmx-ai-teacher
+.history-item,
+
+body.lmx-ai-teacher
+.quick-prompt,
+
+body.lmx-ai-teacher
+.new-chat {
+    color:
+        #d9def2 !important;
+
+    border-color:
+        rgba(113,89,194,.14) !important;
+
+    background:
+        rgba(10,15,40,.93) !important;
+}
+
+body.lmx-ai-teacher
+.history-item.active,
+
+body.lmx-ai-teacher
+.mode-button.active {
+    color:
+        white !important;
+
+    border-color:
+        rgba(147,91,255,.39) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(84,39,187,.80),
+            rgba(48,49,139,.78)
+        ) !important;
+}
+
+
+/* =========================
+   QUIZ
+   ========================= */
+
+body.lmx-quiz
+.quiz-page {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-quiz
+.quiz-rail,
+
+body.lmx-quiz
+.quiz-card,
+
+body.lmx-quiz
+.start-card,
+
+body.lmx-quiz
+.result-card {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(255,187,73,.14) !important;
+
+    background:
+        radial-gradient(
+            circle at 91% 8%,
+            rgba(255,172,51,.06),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(12,16,43,.97),
+            rgba(7,11,31,.97)
+        ) !important;
+
+    box-shadow:
+        0 22px 52px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-quiz
+.category-card,
+
+body.lmx-quiz
+.setting,
+
+body.lmx-quiz
+.answer,
+
+body.lmx-quiz
+.result-stat,
+
+body.lmx-quiz
+.rail-feature,
+
+body.lmx-quiz
+.rail-tip {
+    color:
+        #dde3f6 !important;
+
+    border-color:
+        rgba(108,96,168,.15) !important;
+
+    background:
+        rgba(9,13,36,.92) !important;
+}
+
+body.lmx-quiz
+.category-card.active {
+    border-color:
+        rgba(255,194,76,.40) !important;
+
+    background:
+        radial-gradient(
+            circle at 88% 9%,
+            rgba(255,198,85,.13),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(67,33,117,.85),
+            rgba(30,27,82,.91)
+        ) !important;
+}
+
+
+/* =========================
+   SCAN TEXT
+   ========================= */
+
+body.lmx-scan
+.scan-page {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-scan
+.scan-card,
+
+body.lmx-scan
+.card,
+
+body.lmx-scan
+.vision-section,
+
+body.lmx-scan
+.audio-panel {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(255,80,193,.15) !important;
+
+    background:
+        radial-gradient(
+            circle at 91% 8%,
+            rgba(255,64,183,.07),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(12,16,44,.97),
+            rgba(7,11,32,.97)
+        ) !important;
+
+    box-shadow:
+        0 22px 52px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-scan
+.upload-zone,
+
+body.lmx-scan
+.result-content,
+
+body.lmx-scan
+.vision-prompt,
+
+body.lmx-scan
+.vision-result {
+    color:
+        #dfe4f5 !important;
+
+    border-color:
+        rgba(113,91,196,.15) !important;
+
+    background:
+        rgba(5,10,28,.92) !important;
+}
+
+body.lmx-scan
+.result-text {
+    color:
+        #e7ebf8 !important;
+
+    background:
+        rgba(4,8,25,.94) !important;
+}
+
+
+/* =========================
+   PROFILE
+   ========================= */
+
+body.lmx-profile
+.page {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-profile
+.profile-hero {
+    border-color:
+        rgba(255,189,73,.18) !important;
+
+    background:
+        radial-gradient(
+            circle at 86% 10%,
+            rgba(255,176,45,.10),
+            transparent 23%
+        ),
+        radial-gradient(
+            circle at 19% 91%,
+            rgba(126,61,255,.22),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #090e2a,
+            #15103b 49%,
+            #0a1532
+        ) !important;
+
+    box-shadow:
+        0 28px 70px rgba(0,0,0,.34) !important;
+}
+
+body.lmx-profile
+.stat,
+
+body.lmx-profile
+.achievement,
+
+body.lmx-profile
+.panel,
+
+body.lmx-profile
+.next-achievement {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(129,98,211,.17) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12,17,47,.96),
+            rgba(7,11,32,.96)
+        ) !important;
+
+    box-shadow:
+        0 20px 48px rgba(0,0,0,.26),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-profile
+.achievement.unlocked {
+    border-color:
+        rgba(255,192,74,.25) !important;
+
+    background:
+        radial-gradient(
+            circle at 90% 8%,
+            rgba(255,188,65,.09),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(17,17,49,.97),
+            rgba(9,11,34,.97)
+        ) !important;
+}
+
+body.lmx-profile
+.achievement.locked {
+    opacity:
+        .48 !important;
+}
+
+
+/* =========================
+   STUDY PLAN
+   ========================= */
+
+body.lmx-study-plan
+.coach-page {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-study-plan
+.builder-panel,
+
+body.lmx-study-plan
+.plan-stage,
+
+body.lmx-study-plan
+.goal-card,
+
+body.lmx-study-plan
+.exam-card,
+
+body.lmx-study-plan
+.progress-card,
+
+body.lmx-study-plan
+.task-card,
+
+body.lmx-study-plan
+.milestone-card,
+
+body.lmx-study-plan
+.coach-message,
+
+body.lmx-study-plan
+.empty-experience {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(130,94,224,.17) !important;
+
+    background:
+        radial-gradient(
+            circle at 91% 8%,
+            rgba(118,66,255,.065),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(12,17,47,.97),
+            rgba(7,11,32,.97)
+        ) !important;
+
+    box-shadow:
+        0 20px 48px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-study-plan
+.goal-card.active,
+
+body.lmx-study-plan
+.period-button.active {
+    color:
+        white !important;
+
+    border-color:
+        rgba(148,91,255,.40) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(82,37,186,.82),
+            rgba(45,51,137,.80)
+        ) !important;
+}
+
+
+/* =========================
+   ANALYTICS
+   ========================= */
+
+body.lmx-analytics
+.page {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-analytics
+.hero {
+    border-color:
+        rgba(78,123,255,.18) !important;
+
+    background:
+        radial-gradient(
+            circle at 86% 9%,
+            rgba(52,115,255,.21),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 17% 90%,
+            rgba(130,58,255,.18),
+            transparent 29%
+        ),
+        linear-gradient(
+            135deg,
+            #08102c,
+            #10123a 48%,
+            #081834
+        ) !important;
+
+    box-shadow:
+        0 28px 70px rgba(0,0,0,.34) !important;
+}
+
+body.lmx-analytics
+.kpi,
+
+body.lmx-analytics
+.panel,
+
+body.lmx-analytics
+.skill,
+
+body.lmx-analytics
+.mastery-row,
+
+body.lmx-analytics
+.recent-item,
+
+body.lmx-analytics
+.insight,
+
+body.lmx-analytics
+.empty {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(76,116,211,.15) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12,17,47,.96),
+            rgba(7,11,32,.96)
+        ) !important;
+
+    box-shadow:
+        0 20px 48px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-analytics
+.donut::before {
+    background:
+        #0a0f2b !important;
+}
+
+body.lmx-analytics
+.skill-track,
+
+body.lmx-analytics
+.week-track {
+    background:
+        rgba(255,255,255,.055) !important;
+}
+
+
+/* =========================
+   FAVORITES
+   ========================= */
+
+body.lmx-favorites
+.favorites-page {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-favorites
+.favorites-rail,
+
+body.lmx-favorites
+.favorites-main,
+
+body.lmx-favorites
+.stat-card,
+
+body.lmx-favorites
+.word-card,
+
+body.lmx-favorites
+.empty-state,
+
+body.lmx-favorites
+.rail-tip {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(255,74,172,.14) !important;
+
+    background:
+        radial-gradient(
+            circle at 91% 8%,
+            rgba(255,70,169,.055),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(12,17,47,.97),
+            rgba(7,11,32,.97)
+        ) !important;
+
+    box-shadow:
+        0 20px 48px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+
+/* =========================
+   SETTINGS
+   ========================= */
+
+body.lmx-settings
+.settings-shell,
+
+body.lmx-settings
+.main {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-settings
+.card,
+
+body.lmx-settings
+.subscription-card,
+
+body.lmx-settings
+.quick-link,
+
+body.lmx-settings
+.plan-hero,
+
+body.lmx-settings
+.reset-box,
+
+body.lmx-settings
+.danger-box {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(126,94,217,.17) !important;
+
+    background:
+        radial-gradient(
+            circle at 91% 8%,
+            rgba(114,63,255,.06),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(12,17,47,.97),
+            rgba(7,11,32,.97)
+        ) !important;
+
+    box-shadow:
+        0 20px 48px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-settings
+.card-header,
+
+body.lmx-settings
+.info-row {
+    border-color:
+        rgba(255,255,255,.05) !important;
+}
+
+
+/* =========================
+   PRICING
+   ========================= */
+
+body.lmx-pricing
+.page {
+    color:
+        var(--lmx-text) !important;
+
+    background:
+        transparent !important;
+}
+
+body.lmx-pricing
+.hero {
+    border:
+        1px solid
+        rgba(255,191,76,.17) !important;
+
+    border-radius:
+        25px !important;
+
+    background:
+        radial-gradient(
+            circle at 84% 12%,
+            rgba(255,182,52,.09),
+            transparent 25%
+        ),
+        radial-gradient(
+            circle at 18% 89%,
+            rgba(126,57,255,.20),
+            transparent 29%
+        ),
+        linear-gradient(
+            135deg,
+            #090e29,
+            #15103b 49%,
+            #09122f
+        ) !important;
+
+    box-shadow:
+        0 28px 70px rgba(0,0,0,.34) !important;
+}
+
+body.lmx-pricing
+.plan,
+
+body.lmx-pricing
+.trust-card,
+
+body.lmx-pricing
+.modal-card {
+    color:
+        var(--lmx-text) !important;
+
+    border-color:
+        rgba(129,98,211,.18) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12,17,47,.97),
+            rgba(7,11,32,.97)
+        ) !important;
+
+    box-shadow:
+        0 20px 49px rgba(0,0,0,.27),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-pricing
+.plan.featured {
+    border-color:
+        rgba(255,194,76,.39) !important;
+
+    background:
+        radial-gradient(
+            circle at 89% 8%,
+            rgba(255,185,52,.10),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(23,17,55,.98),
+            rgba(9,11,34,.98)
+        ) !important;
+
+    box-shadow:
+        0 24px 56px rgba(0,0,0,.30),
+        0 0 31px rgba(255,181,48,.055) !important;
+}
+
+
+/* =========================
+   FINAL TEXT NORMALIZATION
+   ========================= */
+
+body.lmx-page
+h1,
+
+body.lmx-page
+h2,
+
+body.lmx-page
+h3,
+
+body.lmx-page
+h4,
+
+body.lmx-page
+strong {
+    color:
+        inherit;
+}
+
+body.lmx-page
+.card h1,
+
+body.lmx-page
+.card h2,
+
+body.lmx-page
+.card h3,
+
+body.lmx-page
+.panel h1,
+
+body.lmx-page
+.panel h2,
+
+body.lmx-page
+.panel h3 {
+    color:
+        white !important;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 920px) {
+
+    body.lmx-authenticated {
+        padding-left:
+            0 !important;
+    }
+
+    .lmx-sidebar {
+        width:
+            min(88vw, 292px);
+
+        transform:
+            translateX(-104%);
+
+        transition:
+            transform .24s ease;
+    }
+
+    body.lmx-nav-open
+    .lmx-sidebar {
+        transform:
+            translateX(0);
+    }
+
+    .lmx-mobile-menu {
+        position:
+            fixed;
+
+        left:
+            13px;
+
+        top:
+            13px;
+
+        z-index:
+            6000;
+
+        width:
+            43px;
+
+        height:
+            43px;
+
+        display:
+            grid;
+
+        place-items:
+            center;
+
+        border:
+            1px solid
+            rgba(145,91,255,.38);
+
+        border-radius:
+            12px;
+
+        color:
+            white;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(72,34,166,.97),
+                rgba(26,37,101,.97)
+            );
+
+        box-shadow:
+            0 12px 30px rgba(0,0,0,.31),
+            0 0 22px rgba(126,68,255,.15);
+
+        font-size:
+            19px;
+    }
+
+    .lmx-backdrop {
+        position:
+            fixed;
+
+        inset:
+            0;
+
+        z-index:
+            4900;
+
+        background:
+            rgba(2,3,12,.73);
+
+        backdrop-filter:
+            blur(7px);
+    }
+
+    body.lmx-nav-open
+    .lmx-backdrop {
+        display:
+            block;
+    }
+
+    body.lmx-page
+    .main,
+
+    body.lmx-page
+    .page,
+
+    body.lmx-page
+    .quiz-page,
+
+    body.lmx-page
+    .scan-page,
+
+    body.lmx-page
+    .vocabulary-page,
+
+    body.lmx-page
+    .favorites-page,
+
+    body.lmx-page
+    .coach-page {
+        padding-top:
+            70px !important;
+    }
+
+    body.lmx-ai-teacher {
+        overflow-y:
+            auto !important;
+    }
+
+}
+
+
+/* ==========================================================
+   SETTINGS — DARK POLISH FIX
+   Removes leftover white surfaces and restores icon contrast.
+   ========================================================== */
+
+body.lmx-settings .profile-main {
+    border-color: rgba(255,255,255,.06) !important;
+}
+
+body.lmx-settings .info-list {
+    gap: 11px !important;
+}
+
+body.lmx-settings .info-row {
+    min-height: 58px !important;
+
+    border:
+        1px solid
+        rgba(121, 100, 205, .16) !important;
+
+    background:
+        radial-gradient(
+            circle at 95% 10%,
+            rgba(132, 76, 255, .07),
+            transparent 31%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(8, 13, 36, .97),
+            rgba(11, 16, 44, .97)
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.025) !important;
+}
+
+body.lmx-settings .info-row:hover {
+    border-color:
+        rgba(145, 92, 255, .30) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(12, 17, 49, .99),
+            rgba(13, 17, 46, .99)
+        ) !important;
+}
+
+body.lmx-settings .info-label {
+    color:
+        #9aa4c7 !important;
+}
+
+body.lmx-settings .info-value {
+    color:
+        #f2f4ff !important;
+}
+
+
+body.lmx-settings .field-grid {
+    gap: 13px !important;
+}
+
+body.lmx-settings .field {
+    border:
+        1px solid
+        rgba(124, 98, 210, .16) !important;
+
+    background:
+        radial-gradient(
+            circle at 95% 6%,
+            rgba(102, 68, 221, .055),
+            transparent 30%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(8, 13, 36, .97),
+            rgba(10, 15, 42, .97)
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.02) !important;
+}
+
+body.lmx-settings .field label {
+    color:
+        #b5beda !important;
+}
+
+body.lmx-settings .field select {
+    color:
+        #f4f5ff !important;
+
+    border:
+        1px solid
+        rgba(119, 99, 196, .22) !important;
+
+    background:
+        #090e28 !important;
+}
+
+body.lmx-settings .field select option {
+    color:
+        #f4f5ff !important;
+
+    background:
+        #090e28 !important;
+}
+
+
+body.lmx-settings .plan-status-grid {
+    gap: 10px !important;
+}
+
+body.lmx-settings .plan-status-box {
+    border:
+        1px solid
+        rgba(124, 98, 210, .16) !important;
+
+    background:
+        radial-gradient(
+            circle at 90% 8%,
+            rgba(119, 72, 255, .07),
+            transparent 30%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(8, 13, 36, .97),
+            rgba(10, 15, 42, .97)
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.02) !important;
+}
+
+body.lmx-settings .plan-status-box small {
+    color:
+        #7580a5 !important;
+}
+
+body.lmx-settings .plan-status-box strong {
+    color:
+        #f0f3ff !important;
+}
+
+
+body.lmx-settings .quick-links {
+    gap: 10px !important;
+}
+
+body.lmx-settings .quick-link {
+    min-height: 67px !important;
+
+    border:
+        1px solid
+        rgba(119, 97, 200, .16) !important;
+
+    color:
+        #eef1ff !important;
+
+    background:
+        radial-gradient(
+            circle at 94% 5%,
+            rgba(103, 67, 234, .06),
+            transparent 30%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(8, 13, 36, .98),
+            rgba(9, 14, 40, .98)
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.02) !important;
+}
+
+body.lmx-settings .quick-link:hover {
+    border-color:
+        rgba(151, 95, 255, .38) !important;
+
+    background:
+        radial-gradient(
+            circle at 91% 8%,
+            rgba(126, 70, 255, .14),
+            transparent 31%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(18, 20, 58, .99),
+            rgba(11, 17, 45, .99)
+        ) !important;
+
+    box-shadow:
+        0 14px 30px
+        rgba(0,0,0,.22),
+        0 0 22px
+        rgba(126,70,255,.07) !important;
+}
+
+body.lmx-settings .quick-link strong {
+    color:
+        #f5f6ff !important;
+}
+
+body.lmx-settings .quick-link span {
+    color:
+        #858fb1 !important;
+}
+
+body.lmx-settings .quick-arrow {
+    color:
+        #7682aa !important;
+}
+
+
+/* QUICK ACCESS ICONS:
+   no white-on-white icon containers */
+body.lmx-settings .quick-link-icon {
+    color:
+        #ffffff !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.09) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7042e3,
+            #485acb
+        ) !important;
+
+    box-shadow:
+        0 10px 22px
+        rgba(89, 55, 194, .24),
+        inset 0 1px 0
+        rgba(255,255,255,.10) !important;
+
+    text-shadow:
+        0 1px 8px
+        rgba(255,255,255,.20);
+}
+
+body.lmx-settings .quick-link:nth-child(2) .quick-link-icon {
+    color:
+        #352649 !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffe28b,
+            #ffb94b
+        ) !important;
+}
+
+body.lmx-settings .quick-link:nth-child(3) .quick-link-icon {
+    color:
+        #061f28 !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #66e8d7,
+            #49a9ee
+        ) !important;
+}
+
+body.lmx-settings .quick-link:nth-child(4) .quick-link-icon {
+    color:
+        #ffffff !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #9b5df7,
+            #6b4ee6
+        ) !important;
+}
+
+body.lmx-settings .quick-link:nth-child(5) .quick-link-icon {
+    color:
+        #ffffff !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ec57bf,
+            #8a4de2
+        ) !important;
+}
+
+
+/* Header icons stay visible on dark cards */
+body.lmx-settings .card-icon {
+    color:
+        #ffffff !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(116, 65, 233, .95),
+            rgba(69, 89, 201, .95)
+        ) !important;
+
+    box-shadow:
+        0 10px 24px
+        rgba(76, 49, 170, .20) !important;
+}
+
+
+/* Avoid pale / near-white card interiors */
+body.lmx-settings .card-body {
+    background:
+        transparent !important;
+}
+
+body.lmx-settings .subscription-card,
+body.lmx-settings .card {
+    overflow:
+        hidden !important;
+}
+
+
+/* ==========================================================
+   MIDNIGHT ROYAL V2 — FINAL DARK SURFACE CLEANUP
+   Fixes remaining pale/white surfaces shown in screenshots.
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   DASHBOARD — Quiz progress + Continue learning
+   ---------------------------------------------------------- */
+
+body.lmx-dashboard .quiz-performance-card,
+body.lmx-dashboard .learning-card {
+    color: #f5f6ff !important;
+
+    border:
+        1px solid
+        rgba(127, 96, 219, .18) !important;
+
+    background:
+        radial-gradient(
+            circle at 92% 8%,
+            rgba(119, 65, 255, .075),
+            transparent 29%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(11, 16, 45, .98),
+            rgba(6, 10, 30, .98)
+        ) !important;
+
+    box-shadow:
+        0 20px 48px rgba(0,0,0,.27),
+        inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+body.lmx-dashboard .quiz-performance-card:hover,
+body.lmx-dashboard .learning-card:hover {
+    border-color:
+        rgba(148, 91, 255, .34) !important;
+
+    box-shadow:
+        0 23px 53px rgba(0,0,0,.31),
+        0 0 25px rgba(126,67,255,.07) !important;
+}
+
+body.lmx-dashboard .quiz-performance-icon,
+body.lmx-dashboard .learning-card-icon,
+body.lmx-dashboard .stat-icon {
+    color: #ffffff !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7042df,
+            #485bca
+        ) !important;
+
+    box-shadow:
+        0 10px 23px rgba(77,51,181,.22) !important;
+}
+
+body.lmx-dashboard .quiz-performance-number,
+body.lmx-dashboard .learning-card h3 {
+    color: #ffffff !important;
+}
+
+body.lmx-dashboard .quiz-performance-label,
+body.lmx-dashboard .learning-card p {
+    color: #8f99ba !important;
+}
+
+body.lmx-dashboard .learning-link {
+    color: #a77bff !important;
+}
+
+
+/* ----------------------------------------------------------
+   QUIZ — rail header, outer stage, footer, chips, icons
+   ---------------------------------------------------------- */
+
+body.lmx-quiz .quiz-rail {
+    border-color:
+        rgba(128, 96, 218, .19) !important;
+
+    background:
+        radial-gradient(
+            circle at 12% 0%,
+            rgba(125, 65, 255, .13),
+            transparent 31%
+        ),
+        linear-gradient(
+            155deg,
+            rgba(9, 14, 40, .99),
+            rgba(6, 10, 29, .99)
+        ) !important;
+
+    box-shadow:
+        0 22px 54px rgba(0,0,0,.29),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-quiz .rail-head {
+    border-bottom-color:
+        rgba(129, 97, 214, .14) !important;
+
+    background:
+        radial-gradient(
+            circle at 90% 8%,
+            rgba(134, 72, 255, .10),
+            transparent 31%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(14, 18, 50, .98),
+            rgba(9, 13, 38, .98)
+        ) !important;
+}
+
+body.lmx-quiz .rail-head small {
+    color: #9a71ff !important;
+}
+
+body.lmx-quiz .rail-head h2 {
+    color: #ffffff !important;
+}
+
+body.lmx-quiz .rail-feature {
+    border-color:
+        rgba(119, 96, 194, .15) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 15, 42, .97),
+            rgba(7, 11, 32, .97)
+        ) !important;
+}
+
+body.lmx-quiz .rail-feature strong {
+    color: #edf0ff !important;
+}
+
+body.lmx-quiz .rail-feature span {
+    color: #828cac !important;
+}
+
+body.lmx-quiz .rail-icon,
+body.lmx-quiz .category-icon {
+    color: #ffffff !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.075) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6741d5,
+            #3f5fb9
+        ) !important;
+
+    box-shadow:
+        0 9px 21px rgba(73, 49, 166, .20) !important;
+}
+
+body.lmx-quiz .rail-tip {
+    border-color:
+        rgba(255, 191, 78, .20) !important;
+
+    background:
+        radial-gradient(
+            circle at 91% 9%,
+            rgba(255, 187, 55, .075),
+            transparent 30%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(30, 24, 48, .97),
+            rgba(14, 16, 39, .97)
+        ) !important;
+}
+
+body.lmx-quiz .rail-tip small {
+    color: #f2b94e !important;
+}
+
+body.lmx-quiz .rail-tip p {
+    color: #aaa48e !important;
+}
+
+/* universal sidebar already gives navigation */
+body.lmx-quiz .rail-footer {
+    display: none !important;
+}
+
+body.lmx-quiz .quiz-stage {
+    border-color:
+        rgba(133, 95, 231, .20) !important;
+
+    background:
+        radial-gradient(
+            circle at 12% 11%,
+            rgba(112, 57, 255, .10),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 88% 75%,
+            rgba(71, 107, 255, .07),
+            transparent 28%
+        ),
+        linear-gradient(
+            150deg,
+            rgba(7, 11, 31, .99),
+            rgba(9, 12, 37, .99)
+        ) !important;
+
+    box-shadow:
+        0 24px 58px rgba(0,0,0,.31),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-quiz .start-intro h2,
+body.lmx-quiz .setting label {
+    color: #f7f5ff !important;
+}
+
+body.lmx-quiz .start-intro p,
+body.lmx-quiz .setting-note,
+body.lmx-quiz .category-card small {
+    color: #8992b2 !important;
+}
+
+body.lmx-quiz .session-chip {
+    color: #c4adff !important;
+
+    border-color:
+        rgba(148, 91, 255, .25) !important;
+
+    background:
+        rgba(44, 26, 99, .68) !important;
+}
+
+body.lmx-quiz .setting {
+    border-color:
+        rgba(120, 96, 198, .16) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 15, 42, .98),
+            rgba(7, 11, 32, .98)
+        ) !important;
+}
+
+
+/* ----------------------------------------------------------
+   SCAN TEXT — card headers, upload/result icons, buttons,
+   Gemini Vision header
+   ---------------------------------------------------------- */
+
+body.lmx-scan .scan-card,
+body.lmx-scan .vision-section {
+    border-color:
+        rgba(133, 91, 226, .19) !important;
+
+    background:
+        radial-gradient(
+            circle at 10% 0%,
+            rgba(119, 63, 255, .09),
+            transparent 31%
+        ),
+        linear-gradient(
+            155deg,
+            rgba(9, 14, 40, .99),
+            rgba(6, 10, 29, .99)
+        ) !important;
+
+    box-shadow:
+        0 22px 54px rgba(0,0,0,.29),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-scan .card-header,
+body.lmx-scan .vision-header {
+    border-bottom-color:
+        rgba(126, 95, 211, .14) !important;
+
+    background:
+        radial-gradient(
+            circle at 89% 8%,
+            rgba(134, 71, 255, .10),
+            transparent 31%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(14, 18, 50, .98),
+            rgba(9, 13, 38, .98)
+        ) !important;
+}
+
+body.lmx-scan .card-header small,
+body.lmx-scan .vision-header small {
+    color: #9b73ff !important;
+}
+
+body.lmx-scan .card-header h2,
+body.lmx-scan .vision-header h2,
+body.lmx-scan .upload-placeholder h3,
+body.lmx-scan .result-empty h3 {
+    color: #ffffff !important;
+}
+
+body.lmx-scan .card-header p,
+body.lmx-scan .vision-header p,
+body.lmx-scan .upload-placeholder p,
+body.lmx-scan .result-empty p {
+    color: #8993b4 !important;
+}
+
+body.lmx-scan .card-mini-icon,
+body.lmx-scan .upload-icon,
+body.lmx-scan .result-empty-icon {
+    color: #ffffff !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.08) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7043df,
+            #4d5bc8
+        ) !important;
+
+    box-shadow:
+        0 10px 23px rgba(77,50,178,.23) !important;
+}
+
+body.lmx-scan .upload-zone {
+    border-color:
+        rgba(129, 94, 222, .27) !important;
+
+    background:
+        radial-gradient(
+            circle at 50% 18%,
+            rgba(115, 61, 255, .08),
+            transparent 34%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(6, 11, 31, .96),
+            rgba(8, 12, 36, .96)
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.018) !important;
+}
+
+body.lmx-scan .secondary-button {
+    color: #e7ebfb !important;
+
+    border-color:
+        rgba(117, 94, 196, .19) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(13, 18, 50, .98),
+            rgba(8, 13, 36, .98)
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+body.lmx-scan .secondary-button:hover {
+    color: #ffffff !important;
+
+    border-color:
+        rgba(151, 96, 255, .40) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(34, 25, 82, .99),
+            rgba(12, 19, 50, .99)
+        ) !important;
+}
+
+body.lmx-scan .vision-badge {
+    color: #c5b0ff !important;
+
+    border-color:
+        rgba(148, 91, 255, .24) !important;
+
+    background:
+        rgba(44, 26, 99, .68) !important;
+}
+
+body.lmx-scan .vision-prompts button {
+    color: #cfd5ec !important;
+
+    border-color:
+        rgba(112, 91, 184, .16) !important;
+
+    background:
+        rgba(10, 15, 41, .94) !important;
+}
+
+body.lmx-scan .vision-prompts button:hover {
+    color: #ffffff !important;
+
+    border-color:
+        rgba(151, 96, 255, .36) !important;
+
+    background:
+        rgba(39, 25, 88, .93) !important;
+}
+
+body.lmx-scan .vision-label {
+    color: #dfe4f5 !important;
+}
+
+
+/* ----------------------------------------------------------
+   STUDY PLAN — builder must be fully dark
+   ---------------------------------------------------------- */
+
+body.lmx-study-plan .builder-panel {
+    border-color:
+        rgba(132, 95, 226, .20) !important;
+
+    background:
+        radial-gradient(
+            circle at 15% 0%,
+            rgba(120, 64, 255, .12),
+            transparent 34%
+        ),
+        linear-gradient(
+            160deg,
+            rgba(9, 14, 40, .99),
+            rgba(6, 10, 29, .99)
+        ) !important;
+
+    box-shadow:
+        0 22px 55px rgba(0,0,0,.30),
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-study-plan .builder-head,
+body.lmx-study-plan .builder-footer {
+    border-color:
+        rgba(125, 95, 210, .14) !important;
+
+    background:
+        radial-gradient(
+            circle at 90% 8%,
+            rgba(135, 71, 255, .10),
+            transparent 31%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(14, 18, 50, .98),
+            rgba(9, 13, 38, .98)
+        ) !important;
+}
+
+body.lmx-study-plan .builder-kicker {
+    color: #9c74ff !important;
+}
+
+body.lmx-study-plan .builder-head h2,
+body.lmx-study-plan .field-label,
+body.lmx-study-plan .goal-copy strong,
+body.lmx-study-plan .exam-top strong {
+    color: #f5f6ff !important;
+}
+
+body.lmx-study-plan .builder-head p,
+body.lmx-study-plan .field-label span,
+body.lmx-study-plan .goal-copy p,
+body.lmx-study-plan .exam-top p {
+    color: #8993b4 !important;
+}
+
+body.lmx-study-plan .period-button {
+    color: #b5bedb !important;
+
+    border-color:
+        rgba(116, 92, 192, .16) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 15, 42, .98),
+            rgba(7, 11, 32, .98)
+        ) !important;
+}
+
+body.lmx-study-plan .period-button:hover {
+    color: #ffffff !important;
+
+    border-color:
+        rgba(151, 96, 255, .34) !important;
+}
+
+body.lmx-study-plan .period-button.active {
+    color: #ffffff !important;
+
+    border-color:
+        rgba(159, 101, 255, .49) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #5227ba,
+            #7140d8 55%,
+            #3e49a5
+        ) !important;
+
+    box-shadow:
+        0 10px 24px rgba(78,38,181,.25) !important;
+}
+
+body.lmx-study-plan .goal-card,
+body.lmx-study-plan .goal-card.hot {
+    color: #eef1ff !important;
+
+    border-color:
+        rgba(116, 93, 194, .16) !important;
+
+    background:
+        radial-gradient(
+            circle at 90% 8%,
+            rgba(107, 63, 244, .065),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(10, 15, 42, .98),
+            rgba(7, 11, 32, .98)
+        ) !important;
+}
+
+body.lmx-study-plan .goal-card.active,
+body.lmx-study-plan .goal-card.hot.active {
+    border-color:
+        rgba(151, 95, 255, .46) !important;
+
+    background:
+        radial-gradient(
+            circle at 90% 8%,
+            rgba(132, 73, 255, .17),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(56, 30, 117, .98),
+            rgba(18, 21, 61, .98)
+        ) !important;
+
+    box-shadow:
+        0 12px 28px rgba(72,35,169,.22) !important;
+}
+
+body.lmx-study-plan .goal-icon {
+    color: #ffffff !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.075) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6742d7,
+            #4360bb
+        ) !important;
+}
+
+body.lmx-study-plan .exam-card {
+    border-color:
+        rgba(255, 188, 67, .18) !important;
+
+    background:
+        radial-gradient(
+            circle at 95% 0%,
+            rgba(255, 180, 45, .08),
+            transparent 36%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(28, 23, 47, .98),
+            rgba(11, 15, 36, .98)
+        ) !important;
+}
+
+body.lmx-study-plan .switch {
+    background: #242942 !important;
+}
+
+body.lmx-study-plan .switch::after {
+    background: #cfd5ec !important;
+}
+
+body.lmx-study-plan .switch.active {
+    background:
+        linear-gradient(
+            135deg,
+            #6546db,
+            #9162f3
+        ) !important;
+}
+
+body.lmx-study-plan .task-card {
+    border-color:
+        rgba(119, 96, 197, .16) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10, 15, 42, .98),
+            rgba(7, 11, 32, .98)
+        ) !important;
+}
+
+
+/* ----------------------------------------------------------
+   PROFILE — top action buttons + icon containers
+   ---------------------------------------------------------- */
+
+body.lmx-profile .top-link {
+    color: #d7dcef !important;
+
+    border-color:
+        rgba(116, 92, 194, .18) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12, 17, 47, .98),
+            rgba(7, 11, 32, .98)
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-profile .top-link:hover {
+    color: #ffffff !important;
+
+    border-color:
+        rgba(151, 96, 255, .36) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(36, 25, 83, .99),
+            rgba(11, 18, 49, .99)
+        ) !important;
+}
+
+body.lmx-profile .stat-icon,
+body.lmx-profile .achievement-icon,
+body.lmx-profile .next-achievement-icon {
+    color: #ffffff !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.075) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6742d7,
+            #435fbb
+        ) !important;
+
+    box-shadow:
+        0 9px 21px rgba(73, 49, 166, .20) !important;
+}
+
+body.lmx-profile .achievement.unlocked .achievement-icon {
+    color: #3b2a4c !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffe695,
+            #ffbd4d
+        ) !important;
+
+    box-shadow:
+        0 11px 24px rgba(218,157,46,.18) !important;
+}
+
+body.lmx-profile .achievement-state {
+    color: #aab2ce !important;
+
+    background:
+        rgba(255,255,255,.065) !important;
+}
+
+body.lmx-profile .achievement.unlocked .achievement-state {
+    color: #77dfab !important;
+
+    background:
+        rgba(65, 181, 126, .12) !important;
+}
+
+body.lmx-profile .plan-card {
+    color: #f0f2ff !important;
+
+    border-color:
+        rgba(122, 97, 205, .17) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12, 17, 47, .97),
+            rgba(7, 11, 32, .97)
+        ) !important;
+}
+
+
+/* ----------------------------------------------------------
+   ANALYTICS — action buttons + KPI/icon/detail surfaces
+   ---------------------------------------------------------- */
+
+body.lmx-analytics .top-link {
+    color: #d5daed !important;
+
+    border-color:
+        rgba(116, 92, 194, .18) !important;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(12, 17, 47, .98),
+            rgba(7, 11, 32, .98)
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.02) !important;
+}
+
+body.lmx-analytics .top-link:hover {
+    color: #ffffff !important;
+
+    border-color:
+        rgba(151, 96, 255, .36) !important;
+
+    background:
+        rgba(34, 25, 82, .96) !important;
+}
+
+body.lmx-analytics .kpi-icon,
+body.lmx-analytics .skill-icon {
+    color: #ffffff !important;
+
+    border:
+        1px solid
+        rgba(255,255,255,.075) !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6742d7,
+            #435fbb
+        ) !important;
+
+    box-shadow:
+        0 9px 21px rgba(73, 49, 166, .20) !important;
+}
+
+body.lmx-analytics .kpi strong,
+body.lmx-analytics .skill-copy strong,
+body.lmx-analytics .mastery-row strong,
+body.lmx-analytics .recent-item strong {
+    color: #f5f6ff !important;
+}
+
+body.lmx-analytics .kpi span,
+body.lmx-analytics .skill-copy span,
+body.lmx-analytics .mastery-row span,
+body.lmx-analytics .recent-item span {
+    color: #8993b4 !important;
+}
+
+body.lmx-analytics .recent-score {
+    color: #aa7cff !important;
+}
+
+body.lmx-analytics .recent-percent {
+    color: #79dfad !important;
+
+    border:
+        1px solid
+        rgba(71, 190, 132, .17) !important;
+
+    background:
+        rgba(52, 165, 111, .10) !important;
+}
+
+body.lmx-analytics .empty {
+    color: #8993b4 !important;
+
+    border-color:
+        rgba(123, 96, 205, .20) !important;
+
+    background:
+        rgba(8, 13, 36, .92) !important;
+}
+
+
+/* ----------------------------------------------------------
+   GLOBAL — pale icon/chip cleanup for these app pages
+   ---------------------------------------------------------- */
+
+body.lmx-dashboard .button-light,
+body.lmx-quiz .quiz-back-button {
+    color: #d8def1 !important;
+
+    border-color:
+        rgba(116, 92, 194, .18) !important;
+
+    background:
+        rgba(10, 15, 42, .96) !important;
+}
+
+
+/* Keep scrollbars aligned with the dark theme */
+body.lmx-page *::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body.lmx-page *::-webkit-scrollbar-thumb {
+    border:
+        0 !important;
+
+    background:
+        linear-gradient(
+            180deg,
+            #7750e5,
+            #4d62ce
+        ) !important;
+}

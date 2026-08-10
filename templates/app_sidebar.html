@@ -1,0 +1,218 @@
+{% set ep = request.endpoint or '' %}
+
+<button
+    type="button"
+    class="lmx-mobile-menu"
+    aria-label="Open navigation"
+    onclick="document.body.classList.toggle('lmx-nav-open')"
+>
+    ☰
+</button>
+
+<div
+    class="lmx-backdrop"
+    onclick="document.body.classList.remove('lmx-nav-open')"
+></div>
+
+<aside class="lmx-sidebar">
+
+    <a
+        href="{{ url_for('home') }}"
+        class="lmx-brand"
+    >
+        <div class="lmx-logo">
+            🧠
+        </div>
+
+        <div class="lmx-brand-copy">
+            <strong>
+                Lingua<span>Mind</span>
+            </strong>
+
+            <small>
+                AI LANGUAGE LEARNING
+            </small>
+        </div>
+    </a>
+
+
+    <section class="lmx-nav-section">
+
+        <div class="lmx-nav-label">
+            MENU
+        </div>
+
+        <nav class="lmx-nav">
+
+            <a
+                href="{{ url_for('home') }}"
+                class="lmx-nav-item {% if ep in ['home', 'dashboard'] %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon purple">▦</span>
+                <span class="lmx-nav-text">Dashboard</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+            <a
+                href="{{ url_for('vocabulary') }}"
+                class="lmx-nav-item {% if ep in ['vocabulary', 'add_word', 'edit_word'] %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon cyan">▣</span>
+                <span class="lmx-nav-text">Vocabulary</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+            <a
+                href="{{ url_for('ai_teacher') }}"
+                class="lmx-nav-item {% if ep == 'ai_teacher' %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon blue">✦</span>
+                <span class="lmx-nav-text">AI Teacher</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+            <a
+                href="{{ url_for('quiz') }}"
+                class="lmx-nav-item {% if ep == 'quiz' %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon gold">🏆</span>
+                <span class="lmx-nav-text">Quiz</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+            <a
+                href="{{ url_for('scan_text') }}"
+                class="lmx-nav-item {% if ep == 'scan_text' %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon pink">⌗</span>
+                <span class="lmx-nav-text">Scan Text</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+        </nav>
+
+    </section>
+
+
+    <section class="lmx-nav-section">
+
+        <div class="lmx-nav-label">
+            MORE
+        </div>
+
+        <nav class="lmx-nav">
+
+            <a
+                href="{{ url_for('profile') }}"
+                class="lmx-nav-item {% if ep == 'profile' %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon violet">◉</span>
+                <span class="lmx-nav-text">Profile & Achievements</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+            <a
+                href="{{ url_for('study_plan') }}"
+                class="lmx-nav-item {% if ep == 'study_plan' %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon purple">▦</span>
+                <span class="lmx-nav-text">Study Plan</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+            <a
+                href="{{ url_for('analytics') }}"
+                class="lmx-nav-item {% if ep == 'analytics' %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon blue">▥</span>
+                <span class="lmx-nav-text">Progress Analytics</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+            <a
+                href="{{ url_for('favorites') }}"
+                class="lmx-nav-item {% if ep == 'favorites' %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon pink">★</span>
+                <span class="lmx-nav-text">Favorites</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+            <a
+                href="{{ url_for('settings') }}"
+                class="lmx-nav-item {% if ep == 'settings' %}active{% endif %}"
+            >
+                <span class="lmx-nav-icon slate">⚙</span>
+                <span class="lmx-nav-text">Settings</span>
+                <span class="lmx-nav-arrow">›</span>
+            </a>
+
+        </nav>
+
+    </section>
+
+
+    <section class="lmx-nav-section lmx-premium-section">
+
+        <div class="lmx-nav-label premium">
+            PREMIUM
+        </div>
+
+        <a
+            href="{{ url_for('pricing') }}"
+            class="lmx-premium-card {% if ep == 'pricing' %}active{% endif %}"
+        >
+            <div class="lmx-premium-icon">
+                ◆
+            </div>
+
+            <div>
+                <strong>
+                    Premium
+                </strong>
+
+                <span>
+                    Pricing Plans
+                </span>
+            </div>
+
+            <b>
+                ›
+            </b>
+        </a>
+
+    </section>
+
+
+    <div class="lmx-user">
+
+        <div class="lmx-user-avatar">
+            {{ session.get('username', 'L')[0]|upper }}
+        </div>
+
+        <div>
+            <strong>
+                {{ session.get('username', 'Learner') }}
+            </strong>
+
+            <span>
+                LinguaMind learner
+            </span>
+        </div>
+
+    </div>
+
+</aside>
+
+<script>
+document.addEventListener(
+    "keydown",
+    function(event) {
+        if (event.key === "Escape") {
+            document.body.classList.remove(
+                "lmx-nav-open"
+            );
+        }
+    }
+);
+</script>

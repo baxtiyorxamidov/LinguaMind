@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Favorites — LinguaMind</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/midnight_royal_v2.css') }}"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+        }
+
+
+        body.favx-page {
+            overflow: hidden;
+        }
+
+
+        .favx-shell {
+            width: 100%;
+            height: 100vh;
+
+            display: grid;
+            grid-template-rows:
+                auto
+                minmax(0, 1fr);
+
+            gap: 16px;
+
+            padding:
+                18px
+                22px
+                20px;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           TOPBAR
+        ===================================================== */
+
+        .favx-topbar {
+            position: relative;
+
+            min-height: 108px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 18px;
+
+            padding:
+                17px
+                20px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(145, 91, 255, .21);
+
+            border-radius: 26px;
+
+            background:
+                radial-gradient(
+                    circle at 86% 14%,
+                    rgba(255, 71, 189, .11),
+                    transparent 26%
+                ),
+                radial-gradient(
+                    circle at 18% 92%,
+                    rgba(115, 62, 255, .14),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    rgba(10, 14, 42, .98),
+                    rgba(7, 11, 31, .98)
+                );
+
+            box-shadow:
+                0 24px 58px
+                rgba(0, 0, 0, .30),
+                inset 0 1px 0
+                rgba(255, 255, 255, .025);
+        }
+
+
+        .favx-topbar::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: 24px;
+            right: 24px;
+
+            height: 3px;
+
+            border-radius:
+                0
+                0
+                999px
+                999px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    #7a4cff 16%,
+                    #b45bff 47%,
+                    #ff5fc4 78%,
+                    transparent
+                );
+
+            box-shadow:
+                0 0 19px
+                rgba(173, 84, 255, .38);
+        }
+
+
+        .favx-brand {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+
+            gap: 14px;
+
+            min-width: 0;
+        }
+
+
+        .favx-brand-icon {
+            position: relative;
+
+            width: 62px;
+            height: 62px;
+
+            flex-shrink: 0;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, .09);
+
+            border-radius: 20px;
+
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at 28% 18%,
+                    rgba(255,255,255,.20),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #673edc,
+                    #8d4cec 52%,
+                    #e557be
+                );
+
+            box-shadow:
+                0 14px 30px
+                rgba(113, 55, 226, .28),
+                0 0 24px
+                rgba(226, 73, 181, .10);
+
+            font-size: 27px;
+        }
+
+
+        .favx-brand-icon::after {
+            content: "";
+
+            position: absolute;
+
+            right: 4px;
+            bottom: 4px;
+
+            width: 9px;
+            height: 9px;
+
+            border:
+                2px solid
+                #0a0e29;
+
+            border-radius: 50%;
+
+            background:
+                #ff5b9f;
+
+            box-shadow:
+                0 0 13px
+                rgba(255, 91, 159, .52);
+        }
+
+
+        .favx-brand-copy small {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color:
+                #a778ff;
+
+            font-size:
+                10px;
+
+            font-weight:
+                950;
+
+            letter-spacing:
+                1.55px;
+        }
+
+
+        .favx-brand-copy h1 {
+            margin: 0;
+
+            color: #ffffff;
+
+            font-size:
+                clamp(25px, 2.2vw, 34px);
+
+            line-height: 1.08;
+
+            font-weight: 950;
+
+            letter-spacing: -.9px;
+        }
+
+
+        .favx-brand-copy p {
+            margin:
+                6px
+                0
+                0;
+
+            color:
+                #8791b5;
+
+            font-size:
+                12px;
+
+            line-height:
+                1.45;
+        }
+
+
+        .favx-count-pill {
+            position: relative;
+            z-index: 2;
+
+            min-height: 45px;
+
+            display: inline-flex;
+            align-items: center;
+
+            gap: 9px;
+
+            padding:
+                0
+                15px;
+
+            border:
+                1px solid
+                rgba(255, 89, 172, .22);
+
+            border-radius:
+                14px;
+
+            color:
+                #ffc1dc;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(80, 22, 65, .58),
+                    rgba(46, 20, 66, .70)
+                );
+
+            box-shadow:
+                0 12px 28px
+                rgba(0,0,0,.22),
+                inset 0 1px 0
+                rgba(255,255,255,.025);
+
+            font-size:
+                11px;
+
+            font-weight:
+                900;
+
+            white-space:
+                nowrap;
+        }
+
+
+        .favx-count-dot {
+            width: 9px;
+            height: 9px;
+
+            border-radius: 50%;
+
+            background:
+                #ff5d9f;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(255, 93, 159, .10),
+                0 0 16px
+                rgba(255, 93, 159, .45);
+        }
+
+
+        /* =====================================================
+           WORKSPACE
+        ===================================================== */
+
+        .favx-workspace {
+            min-height: 0;
+
+            display: grid;
+            grid-template-columns:
+                270px
+                minmax(0, 1fr);
+
+            gap: 16px;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           LEFT RAIL
+        ===================================================== */
+
+        .favx-rail {
+            min-height: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(140, 91, 228, .18);
+
+            border-radius:
+                24px;
+
+            background:
+                radial-gradient(
+                    circle at 12% 0%,
+                    rgba(145, 63, 255, .10),
+                    transparent 31%
+                ),
+                linear-gradient(
+                    155deg,
+                    rgba(10, 15, 42, .98),
+                    rgba(6, 10, 29, .98)
+                );
+
+            box-shadow:
+                0 22px 54px
+                rgba(0, 0, 0, .29),
+                inset 0 1px 0
+                rgba(255,255,255,.02);
+        }
+
+
+        .favx-rail-head {
+            padding:
+                19px
+                18px
+                16px;
+
+            border-bottom:
+                1px solid
+                rgba(130, 94, 213, .13);
+        }
+
+
+        .favx-rail-head small {
+            display: block;
+
+            margin-bottom:
+                5px;
+
+            color:
+                #a778ff;
+
+            font-size:
+                9px;
+
+            font-weight:
+                950;
+
+            letter-spacing:
+                1.35px;
+        }
+
+
+        .favx-rail-head h2 {
+            margin: 0;
+
+            color:
+                #ffffff;
+
+            font-size:
+                21px;
+
+            font-weight:
+                920;
+
+            letter-spacing:
+                -.45px;
+        }
+
+
+        .favx-rail-body {
+            min-height: 0;
+
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+
+            padding:
+                14px;
+
+            overflow-y: auto;
+        }
+
+
+        .favx-rail-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+
+        .favx-rail-body::-webkit-scrollbar-thumb {
+            border-radius: 999px;
+
+            background:
+                linear-gradient(
+                    #9258ef,
+                    #5a5ed2
+                );
+        }
+
+
+        .favx-stat {
+            min-height: 108px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            padding:
+                13px;
+
+            border:
+                1px solid
+                rgba(119, 95, 197, .16);
+
+            border-radius:
+                16px;
+
+            background:
+                radial-gradient(
+                    circle at 90% 8%,
+                    rgba(141, 75, 255, .07),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(11, 16, 45, .97),
+                    rgba(7, 11, 32, .97)
+                );
+
+            box-shadow:
+                inset 0 1px 0
+                rgba(255,255,255,.018);
+        }
+
+
+        .favx-stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 8px;
+        }
+
+
+        .favx-stat-label {
+            color:
+                #7f89ab;
+
+            font-size:
+                8px;
+
+            font-weight:
+                950;
+
+            letter-spacing:
+                1.1px;
+        }
+
+
+        .favx-stat-icon {
+            width: 33px;
+            height: 33px;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid
+                rgba(255,255,255,.07);
+
+            border-radius:
+                10px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6742d7,
+                    #4b5fc3
+                );
+
+            box-shadow:
+                0 8px 20px
+                rgba(73, 49, 166, .18);
+
+            font-size: 14px;
+        }
+
+
+        .favx-stat:nth-child(2)
+        .favx-stat-icon {
+            color:
+                #302449;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffe492,
+                    #ffbc4e
+                );
+        }
+
+
+        .favx-stat:nth-child(3)
+        .favx-stat-icon {
+            color:
+                #08242b;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #67e6d2,
+                    #48a9e8
+                );
+        }
+
+
+        .favx-stat:nth-child(4)
+        .favx-stat-icon {
+            color:
+                #412c20;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ffd883,
+                    #ec9843
+                );
+        }
+
+
+        .favx-stat-value {
+            color:
+                #ffffff;
+
+            font-size:
+                28px;
+
+            font-weight:
+                950;
+
+            line-height:
+                1;
+        }
+
+
+        .favx-tip {
+            grid-column:
+                1 / -1;
+
+            padding:
+                14px;
+
+            border:
+                1px solid
+                rgba(255, 95, 188, .16);
+
+            border-radius:
+                16px;
+
+            background:
+                radial-gradient(
+                    circle at 91% 8%,
+                    rgba(255, 80, 185, .075),
+                    transparent 31%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(26, 19, 48, .98),
+                    rgba(10, 13, 36, .98)
+                );
+        }
+
+
+        .favx-tip small {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color:
+                #ff8bc8;
+
+            font-size:
+                8px;
+
+            font-weight:
+                950;
+
+            letter-spacing:
+                1.2px;
+        }
+
+
+        .favx-tip p {
+            margin: 0;
+
+            color:
+                #8c95b3;
+
+            font-size:
+                10px;
+
+            line-height:
+                1.55;
+        }
+
+
+        .favx-rail-footer {
+            flex-shrink: 0;
+
+            padding:
+                12px
+                14px
+                14px;
+
+            border-top:
+                1px solid
+                rgba(130, 94, 213, .13);
+        }
+
+
+        .favx-open-vocab {
+            min-height:
+                45px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            border:
+                1px solid
+                rgba(143, 92, 255, .24);
+
+            border-radius:
+                13px;
+
+            color:
+                #ffffff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5528bc,
+                    #7442da 55%,
+                    #4753b9
+                );
+
+            box-shadow:
+                0 12px 27px
+                rgba(76, 37, 177, .24);
+
+            text-decoration:
+                none;
+
+            font-size:
+                10.5px;
+
+            font-weight:
+                900;
+
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease;
+        }
+
+
+        .favx-open-vocab:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 16px 33px
+                rgba(76, 37, 177, .32);
+        }
+
+
+        /* =====================================================
+           MAIN PANEL
+        ===================================================== */
+
+        .favx-main {
+            min-width: 0;
+            min-height: 0;
+
+            display: grid;
+            grid-template-rows:
+                auto
+                minmax(0, 1fr);
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(136, 88, 226, .18);
+
+            border-radius:
+                24px;
+
+            background:
+                radial-gradient(
+                    circle at 92% 4%,
+                    rgba(255, 71, 189, .055),
+                    transparent 25%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(9, 14, 40, .98),
+                    rgba(6, 10, 29, .98)
+                );
+
+            box-shadow:
+                0 22px 54px
+                rgba(0,0,0,.29),
+                inset 0 1px 0
+                rgba(255,255,255,.02);
+        }
+
+
+        .favx-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            padding:
+                14px;
+
+            border-bottom:
+                1px solid
+                rgba(130, 94, 213, .13);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(12, 17, 48, .97),
+                    rgba(8, 12, 34, .97)
+                );
+        }
+
+
+        .favx-search {
+            min-width: 220px;
+            flex: 1;
+
+            min-height: 46px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 9px;
+
+            padding:
+                0
+                13px;
+
+            border:
+                1px solid
+                rgba(118, 94, 194, .18);
+
+            border-radius:
+                13px;
+
+            background:
+                rgba(5, 10, 28, .94);
+        }
+
+
+        .favx-search span {
+            color:
+                #9d78ff;
+
+            font-size:
+                15px;
+        }
+
+
+        .favx-search input {
+            width: 100%;
+
+            border: 0 !important;
+            outline: 0 !important;
+
+            color:
+                #f3f5ff !important;
+
+            background:
+                transparent !important;
+
+            box-shadow:
+                none !important;
+
+            font-size:
+                11px;
+        }
+
+
+        .favx-search input::placeholder {
+            color:
+                #65708f !important;
+        }
+
+
+        .favx-filters {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+
+            gap: 7px;
+        }
+
+
+        .favx-filter {
+            min-height:
+                38px;
+
+            padding:
+                0
+                12px;
+
+            border:
+                1px solid
+                rgba(113, 91, 186, .16);
+
+            border-radius:
+                11px;
+
+            color:
+                #aab3cf;
+
+            background:
+                rgba(9, 14, 39, .94);
+
+            font-size:
+                9px;
+
+            font-weight:
+                900;
+
+            transition:
+                .18s ease;
+        }
+
+
+        .favx-filter:hover {
+            color:
+                #ffffff;
+
+            border-color:
+                rgba(150, 94, 255, .33);
+        }
+
+
+        .favx-filter.active {
+            color:
+                #ffffff;
+
+            border-color:
+                rgba(255, 91, 184, .34);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(106, 40, 153, .91),
+                    rgba(66, 39, 132, .94)
+                );
+
+            box-shadow:
+                0 9px 20px
+                rgba(101, 42, 159, .18);
+        }
+
+
+        .favx-scroll {
+            min-height: 0;
+
+            padding:
+                15px;
+
+            overflow-y:
+                auto;
+        }
+
+
+        .favx-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+
+        .favx-scroll::-webkit-scrollbar-thumb {
+            border-radius: 999px;
+
+            background:
+                linear-gradient(
+                    #8f51e7,
+                    #515fd0
+                );
+        }
+
+
+        .favx-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 13px;
+        }
+
+
+        /* =====================================================
+           WORD CARD
+        ===================================================== */
+
+        .favx-card {
+            position: relative;
+
+            min-width: 0;
+
+            padding:
+                16px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(120, 94, 198, .16);
+
+            border-radius:
+                17px;
+
+            background:
+                radial-gradient(
+                    circle at 94% 4%,
+                    rgba(255, 75, 180, .065),
+                    transparent 31%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(11, 16, 45, .98),
+                    rgba(7, 11, 32, .98)
+                );
+
+            box-shadow:
+                0 15px 35px
+                rgba(0,0,0,.20),
+                inset 0 1px 0
+                rgba(255,255,255,.018);
+
+            transition:
+                transform .18s ease,
+                border-color .18s ease,
+                box-shadow .18s ease;
+        }
+
+
+        .favx-card::after {
+            content: "♥";
+
+            position: absolute;
+
+            right: -5px;
+            bottom: -27px;
+
+            color:
+                rgba(255, 87, 168, .045);
+
+            font-size:
+                96px;
+
+            font-weight:
+                950;
+
+            pointer-events: none;
+        }
+
+
+        .favx-card:hover {
+            transform:
+                translateY(-3px);
+
+            border-color:
+                rgba(255, 91, 184, .27);
+
+            box-shadow:
+                0 20px 42px
+                rgba(0,0,0,.28),
+                0 0 25px
+                rgba(255, 79, 183, .045);
+        }
+
+
+        .favx-card-top {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-bottom:
+                12px;
+        }
+
+
+        .favx-word {
+            margin: 0;
+
+            color:
+                #ffffff;
+
+            font-size:
+                20px;
+
+            line-height:
+                1.1;
+
+            font-weight:
+                930;
+
+            letter-spacing:
+                -.45px;
+
+            word-break:
+                break-word;
+        }
+
+
+        .favx-translation {
+            margin-top:
+                5px;
+
+            color:
+                #a8b1ce;
+
+            font-size:
+                10px;
+
+            font-weight:
+                760;
+
+            word-break:
+                break-word;
+        }
+
+
+        .favx-remove-form {
+            flex-shrink: 0;
+        }
+
+
+        .favx-remove {
+            width:
+                36px;
+
+            height:
+                36px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            border:
+                1px solid
+                rgba(255, 91, 159, .18);
+
+            border-radius:
+                11px;
+
+            color:
+                #ff75ad;
+
+            background:
+                rgba(64, 18, 48, .62);
+
+            box-shadow:
+                inset 0 1px 0
+                rgba(255,255,255,.02);
+
+            font-size:
+                14px;
+
+            transition:
+                .18s ease;
+        }
+
+
+        .favx-remove:hover {
+            transform:
+                scale(1.05);
+
+            border-color:
+                rgba(255, 91, 159, .39);
+
+            background:
+                rgba(96, 27, 67, .78);
+        }
+
+
+        .favx-example {
+            position: relative;
+            z-index: 2;
+
+            min-height:
+                56px;
+
+            margin:
+                0
+                0
+                13px;
+
+            padding:
+                11px
+                12px;
+
+            border:
+                1px solid
+                rgba(109, 90, 179, .13);
+
+            border-radius:
+                12px;
+
+            color:
+                #8791b1;
+
+            background:
+                rgba(5, 10, 28, .72);
+
+            font-size:
+                10px;
+
+            line-height:
+                1.55;
+        }
+
+
+        .favx-bottom {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+        }
+
+
+        .favx-status {
+            min-height:
+                30px;
+
+            display:
+                inline-flex;
+            align-items: center;
+
+            gap: 6px;
+
+            padding:
+                0
+                10px;
+
+            border-radius:
+                999px;
+
+            font-size:
+                8px;
+
+            font-weight:
+                950;
+
+            letter-spacing:
+                .15px;
+        }
+
+
+        .favx-status-new {
+            color:
+                #9bdcff;
+
+            border:
+                1px solid
+                rgba(75, 164, 239, .18);
+
+            background:
+                rgba(32, 91, 144, .14);
+        }
+
+
+        .favx-status-learning {
+            color:
+                #bda6ff;
+
+            border:
+                1px solid
+                rgba(142, 99, 255, .20);
+
+            background:
+                rgba(89, 55, 169, .18);
+        }
+
+
+        .favx-status-mastered {
+            color:
+                #ffd98d;
+
+            border:
+                1px solid
+                rgba(238, 181, 75, .19);
+
+            background:
+                rgba(135, 89, 31, .15);
+        }
+
+
+        .favx-edit {
+            width:
+                33px;
+
+            height:
+                33px;
+
+            display:
+                grid;
+            place-items:
+                center;
+
+            border:
+                1px solid
+                rgba(124, 98, 211, .17);
+
+            border-radius:
+                10px;
+
+            color:
+                #ffffff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(103, 66, 215, .82),
+                    rgba(66, 86, 185, .80)
+                );
+
+            text-decoration:
+                none;
+
+            font-size:
+                13px;
+
+            transition:
+                .18s ease;
+        }
+
+
+        .favx-edit:hover {
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(151, 96, 255, .38);
+
+            box-shadow:
+                0 10px 22px
+                rgba(75, 45, 165, .20);
+        }
+
+
+        /* =====================================================
+           EMPTY / NO RESULTS
+        ===================================================== */
+
+        .favx-empty {
+            grid-column:
+                1 / -1;
+
+            min-height:
+                440px;
+
+            display:
+                grid;
+            place-items:
+                center;
+
+            padding:
+                28px;
+
+            border:
+                1px dashed
+                rgba(255, 91, 184, .19);
+
+            border-radius:
+                19px;
+
+            background:
+                radial-gradient(
+                    circle at 50% 39%,
+                    rgba(255, 76, 177, .055),
+                    transparent 30%
+                ),
+                rgba(7, 11, 32, .72);
+
+            text-align:
+                center;
+        }
+
+
+        .favx-empty-inner {
+            max-width:
+                520px;
+        }
+
+
+        .favx-empty-icon {
+            width:
+                78px;
+            height:
+                78px;
+
+            margin:
+                0
+                auto
+                17px;
+
+            display:
+                grid;
+            place-items:
+                center;
+
+            border:
+                1px solid
+                rgba(255, 91, 184, .20);
+
+            border-radius:
+                22px;
+
+            color:
+                #ff7ab5;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(102, 39, 119, .85),
+                    rgba(55, 35, 109, .88)
+                );
+
+            box-shadow:
+                0 16px 32px
+                rgba(0,0,0,.24),
+                0 0 26px
+                rgba(255, 78, 183, .075);
+
+            font-size:
+                31px;
+        }
+
+
+        .favx-empty h2 {
+            margin:
+                0
+                0
+                8px;
+
+            color:
+                #ffffff;
+
+            font-size:
+                23px;
+
+            font-weight:
+                930;
+        }
+
+
+        .favx-empty p {
+            margin:
+                0
+                auto
+                18px;
+
+            color:
+                #8791b3;
+
+            font-size:
+                11px;
+
+            line-height:
+                1.6;
+        }
+
+
+        .favx-browse {
+            min-height:
+                43px;
+
+            display:
+                inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding:
+                0
+                16px;
+
+            border:
+                1px solid
+                rgba(151, 96, 255, .30);
+
+            border-radius:
+                12px;
+
+            color:
+                #ffffff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5728bf,
+                    #7542db 55%,
+                    #4a55bb
+                );
+
+            box-shadow:
+                0 12px 27px
+                rgba(77, 38, 178, .24);
+
+            text-decoration:
+                none;
+
+            font-size:
+                10px;
+
+            font-weight:
+                900;
+        }
+
+
+        .favx-no-results {
+            display: none;
+
+            grid-column:
+                1 / -1;
+
+            padding:
+                17px;
+
+            border:
+                1px dashed
+                rgba(139, 94, 226, .20);
+
+            border-radius:
+                14px;
+
+            color:
+                #8f98b8;
+
+            background:
+                rgba(8, 13, 36, .86);
+
+            text-align:
+                center;
+
+            font-size:
+                10.5px;
+
+            font-weight:
+                760;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1200px) {
+
+            .favx-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+
+        @media (max-width: 920px) {
+
+            body.favx-page {
+                overflow-y:
+                    auto;
+            }
+
+
+            .favx-shell {
+                height:
+                    auto;
+
+                min-height:
+                    100vh;
+
+                overflow:
+                    visible;
+
+                padding:
+                    72px
+                    14px
+                    18px;
+            }
+
+
+            .favx-workspace {
+                display:
+                    block;
+
+                overflow:
+                    visible;
+            }
+
+
+            .favx-rail {
+                margin-bottom:
+                    14px;
+            }
+
+
+            .favx-main {
+                min-height:
+                    620px;
+            }
+
+
+            .favx-toolbar {
+                align-items:
+                    stretch;
+
+                flex-direction:
+                    column;
+            }
+
+
+            .favx-filters {
+                width:
+                    100%;
+            }
+
+
+            .favx-filter {
+                flex:
+                    1;
+            }
+
+        }
+
+
+        @media (max-width: 640px) {
+
+            .favx-topbar {
+                align-items:
+                    flex-start;
+
+                flex-direction:
+                    column;
+            }
+
+
+            .favx-count-pill {
+                width:
+                    100%;
+
+                justify-content:
+                    center;
+            }
+
+
+            .favx-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+
+            .favx-rail-body {
+                grid-template-columns:
+                    1fr
+                    1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body class="lmx-page lmx-favorites lmx-authenticated favx-page">
+
+    {% include 'app_sidebar.html' %}
+
+
+    <div class="favx-shell">
+
+
+        <!-- =========================================
+             TOPBAR
+        ========================================== -->
+
+        <header class="favx-topbar">
+
+            <div class="favx-brand">
+
+                <div class="favx-brand-icon">
+                    ♥
+                </div>
+
+
+                <div class="favx-brand-copy">
+
+                    <small>
+                        LINGUAMIND WORD BANK
+                    </small>
+
+                    <h1>
+                        Favorites
+                    </h1>
+
+                    <p>
+                        Keep your most important words in one focused place.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="favx-count-pill">
+
+                <span class="favx-count-dot"></span>
+
+                <span>
+                    {{ words|length }}
+                    Favorite
+                    {% if words|length == 1 %}
+                        Word
+                    {% else %}
+                        Words
+                    {% endif %}
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- =========================================
+             WORKSPACE
+        ========================================== -->
+
+        <main class="favx-workspace">
+
+
+            <!-- =====================================
+                 LEFT RAIL
+            ====================================== -->
+
+            <aside class="favx-rail">
+
+                <div class="favx-rail-head">
+
+                    <small>
+                        SAVED WORDS
+                    </small>
+
+                    <h2>
+                        Favorite Center
+                    </h2>
+
+                </div>
+
+
+                <div class="favx-rail-body">
+
+
+                    <div class="favx-stat">
+
+                        <div class="favx-stat-top">
+
+                            <span class="favx-stat-label">
+                                TOTAL
+                            </span>
+
+                            <span class="favx-stat-icon">
+                                ♥
+                            </span>
+
+                        </div>
+
+                        <strong
+                            id="totalCount"
+                            class="favx-stat-value"
+                        >
+                            {{ words|length }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="favx-stat">
+
+                        <div class="favx-stat-top">
+
+                            <span class="favx-stat-label">
+                                NEW
+                            </span>
+
+                            <span class="favx-stat-icon">
+                                N
+                            </span>
+
+                        </div>
+
+                        <strong
+                            id="newCount"
+                            class="favx-stat-value"
+                        >
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="favx-stat">
+
+                        <div class="favx-stat-top">
+
+                            <span class="favx-stat-label">
+                                LEARNING
+                            </span>
+
+                            <span class="favx-stat-icon">
+                                L
+                            </span>
+
+                        </div>
+
+                        <strong
+                            id="learningCount"
+                            class="favx-stat-value"
+                        >
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="favx-stat">
+
+                        <div class="favx-stat-top">
+
+                            <span class="favx-stat-label">
+                                MASTERED
+                            </span>
+
+                            <span class="favx-stat-icon">
+                                M
+                            </span>
+
+                        </div>
+
+                        <strong
+                            id="masteredCount"
+                            class="favx-stat-value"
+                        >
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="favx-tip">
+
+                        <small>
+                            FAVORITE TIP
+                        </small>
+
+                        <p>
+                            Keep only the words you really want to review often.
+                            A smaller focused list is easier to master.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="favx-rail-footer">
+
+                    <a
+                        href="{{ url_for('vocabulary') }}"
+                        class="favx-open-vocab"
+                    >
+                        ▣ Open Vocabulary
+                    </a>
+
+                </div>
+
+            </aside>
+
+
+            <!-- =====================================
+                 MAIN
+            ====================================== -->
+
+            <section class="favx-main">
+
+
+                <div class="favx-toolbar">
+
+
+                    <label class="favx-search">
+
+                        <span>
+                            ⌕
+                        </span>
+
+                        <input
+                            type="text"
+                            id="favoriteSearch"
+                            placeholder="Search favorite words..."
+                            autocomplete="off"
+                        >
+
+                    </label>
+
+
+                    <div class="favx-filters">
+
+                        <button
+                            type="button"
+                            class="favx-filter active"
+                            data-filter="all"
+                        >
+                            All
+                        </button>
+
+                        <button
+                            type="button"
+                            class="favx-filter"
+                            data-filter="New"
+                        >
+                            New
+                        </button>
+
+                        <button
+                            type="button"
+                            class="favx-filter"
+                            data-filter="Learning"
+                        >
+                            Learning
+                        </button>
+
+                        <button
+                            type="button"
+                            class="favx-filter"
+                            data-filter="Mastered"
+                        >
+                            Mastered
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="favx-scroll">
+
+
+                    <div
+                        class="favx-grid"
+                        id="wordsGrid"
+                    >
+
+
+                        {% for word in words %}
+
+
+                        <article
+                            class="favx-card"
+                            data-status="{{ word.status }}"
+                            data-search="{{ word.english_word }} {{ word.uzbek_word }} {{ word.example_sentence or '' }}"
+                        >
+
+
+                            <div class="favx-card-top">
+
+                                <div>
+
+                                    <h2 class="favx-word">
+                                        {{ word.english_word }}
+                                    </h2>
+
+                                    <div class="favx-translation">
+                                        🇺🇿 {{ word.uzbek_word }}
+                                    </div>
+
+                                </div>
+
+
+                                <form
+                                    action="{{ url_for('remove_favorite', word_id=word.id) }}"
+                                    method="GET"
+                                    class="favx-remove-form"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="favx-remove"
+                                        title="Remove from favorites"
+                                        aria-label="Remove from favorites"
+                                    >
+                                        ♥
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+
+                            <p class="favx-example">
+
+                                {% if word.example_sentence %}
+
+                                    "{{ word.example_sentence }}"
+
+                                {% else %}
+
+                                    No example sentence yet.
+
+                                {% endif %}
+
+                            </p>
+
+
+                            <div class="favx-bottom">
+
+
+                                {% if word.status == "New" %}
+
+                                    <span class="favx-status favx-status-new">
+                                        New
+                                    </span>
+
+                                {% elif word.status == "Learning" %}
+
+                                    <span class="favx-status favx-status-learning">
+                                        Learning
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="favx-status favx-status-mastered">
+                                        Mastered
+                                    </span>
+
+                                {% endif %}
+
+
+                                <a
+                                    href="{{ url_for('edit_word', word_id=word.id) }}"
+                                    class="favx-edit"
+                                    title="Edit word"
+                                    aria-label="Edit word"
+                                >
+                                    ✎
+                                </a>
+
+                            </div>
+
+                        </article>
+
+
+                        {% else %}
+
+
+                        <div class="favx-empty">
+
+                            <div class="favx-empty-inner">
+
+                                <div class="favx-empty-icon">
+                                    ♥
+                                </div>
+
+                                <h2>
+                                    No favorite words yet
+                                </h2>
+
+                                <p>
+                                    Open Vocabulary and press the heart beside any word.
+                                    Your favorite words will automatically appear here.
+                                </p>
+
+                                <a
+                                    href="{{ url_for('vocabulary') }}"
+                                    class="favx-browse"
+                                >
+                                    ▣ Browse Vocabulary
+                                </a>
+
+                            </div>
+
+                        </div>
+
+
+                        {% endfor %}
+
+
+                        {% if words %}
+
+                        <div
+                            id="noSearchResults"
+                            class="favx-no-results"
+                        >
+                            No favorite words match your search.
+                        </div>
+
+                        {% endif %}
+
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script>
+
+        const searchInput =
+            document.getElementById(
+                "favoriteSearch"
+            );
+
+
+        const cards =
+            Array.from(
+                document.querySelectorAll(
+                    ".favx-card"
+                )
+            );
+
+
+        const filterButtons =
+            Array.from(
+                document.querySelectorAll(
+                    ".favx-filter"
+                )
+            );
+
+
+        const noSearchResults =
+            document.getElementById(
+                "noSearchResults"
+            );
+
+
+        let currentFilter =
+            "all";
+
+
+        function updateCounts() {
+
+            let newCount = 0;
+            let learningCount = 0;
+            let masteredCount = 0;
+
+
+            cards.forEach(
+                function(card) {
+
+                    const status =
+                        card.dataset.status;
+
+
+                    if (status === "New") {
+                        newCount++;
+                    }
+
+
+                    if (status === "Learning") {
+                        learningCount++;
+                    }
+
+
+                    if (status === "Mastered") {
+                        masteredCount++;
+                    }
+
+                }
+            );
+
+
+            const newNode =
+                document.getElementById(
+                    "newCount"
+                );
+
+
+            const learningNode =
+                document.getElementById(
+                    "learningCount"
+                );
+
+
+            const masteredNode =
+                document.getElementById(
+                    "masteredCount"
+                );
+
+
+            if (newNode) {
+                newNode.textContent =
+                    newCount;
+            }
+
+
+            if (learningNode) {
+                learningNode.textContent =
+                    learningCount;
+            }
+
+
+            if (masteredNode) {
+                masteredNode.textContent =
+                    masteredCount;
+            }
+
+        }
+
+
+        function updateFavorites() {
+
+            const search =
+                searchInput
+                    ? searchInput.value
+                        .toLowerCase()
+                        .trim()
+                    : "";
+
+
+            let visibleCount = 0;
+
+
+            cards.forEach(
+                function(card) {
+
+                    const status =
+                        card.dataset.status;
+
+
+                    const searchableText =
+                        (
+                            card.dataset.search
+                            || ""
+                        )
+                        .toLowerCase();
+
+
+                    const matchesSearch =
+                        searchableText.includes(
+                            search
+                        );
+
+
+                    const matchesFilter =
+                        currentFilter === "all"
+                        ||
+                        status === currentFilter;
+
+
+                    const isVisible =
+                        matchesSearch
+                        &&
+                        matchesFilter;
+
+
+                    card.style.display =
+                        isVisible
+                        ? ""
+                        : "none";
+
+
+                    if (isVisible) {
+                        visibleCount++;
+                    }
+
+                }
+            );
+
+
+            if (noSearchResults) {
+
+                noSearchResults.style.display =
+                    (
+                        cards.length > 0
+                        &&
+                        visibleCount === 0
+                    )
+                    ? "block"
+                    : "none";
+
+            }
+
+        }
+
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                updateFavorites
+            );
+
+        }
+
+
+        filterButtons.forEach(
+            function(button) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        filterButtons.forEach(
+                            function(btn) {
+
+                                btn.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        this.classList.add(
+                            "active"
+                        );
+
+
+                        currentFilter =
+                            this.dataset.filter;
+
+
+                        updateFavorites();
+
+                    }
+                );
+
+            }
+        );
+
+
+        updateCounts();
+        updateFavorites();
+
+    </script>
+
+</body>
+
+</html>

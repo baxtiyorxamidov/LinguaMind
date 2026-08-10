@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinguaMind | AI Language Learning</title>
+    
+<style>
+    * { box-sizing: border-box; }
+
+    :root {
+        --bg: #040612;
+        --bg2: #070a1d;
+        --card: rgba(10, 14, 39, .94);
+        --card2: rgba(14, 18, 48, .90);
+        --line: rgba(139, 98, 236, .19);
+        --line2: rgba(255,255,255,.07);
+        --text: #f7f4ff;
+        --muted: #8892b4;
+        --purple: #8754ff;
+        --violet: #b45fff;
+        --blue: #4e83ff;
+        --pink: #ff5fc4;
+        --gold: #ffc85c;
+        --green: #51d39b;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        background: var(--bg);
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+            radial-gradient(circle at 8% 4%, rgba(121, 65, 255, .20), transparent 24%),
+            radial-gradient(circle at 92% 8%, rgba(64, 111, 255, .14), transparent 24%),
+            radial-gradient(circle at 68% 92%, rgba(225, 69, 195, .07), transparent 27%),
+            linear-gradient(145deg, #040612 0%, #07091b 47%, #080c23 100%);
+        background-attachment: fixed;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        opacity: .20;
+        background-image: radial-gradient(rgba(255,255,255,.25) .55px, transparent .7px);
+        background-size: 28px 28px;
+        mask-image: linear-gradient(to bottom, black, transparent 82%);
+    }
+
+    a { color: inherit; }
+
+    .lm-public-nav {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        height: 82px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 0 clamp(22px, 6vw, 92px);
+        border-bottom: 1px solid rgba(145, 100, 239, .14);
+        background: rgba(5, 8, 25, .82);
+        backdrop-filter: blur(24px);
+        box-shadow: 0 14px 34px rgba(0,0,0,.18);
+    }
+
+    .lm-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 11px;
+        text-decoration: none;
+    }
+
+    .lm-brand-icon {
+        width: 46px;
+        height: 46px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(255,255,255,.09);
+        border-radius: 15px;
+        background:
+            radial-gradient(circle at 28% 18%, rgba(255,255,255,.22), transparent 30%),
+            linear-gradient(135deg, #7045e6, #9858ff 54%, #4c86ff);
+        box-shadow: 0 13px 28px rgba(98, 55, 219, .30);
+        font-size: 21px;
+    }
+
+    .lm-brand-copy strong {
+        display: block;
+        font-size: 19px;
+        font-weight: 950;
+        letter-spacing: -.55px;
+    }
+
+    .lm-brand-copy strong span {
+        color: #a96dff;
+    }
+
+    .lm-brand-copy small {
+        display: block;
+        margin-top: 2px;
+        color: #707b9e;
+        font-size: 7px;
+        font-weight: 900;
+        letter-spacing: 1.25px;
+    }
+
+    .lm-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .lm-nav-links a {
+        color: #929bb9;
+        font-size: 11px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: .18s ease;
+    }
+
+    .lm-nav-links a:hover {
+        color: #fff;
+    }
+
+    .lm-nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .lm-link-button,
+    .lm-primary-button,
+    .lm-secondary-button {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 15px;
+        border-radius: 12px;
+        font-size: 10.5px;
+        font-weight: 900;
+        text-decoration: none;
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .lm-link-button {
+        color: #c6cde3;
+        border: 1px solid transparent;
+    }
+
+    .lm-link-button:hover {
+        color: #fff;
+        border-color: rgba(141, 95, 235, .18);
+        background: rgba(255,255,255,.025);
+    }
+
+    .lm-primary-button {
+        color: #fff;
+        border: 1px solid rgba(173, 119, 255, .38);
+        background:
+            radial-gradient(circle at 90% 8%, rgba(255, 204, 102, .12), transparent 30%),
+            linear-gradient(135deg, #5528bb, #7540db 54%, #4657bf);
+        box-shadow: 0 13px 29px rgba(79, 38, 180, .27), 0 0 22px rgba(132, 73, 255, .08);
+    }
+
+    .lm-primary-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 17px 35px rgba(79, 38, 180, .34), 0 0 27px rgba(132, 73, 255, .12);
+    }
+
+    .lm-secondary-button {
+        color: #dce1f1;
+        border: 1px solid rgba(122, 98, 204, .18);
+        background: linear-gradient(145deg, rgba(13,18,49,.94), rgba(8,12,34,.94));
+    }
+
+    .lm-secondary-button:hover {
+        transform: translateY(-2px);
+        border-color: rgba(151, 96, 255, .35);
+        color: #fff;
+    }
+
+    .lm-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 31px;
+        padding: 0 11px;
+        border: 1px solid rgba(147, 92, 255, .22);
+        border-radius: 999px;
+        color: #b897ff;
+        background: rgba(68, 37, 135, .24);
+        font-size: 9px;
+        font-weight: 950;
+        letter-spacing: .6px;
+    }
+
+    .lm-glow-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--gold);
+        box-shadow: 0 0 13px rgba(255,200,92,.55);
+    }
+
+    .lm-footer {
+        padding: 26px clamp(22px, 6vw, 92px) 34px;
+        border-top: 1px solid rgba(255,255,255,.05);
+        color: #687394;
+        font-size: 9px;
+    }
+
+    @media (max-width: 820px) {
+        .lm-public-nav {
+            height: auto;
+            min-height: 72px;
+            padding: 12px 16px;
+        }
+
+        .lm-nav-links { display: none; }
+
+        .lm-brand-copy small { display: none; }
+
+        .lm-nav-actions .lm-link-button { display: none; }
+    }
+</style>
+
+    
+<style>
+    .landing-wrap {
+        min-height: calc(100vh - 82px);
+        display: grid;
+        align-items: center;
+        padding: clamp(44px, 6vw, 80px) clamp(22px, 6vw, 92px);
+        overflow: hidden;
+    }
+
+    .hero-grid {
+        width: min(1320px, 100%);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) minmax(430px, .92fr);
+        gap: clamp(40px, 6vw, 90px);
+        align-items: center;
+    }
+
+    .hero-copy {
+        position: relative;
+        z-index: 3;
+    }
+
+    .hero-copy h1 {
+        margin: 22px 0 18px;
+        max-width: 760px;
+        font-size: clamp(56px, 6.4vw, 98px);
+        line-height: .94;
+        letter-spacing: -4.2px;
+        font-weight: 970;
+    }
+
+    .hero-copy h1 .accent {
+        display: block;
+        color: transparent;
+        background: linear-gradient(90deg, #9f6bff 0%, #6f5dff 42%, #4e84ff 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        filter: drop-shadow(0 0 20px rgba(122,82,255,.10));
+    }
+
+    .hero-copy > p {
+        max-width: 650px;
+        margin: 0;
+        color: #8d97b8;
+        font-size: 15px;
+        line-height: 1.75;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+        margin-top: 28px;
+    }
+
+    .hero-points {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        margin-top: 23px;
+        color: #7883a5;
+        font-size: 9px;
+        font-weight: 800;
+    }
+
+    .hero-points span::before {
+        content: "✓";
+        margin-right: 6px;
+        color: #7c63ff;
+    }
+
+    .hero-visual {
+        position: relative;
+        min-height: 560px;
+        display: grid;
+        place-items: center;
+    }
+
+    .hero-orbit {
+        position: absolute;
+        width: min(510px, 94%);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background:
+            radial-gradient(circle at 50% 50%, rgba(106, 68, 255, .18), transparent 42%),
+            radial-gradient(circle at 52% 48%, rgba(65, 112, 255, .12), transparent 58%);
+        filter: blur(1px);
+    }
+
+    .hero-orbit::before,
+    .hero-orbit::after {
+        content: "";
+        position: absolute;
+        inset: 9%;
+        border: 1px solid rgba(145, 98, 239, .13);
+        border-radius: 50%;
+    }
+
+    .hero-orbit::after {
+        inset: 22%;
+        border-color: rgba(86, 124, 255, .11);
+    }
+
+    .word-card {
+        position: relative;
+        z-index: 3;
+        width: min(365px, 80%);
+        padding: 27px;
+        border: 1px solid rgba(154, 107, 255, .24);
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at 88% 6%, rgba(255, 93, 194, .10), transparent 28%),
+            linear-gradient(145deg, rgba(14,18,48,.95), rgba(8,12,34,.96));
+        box-shadow:
+            0 34px 80px rgba(0,0,0,.38),
+            0 0 70px rgba(113, 61, 255, .12),
+            inset 0 1px 0 rgba(255,255,255,.035);
+        backdrop-filter: blur(20px);
+    }
+
+    .word-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #7d88aa;
+        font-size: 9px;
+        font-weight: 900;
+    }
+
+    .word-card h2 {
+        margin: 34px 0 7px;
+        font-size: 40px;
+        line-height: 1;
+        letter-spacing: -1.2px;
+    }
+
+    .word-card .translation {
+        color: #a778ff;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .word-card .mini-label {
+        margin-top: 35px;
+        color: #737e9f;
+        font-size: 8px;
+        font-weight: 850;
+    }
+
+    .progress-track {
+        height: 7px;
+        margin-top: 9px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255,255,255,.055);
+    }
+
+    .progress-track span {
+        display: block;
+        width: 69%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #8752ff, #b05cff, #4f87ff);
+        box-shadow: 0 0 16px rgba(142,79,255,.24);
+    }
+
+    .floating-chip {
+        position: absolute;
+        z-index: 4;
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 14px;
+        border: 1px solid rgba(129, 100, 213, .18);
+        border-radius: 14px;
+        color: #d9def0;
+        background: rgba(10,14,39,.91);
+        box-shadow: 0 18px 36px rgba(0,0,0,.28);
+        backdrop-filter: blur(15px);
+        font-size: 9px;
+        font-weight: 850;
+    }
+
+    .chip-a { top: 13%; right: 3%; }
+    .chip-b { bottom: 17%; left: 1%; }
+    .chip-c { bottom: 8%; right: 4%; }
+
+    .floating-chip b {
+        color: #a87aff;
+        font-size: 11px;
+    }
+
+    .feature-section {
+        padding: 78px clamp(22px, 6vw, 92px);
+        border-top: 1px solid rgba(255,255,255,.045);
+    }
+
+    .section-inner {
+        width: min(1320px, 100%);
+        margin: 0 auto;
+    }
+
+    .section-head {
+        max-width: 680px;
+        margin-bottom: 26px;
+    }
+
+    .section-head h2 {
+        margin: 12px 0 10px;
+        font-size: clamp(31px, 4vw, 50px);
+        letter-spacing: -1.8px;
+    }
+
+    .section-head p {
+        margin: 0;
+        color: #838dac;
+        font-size: 12px;
+        line-height: 1.65;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+
+    .feature-card {
+        min-height: 210px;
+        padding: 22px;
+        border: 1px solid rgba(127, 97, 212, .16);
+        border-radius: 20px;
+        background:
+            radial-gradient(circle at 90% 8%, rgba(116, 65, 255, .065), transparent 30%),
+            linear-gradient(145deg, rgba(12,17,47,.96), rgba(7,11,32,.96));
+        box-shadow: 0 18px 45px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.02);
+    }
+
+    .feature-icon {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 13px;
+        background: linear-gradient(135deg, #6742d7, #435fbb);
+        box-shadow: 0 9px 21px rgba(73,49,166,.20);
+        font-size: 18px;
+    }
+
+    .feature-card:nth-child(2) .feature-icon {
+        color: #342649;
+        background: linear-gradient(135deg, #ffe28f, #ffb84b);
+    }
+
+    .feature-card:nth-child(3) .feature-icon {
+        color: #082229;
+        background: linear-gradient(135deg, #67e8d5, #4ba9ea);
+    }
+
+    .feature-card h3 {
+        margin: 18px 0 8px;
+        font-size: 18px;
+    }
+
+    .feature-card p {
+        margin: 0;
+        color: #838dad;
+        font-size: 10.5px;
+        line-height: 1.65;
+    }
+
+    @media (max-width: 980px) {
+        .hero-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-visual {
+            min-height: 470px;
+        }
+
+        .feature-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .landing-wrap {
+            padding-top: 50px;
+        }
+
+        .hero-copy h1 {
+            font-size: 52px;
+            letter-spacing: -2.8px;
+        }
+
+        .hero-visual {
+            min-height: 420px;
+        }
+
+        .chip-a { right: 0; }
+        .chip-b { left: 0; }
+    }
+</style>
+
+</head>
+<body>
+
+<nav class="lm-public-nav">
+    <a class="lm-brand" href="{{ url_for('home') }}">
+        <div class="lm-brand-icon">🧠</div>
+        <div class="lm-brand-copy">
+            <strong>Lingua<span>Mind</span></strong>
+            <small>AI LANGUAGE LEARNING</small>
+        </div>
+    </a>
+
+    <div class="lm-nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#about">About</a>
+    </div>
+
+    <div class="lm-nav-actions">
+        <a class="lm-link-button" href="{{ url_for('login') }}">Login</a>
+        <a class="lm-primary-button" href="{{ url_for('register') }}">Get Started →</a>
+    </div>
+</nav>
+
+<main>
+    <section class="landing-wrap">
+        <div class="hero-grid">
+            <div class="hero-copy">
+                <div class="lm-kicker">
+                    <span class="lm-glow-dot"></span>
+                    AI-POWERED LANGUAGE LEARNING
+                </div>
+
+                <h1>
+                    Learn languages.
+                    <span class="accent">Smarter with AI.</span>
+                </h1>
+
+                <p>
+                    Build vocabulary, practice with an AI teacher, prepare for IELTS and SAT,
+                    scan text from images and track your progress — inside one focused learning system.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="lm-primary-button" href="{{ url_for('register') }}">✦ Start Learning</a>
+                    <a class="lm-secondary-button" href="#features">Explore Features →</a>
+                </div>
+
+                <div class="hero-points">
+                    <span>Smart Vocabulary</span>
+                    <span>AI Practice</span>
+                    <span>Speaking</span>
+                    <span>Progress Tracking</span>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-orbit"></div>
+
+                <div class="word-card">
+                    <div class="word-card-top">
+                        <span>GB · ENGLISH</span>
+                        <span>🔊</span>
+                    </div>
+
+                    <h2>Beautiful</h2>
+                    <div class="translation">Chiroyli</div>
+
+                    <div class="mini-label">LEARNING PROGRESS</div>
+                    <div class="progress-track"><span></span></div>
+                </div>
+
+                <div class="floating-chip chip-a"><b>DE</b> Deutsch</div>
+                <div class="floating-chip chip-b"><b>RU</b> Русский</div>
+                <div class="floating-chip chip-c">✦ AI Teacher</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="feature-section" id="features">
+        <div class="section-inner">
+            <div class="section-head">
+                <div class="lm-kicker">CORE LEARNING SYSTEM</div>
+                <h2>Everything in one dark, focused workspace.</h2>
+                <p>
+                    LinguaMind combines the tools you use every day so your learning history,
+                    vocabulary and practice stay connected.
+                </p>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">✦</div>
+                    <h3>AI Teacher</h3>
+                    <p>Practice grammar, vocabulary, conversation, IELTS, SAT English and SAT Math with guided AI help.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Smart Quiz</h3>
+                    <p>Create focused practice sessions, answer questions and learn from your results instead of only seeing a score.</p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">⌗</div>
+                    <h3>Scan & Learn</h3>
+                    <p>Extract text from images, turn text into audio and use AI Vision to understand learning material faster.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="feature-section" id="how-it-works">
+        <div class="section-inner">
+            <div class="section-head">
+                <div class="lm-kicker">HOW IT WORKS</div>
+                <h2>Learn. Practice. Measure. Repeat.</h2>
+                <p>
+                    Save words, practice them, complete quizzes and study tasks, then use Progress Analytics
+                    to see what is improving and what needs attention next.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="feature-section" id="about">
+        <div class="section-inner">
+            <div class="section-head">
+                <div class="lm-kicker">ABOUT LINGUAMIND</div>
+                <h2>Your personal AI learning environment.</h2>
+                <p>
+                    Designed to keep language learning structured without filling the screen with unnecessary white space or distractions.
+                </p>
+            </div>
+
+            <div class="hero-actions">
+                <a class="lm-primary-button" href="{{ url_for('register') }}">Create Free Account →</a>
+                <a class="lm-secondary-button" href="{{ url_for('login') }}">I already have an account</a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="lm-footer">
+    LinguaMind · AI Language Learning
+</footer>
+
+</body>
+</html>

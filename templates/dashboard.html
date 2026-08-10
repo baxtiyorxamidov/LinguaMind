@@ -1,0 +1,3377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Dashboard — LinguaMind</title>
+
+    <style>
+
+        /* =========================================
+           BASE
+        ========================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --purple: #6c5ce7;
+            --purple-dark: #5948da;
+            --purple-soft: #f0edff;
+
+            --navy: #151832;
+            --navy-2: #1d2142;
+
+            --text: #24273c;
+            --muted: #85899b;
+
+            --border: #e8e9f1;
+            --surface: #ffffff;
+            --background: #f7f8fc;
+
+            --green: #24a66a;
+            --orange: #f59d36;
+            --blue: #4984ed;
+            --pink: #e86493;
+
+            --radius: 22px;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            margin: 0;
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: var(--background);
+            color: var(--text);
+        }
+
+
+        button,
+        a {
+            font-family: inherit;
+        }
+
+
+        /* =========================================
+           LAYOUT
+        ========================================= */
+
+        .app-shell {
+            min-height: 100vh;
+        }
+
+
+        .sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+
+            width: 260px;
+            height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 26px 18px 34px;
+
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            overscroll-behavior: contain;
+            scrollbar-gutter: stable;
+
+            background:
+                radial-gradient(
+                    circle at 20% 10%,
+                    rgba(119, 96, 255, .20),
+                    transparent 27%
+                ),
+                linear-gradient(
+                    180deg,
+                    #191d3d,
+                    #11142b
+                );
+
+            color: white;
+
+            z-index: 50;
+        }
+
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+
+        .sidebar::-webkit-scrollbar-thumb {
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(139, 116, 255, .62),
+                    rgba(96, 80, 197, .45)
+                );
+        }
+
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(156, 133, 255, .82),
+                    rgba(113, 93, 220, .68)
+                );
+        }
+
+
+        .main {
+            min-height: 100vh;
+
+            margin-left: 260px;
+
+            padding: 28px 36px 45px;
+        }
+
+
+        .content {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+
+        /* =========================================
+           SIDEBAR BRAND
+        ========================================= */
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin: 0 7px 34px;
+
+            color: white;
+            text-decoration: none;
+        }
+
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #705df4,
+                    #9e7cff
+                );
+
+            box-shadow:
+                0 10px 25px
+                rgba(108, 92, 231, .30);
+
+            font-size: 23px;
+        }
+
+
+        .brand-name {
+            display: block;
+
+            font-size: 19px;
+            font-weight: 850;
+
+            letter-spacing: -.3px;
+        }
+
+
+        .brand-subtitle {
+            display: block;
+
+            margin-top: 2px;
+
+            color: #9ca3c4;
+
+            font-size: 10px;
+            font-weight: 700;
+
+            letter-spacing: 1px;
+        }
+
+
+        /* =========================================
+           SIDEBAR NAV
+        ========================================= */
+
+        .nav-label {
+            margin:
+                10px
+                12px
+                9px;
+
+            color: #737b9d;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: 1.2px;
+        }
+
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+
+        .nav-item {
+            min-height: 48px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 0 13px;
+
+            border-radius: 13px;
+
+            color: #abb1ca;
+
+            font-size: 14px;
+            font-weight: 650;
+
+            text-decoration: none;
+
+            transition:
+                background .2s,
+                color .2s,
+                transform .2s;
+        }
+
+
+        .nav-item:hover {
+            color: white;
+
+            background:
+                rgba(255, 255, 255, .06);
+
+            transform: translateX(2px);
+        }
+
+
+        .nav-item.active {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6959e8,
+                    #8068ef
+                );
+
+            box-shadow:
+                0 10px 22px
+                rgba(101, 87, 238, .22);
+        }
+
+
+        .nav-icon {
+            width: 25px;
+
+            display: inline-flex;
+            justify-content: center;
+
+            font-size: 17px;
+        }
+
+
+        .nav-item.disabled {
+            cursor: default;
+            opacity: .55;
+        }
+
+
+        .nav-item.disabled:hover {
+            transform: none;
+            background: transparent;
+        }
+
+
+        .soon {
+            margin-left: auto;
+
+            padding: 4px 7px;
+
+            border-radius: 7px;
+
+            background:
+                rgba(255, 255, 255, .08);
+
+            color: #9ea5c4;
+
+            font-size: 8px;
+            font-weight: 850;
+
+            letter-spacing: .7px;
+        }
+
+
+
+        /* =========================================
+           PREMIUM NAV SECTION
+        ========================================= */
+
+        .premium-label {
+            margin-top: 22px;
+            color: #a99cff;
+        }
+
+        .premium-nav-item {
+            position: relative;
+            overflow: hidden;
+
+            border: 1px solid rgba(185, 153, 255, .22);
+
+            color: #f2efff;
+
+            background:
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(255, 215, 128, .18),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    135deg,
+                    rgba(103, 77, 224, .34),
+                    rgba(139, 91, 238, .22)
+                );
+
+            box-shadow:
+                0 10px 24px rgba(52, 38, 137, .16),
+                inset 0 1px 0 rgba(255,255,255,.05);
+        }
+
+        .premium-nav-item:hover {
+            color: white;
+
+            border-color: rgba(214, 189, 255, .34);
+
+            background:
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(255, 219, 130, .23),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    135deg,
+                    rgba(113, 86, 234, .46),
+                    rgba(153, 99, 246, .30)
+                );
+
+            transform: translateX(2px);
+        }
+
+        .premium-nav-item::after {
+            content: "";
+
+            position: absolute;
+            width: 70px;
+            height: 70px;
+
+            right: -24px;
+            bottom: -38px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 227, 151, .08);
+
+            pointer-events: none;
+        }
+
+        .premium-nav-badge {
+            position: relative;
+            z-index: 2;
+
+            margin-left: auto;
+
+            min-height: 22px;
+
+            display: inline-flex;
+            align-items: center;
+
+            padding: 0 8px;
+
+            border: 1px solid rgba(255, 224, 145, .22);
+            border-radius: 999px;
+
+            color: #fff0b4;
+
+            background: rgba(34, 25, 92, .32);
+
+            font-size: 8px;
+            font-weight: 950;
+            letter-spacing: .8px;
+        }
+
+
+        /* =========================================
+           SIDEBAR BOTTOM
+        ========================================= */
+
+        .sidebar-bottom {
+            margin-top: 24px;
+            padding-bottom: 10px;
+            transform: none;
+            flex-shrink: 0;
+        }
+
+
+        .sidebar-tip {
+            margin-bottom: 15px;
+            padding: 17px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.07);
+
+            border-radius: 17px;
+
+            background:
+                rgba(255,255,255,.035);
+        }
+
+
+        .planner-tip {
+            display: block;
+
+            position: relative;
+            overflow: hidden;
+
+            border-color:
+                rgba(140, 112, 255, .20) !important;
+
+            background:
+                radial-gradient(
+                    circle at 88% 8%,
+                    rgba(147, 91, 255, .20),
+                    transparent 36%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(126, 102, 245, .13),
+                    rgba(255,255,255,.055)
+                ) !important;
+
+            box-shadow:
+                0 16px 34px
+                rgba(0,0,0,.15),
+                inset 0 1px 0
+                rgba(255,255,255,.04);
+
+            display: block;
+
+            color: inherit;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            transition:
+                transform .2s ease,
+                border-color .2s ease,
+                background .2s ease,
+                box-shadow .2s ease;
+        }
+
+
+        .planner-tip:hover {
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(139, 116, 255, .24);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(126, 102, 245, .11),
+                    rgba(255,255,255,.045)
+                );
+
+            box-shadow:
+                0 12px 28px
+                rgba(0,0,0,.10);
+        }
+
+
+        .planner-tip-link {
+            display: inline-block;
+
+            margin-top: 10px;
+
+            color: #b9adff;
+
+            font-size: 10px;
+            font-weight: 850;
+        }
+
+
+        .sidebar-tip-icon {
+            width: 35px;
+            height: 35px;
+
+            display: grid;
+            place-items: center;
+
+            margin-bottom: 10px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(124, 104, 246, .17);
+
+            font-size: 17px;
+        }
+
+
+        .sidebar-tip strong {
+            display: block;
+
+            margin-bottom: 5px;
+
+            font-size: 13px;
+        }
+
+
+        .sidebar-tip p {
+            margin: 0;
+
+            color: #949bb8;
+
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+
+        .logout {
+            min-height: 46px;
+
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding: 0 13px;
+
+            border-radius: 12px;
+
+            color: #adb3ca;
+
+            font-size: 14px;
+            font-weight: 650;
+
+            text-decoration: none;
+        }
+
+
+        .logout:hover {
+            color: #ff8694;
+            background: rgba(255,90,110,.06);
+        }
+
+
+        /* =========================================
+           TOPBAR
+        ========================================= */
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 26px;
+        }
+
+
+        .topbar-copy small {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: var(--purple);
+
+            font-size: 11px;
+            font-weight: 850;
+
+            letter-spacing: 1px;
+        }
+
+
+        .topbar-copy h1 {
+            margin: 0;
+
+            font-size: 29px;
+            letter-spacing: -.8px;
+        }
+
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding: 7px 9px 7px 7px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 15px;
+
+            background: white;
+        }
+
+
+        .profile-avatar {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6b5ce7,
+                    #9574fa
+                );
+
+            color: white;
+
+            font-size: 16px;
+            font-weight: 850;
+        }
+
+
+        .profile-info strong {
+            display: block;
+
+            max-width: 160px;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            font-size: 13px;
+        }
+
+
+        .profile-info span {
+            display: block;
+
+            margin-top: 2px;
+
+            color: var(--muted);
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================
+           HERO
+        ========================================= */
+
+        .hero {
+            position: relative;
+
+            min-height: 255px;
+
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1.5fr)
+                minmax(260px, .7fr);
+
+            align-items: center;
+
+            gap: 25px;
+
+            padding: 36px 40px;
+
+            overflow: hidden;
+
+            border-radius: 28px;
+
+            background:
+                radial-gradient(
+                    circle at 80% 30%,
+                    rgba(161, 137, 255, .45),
+                    transparent 26%
+                ),
+                linear-gradient(
+                    135deg,
+                    #5a4bd5,
+                    #7160ed 55%,
+                    #8d6ff7
+                );
+
+            color: white;
+
+            box-shadow:
+                0 24px 60px
+                rgba(88, 72, 205, .20);
+        }
+
+
+        .hero::after {
+            content: "";
+
+            position: absolute;
+            right: -60px;
+            bottom: -110px;
+
+            width: 300px;
+            height: 300px;
+
+            border:
+                42px solid
+                rgba(255,255,255,.055);
+
+            border-radius: 50%;
+        }
+
+
+        .hero-copy {
+            position: relative;
+            z-index: 2;
+        }
+
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            margin-bottom: 14px;
+            padding: 7px 11px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.16);
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,.09);
+
+            font-size: 10px;
+            font-weight: 800;
+
+            letter-spacing: .8px;
+        }
+
+
+        .hero h2 {
+            max-width: 650px;
+
+            margin: 0 0 12px;
+
+            font-size: 35px;
+            line-height: 1.12;
+
+            letter-spacing: -1.2px;
+        }
+
+
+        .hero p {
+            max-width: 620px;
+
+            margin: 0 0 22px;
+
+            color:
+                rgba(255,255,255,.78);
+
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+
+        .button {
+            min-height: 46px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding: 0 17px;
+
+            border-radius: 12px;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            text-decoration: none;
+
+            transition:
+                transform .2s,
+                box-shadow .2s;
+        }
+
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+
+        .button-light {
+            color: #594bd0;
+            background: white;
+
+            box-shadow:
+                0 8px 22px
+                rgba(30,20,90,.12);
+        }
+
+
+        .button-ghost {
+            color: white;
+
+            border:
+                1px solid
+                rgba(255,255,255,.22);
+
+            background:
+                rgba(255,255,255,.07);
+        }
+
+
+        /* =========================================
+           HERO VISUAL
+        ========================================= */
+
+        .hero-visual {
+            position: relative;
+            z-index: 2;
+
+            min-height: 180px;
+
+            display: grid;
+            place-items: center;
+        }
+
+
+        .hero-orbit {
+            width: 155px;
+            height: 155px;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid
+                rgba(255,255,255,.22);
+
+            border-radius: 50%;
+        }
+
+
+        .hero-orbit::before {
+            content: "";
+
+            width: 112px;
+            height: 112px;
+
+            position: absolute;
+
+            border:
+                1px dashed
+                rgba(255,255,255,.26);
+
+            border-radius: 50%;
+        }
+
+
+        .hero-brain {
+            width: 82px;
+            height: 82px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 25px;
+
+            background:
+                rgba(255,255,255,.14);
+
+            backdrop-filter:
+                blur(8px);
+
+            font-size: 40px;
+
+            box-shadow:
+                inset 0 1px 0
+                rgba(255,255,255,.18);
+        }
+
+
+        .floating-badge {
+            position: absolute;
+
+            min-width: 96px;
+
+            padding: 10px 12px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.14);
+
+            border-radius: 13px;
+
+            background:
+                rgba(25, 20, 70, .18);
+
+            backdrop-filter:
+                blur(8px);
+
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+
+        .floating-badge.one {
+            top: 8px;
+            right: 0;
+        }
+
+
+        .floating-badge.two {
+            left: 0;
+            bottom: 10px;
+        }
+
+
+        /* =========================================
+           SECTION HEADINGS
+        ========================================= */
+
+        .section {
+            margin-top: 25px;
+        }
+
+
+        .section-heading {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 14px;
+        }
+
+
+        .section-heading span {
+            color: var(--purple);
+
+            font-size: 10px;
+            font-weight: 850;
+
+            letter-spacing: 1px;
+        }
+
+
+        .section-heading h2 {
+            margin: 4px 0 0;
+
+            font-size: 20px;
+        }
+
+
+        .section-heading p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================
+           STATS
+        ========================================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(5, minmax(0, 1fr));
+
+            gap: 13px;
+        }
+
+
+        .stat-card {
+            position: relative;
+
+            min-height: 132px;
+
+            padding: 18px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 19px;
+
+            background: white;
+
+            box-shadow:
+                0 9px 28px
+                rgba(35,38,75,.035);
+        }
+
+
+        .stat-card::after {
+            content: "";
+
+            position: absolute;
+            right: -28px;
+            bottom: -34px;
+
+            width: 85px;
+            height: 85px;
+
+            border-radius: 50%;
+
+            background:
+                var(--stat-soft);
+        }
+
+
+        .stat-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+
+        .stat-icon {
+            width: 39px;
+            height: 39px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 12px;
+
+            background:
+                var(--stat-soft);
+
+            font-size: 18px;
+        }
+
+
+        .stat-number {
+            margin-top: 14px;
+
+            font-size: 27px;
+            font-weight: 850;
+
+            letter-spacing: -.8px;
+        }
+
+
+        .stat-label {
+            margin-top: 2px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+
+        .stat-purple {
+            --stat-soft: #efecff;
+        }
+
+        .stat-blue {
+            --stat-soft: #eaf2ff;
+        }
+
+        .stat-orange {
+            --stat-soft: #fff3e4;
+        }
+
+        .stat-green {
+            --stat-soft: #e9f8f0;
+        }
+
+        .stat-pink {
+            --stat-soft: #ffedf4;
+        }
+
+
+        /* =========================================
+           TWO-COLUMN AREA
+        ========================================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1.35fr)
+                minmax(300px, .65fr);
+
+            gap: 17px;
+        }
+
+
+        .panel {
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 22px;
+
+            background: white;
+
+            box-shadow:
+                0 10px 32px
+                rgba(35,38,75,.035);
+        }
+
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 21px 22px;
+
+            border-bottom:
+                1px solid #eff0f5;
+        }
+
+
+        .panel-header small {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color: var(--purple);
+
+            font-size: 9px;
+            font-weight: 850;
+
+            letter-spacing: 1px;
+        }
+
+
+        .panel-header h3 {
+            margin: 0;
+
+            font-size: 17px;
+        }
+
+
+        .panel-body {
+            padding: 22px;
+        }
+
+
+        /* =========================================
+           PROGRESS
+        ========================================= */
+
+        .progress-main {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+
+        .progress-ring {
+            position: relative;
+
+            width: 132px;
+            height: 132px;
+
+            flex-shrink: 0;
+
+            display: grid;
+            place-items: center;
+        }
+
+
+        .progress-ring svg {
+            width: 132px;
+            height: 132px;
+
+            transform: rotate(-90deg);
+        }
+
+
+        .progress-ring circle {
+            fill: none;
+
+            stroke-width: 11;
+        }
+
+
+        .progress-ring .track {
+            stroke: #efeff5;
+        }
+
+
+        .progress-ring .value {
+            stroke: var(--purple);
+
+            stroke-linecap: round;
+
+            stroke-dasharray: 339.292;
+
+            stroke-dashoffset: 339.292;
+
+            transition:
+                stroke-dashoffset .6s ease;
+        }
+
+
+        .progress-number {
+            position: absolute;
+
+            font-size: 24px;
+            font-weight: 850;
+        }
+
+
+        .progress-details {
+            flex: 1;
+        }
+
+
+        .progress-details h4 {
+            margin: 0 0 8px;
+
+            font-size: 18px;
+        }
+
+
+        .progress-details p {
+            margin: 0 0 17px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+
+        .mini-progress {
+            display: grid;
+            grid-template-columns: 1fr auto;
+
+            gap: 8px;
+
+            margin-top: 11px;
+
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+
+        .mini-progress span:last-child {
+            color: var(--muted);
+        }
+
+
+        .mini-track {
+            grid-column: 1 / -1;
+
+            height: 7px;
+
+            overflow: hidden;
+
+            border-radius: 10px;
+
+            background: #efeff5;
+        }
+
+
+        .mini-fill {
+            width: 0;
+            height: 100%;
+
+            border-radius: inherit;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #6557e8,
+                    #8e73f7
+                );
+
+            transition:
+                width .5s ease;
+        }
+
+
+        /* =========================================
+           QUICK ACTIONS
+        ========================================= */
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+        }
+
+
+        .quick-card {
+            min-height: 105px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            padding: 15px;
+
+            border:
+                1px solid
+                #ebecf3;
+
+            border-radius: 16px;
+
+            color: inherit;
+            background: #fafaff;
+
+            text-decoration: none;
+
+            transition:
+                transform .2s,
+                border-color .2s,
+                box-shadow .2s;
+        }
+
+
+        .quick-card:hover {
+            transform: translateY(-3px);
+
+            border-color: #d9d4ff;
+
+            box-shadow:
+                0 10px 25px
+                rgba(70,60,150,.07);
+        }
+
+
+        .quick-icon {
+            font-size: 22px;
+        }
+
+
+        .quick-card strong {
+            display: block;
+
+            margin-bottom: 3px;
+
+            font-size: 12px;
+        }
+
+
+        .quick-card span {
+            color: var(--muted);
+
+            font-size: 9px;
+            line-height: 1.4;
+        }
+
+
+        /* =========================================
+           LEARNING CARDS
+        ========================================= */
+
+        .learning-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 14px;
+        }
+
+
+        .learning-card {
+            position: relative;
+
+            min-height: 175px;
+
+            padding: 20px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 21px;
+
+            background: white;
+        }
+
+
+        .learning-card-icon {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            margin-bottom: 16px;
+
+            border-radius: 13px;
+
+            background: var(--purple-soft);
+
+            font-size: 20px;
+        }
+
+
+        .learning-card h3 {
+            margin: 0 0 7px;
+
+            font-size: 15px;
+        }
+
+
+        .learning-card p {
+            margin: 0 0 17px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+
+        .learning-link {
+            color: var(--purple);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            text-decoration: none;
+        }
+
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-top: 28px;
+            padding: 19px 3px 0;
+
+            border-top:
+                1px solid
+                #e9eaf0;
+
+            color: #999cab;
+
+            font-size: 10px;
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 1180px) {
+
+            .stats-grid {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 22px;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .main {
+                padding: 16px;
+            }
+
+            .topbar-copy h1 {
+                font-size: 23px;
+            }
+
+            .profile-info {
+                display: none;
+            }
+
+            .hero {
+                min-height: auto;
+                padding: 28px 24px;
+            }
+
+            .hero h2 {
+                font-size: 28px;
+            }
+
+            .stats-grid,
+            .learning-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-main {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .section-heading {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+        }
+/* =========================================
+   DASHBOARD TYPOGRAPHY FINAL
+   ========================================= */
+
+.brand-name {
+    font-size: 20px;
+}
+
+.brand-subtitle {
+    font-size: 11px;
+}
+
+.nav-label {
+    font-size: 11px;
+}
+
+.nav-item,
+.logout {
+    font-size: 15px;
+}
+
+.soon {
+    font-size: 9px;
+}
+
+.sidebar-tip strong {
+    font-size: 14px;
+}
+
+.sidebar-tip p {
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+.topbar-copy small {
+    font-size: 12px;
+}
+
+.topbar-copy h1 {
+    font-size: 31px;
+}
+
+.profile-info strong {
+    font-size: 14px;
+}
+
+.profile-info span {
+    font-size: 11px;
+}
+
+.hero-badge {
+    font-size: 11px;
+}
+
+.hero h2 {
+    font-size: 37px;
+}
+
+.hero p {
+    font-size: 15px;
+    line-height: 1.75;
+}
+
+.button {
+    font-size: 13px;
+}
+
+.floating-badge {
+    font-size: 11px;
+}
+
+.section-heading span {
+    font-size: 11px;
+}
+
+.section-heading h2 {
+    font-size: 22px;
+}
+
+.section-heading p {
+    font-size: 12px;
+}
+
+.stat-number {
+    font-size: 29px;
+}
+
+.stat-label {
+    font-size: 12px;
+}
+
+.panel-header small {
+    font-size: 10px;
+}
+
+.panel-header h3 {
+    font-size: 18px;
+}
+
+.progress-details h4 {
+    font-size: 19px;
+}
+
+.progress-details p {
+    font-size: 13px;
+}
+
+.mini-progress {
+    font-size: 11px;
+}
+
+.quick-card strong {
+    font-size: 13px;
+}
+
+.quick-card span {
+    font-size: 11px;
+    line-height: 1.55;
+}
+
+.learning-card h3 {
+    font-size: 16px;
+}
+
+.learning-card p {
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.learning-link {
+    font-size: 12px;
+}
+
+.footer {
+    font-size: 11px;
+}
+
+/* =========================================
+   QUIZ PERFORMANCE
+========================================= */
+
+.quiz-performance {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr))
+        minmax(280px, 1.45fr);
+
+    gap: 13px;
+}
+
+
+.quiz-performance-card {
+    min-height: 145px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 19px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 19px;
+
+    background: white;
+
+    box-shadow:
+        0 9px 28px
+        rgba(35, 38, 75, .035);
+}
+
+
+.quiz-performance-icon {
+    width: 39px;
+    height: 39px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 12px;
+
+    background:
+        var(--purple-soft);
+
+    font-size: 18px;
+}
+
+
+.quiz-performance-number {
+    margin-top: 15px;
+
+    font-size: 29px;
+    font-weight: 850;
+
+    letter-spacing: -.8px;
+}
+
+
+.quiz-performance-label {
+    margin-top: 3px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+    font-weight: 650;
+}
+
+
+.latest-quiz-card {
+    position: relative;
+
+    overflow: hidden;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #191d3d,
+            #272b55
+        );
+
+    border-color:
+        transparent;
+}
+
+
+.latest-quiz-card::after {
+    content: "";
+
+    position: absolute;
+
+    right: -45px;
+    bottom: -55px;
+
+    width: 150px;
+    height: 150px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(108, 92, 231, .18);
+}
+
+
+.latest-quiz-card small {
+    position: relative;
+    z-index: 2;
+
+    color: #aaaed0;
+
+    font-size: 10px;
+    font-weight: 850;
+
+    letter-spacing: 1px;
+}
+
+
+.latest-quiz-card h3 {
+    position: relative;
+    z-index: 2;
+
+    margin:
+        7px
+        0
+        5px;
+
+    font-size: 18px;
+
+    text-transform: capitalize;
+}
+
+
+.latest-quiz-card p {
+    position: relative;
+    z-index: 2;
+
+    margin: 0;
+
+    color: #aeb3cf;
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+
+.latest-score {
+    position: relative;
+    z-index: 2;
+
+    margin-top: 14px;
+
+    font-size: 25px;
+    font-weight: 900;
+}
+
+
+.latest-score span {
+    color: #9fa5c8;
+
+    font-size: 11px;
+    font-weight: 650;
+}
+
+
+.quiz-history-link {
+    position: relative;
+    z-index: 2;
+
+    display: inline-flex;
+
+    margin-top: 12px;
+
+    color: #c8c3ff;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    text-decoration: none;
+}
+
+
+@media (max-width: 1180px) {
+
+    .quiz-performance {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .quiz-performance {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+    
+
+        /* DASHBOARD V4 — LEARNING COMMAND CENTER */
+        .command-center{position:relative;overflow:hidden;margin-top:18px;padding:26px;border:1px solid rgba(255,255,255,.11);border-radius:28px;color:white;background:radial-gradient(circle at 84% 15%,rgba(114,159,255,.30),transparent 28%),radial-gradient(circle at 10% 95%,rgba(187,110,255,.22),transparent 30%),linear-gradient(135deg,#2b245f 0%,#4d3bc0 48%,#365fc4 100%);box-shadow:0 24px 60px rgba(64,53,161,.22)}
+        .command-center::after{content:"";position:absolute;width:330px;height:330px;right:-145px;top:-175px;border:1px solid rgba(255,255,255,.10);border-radius:50%;box-shadow:0 0 0 45px rgba(255,255,255,.025),0 0 0 90px rgba(255,255,255,.015);pointer-events:none}
+        .command-top{position:relative;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
+        .command-eyebrow{display:inline-flex;align-items:center;gap:7px;min-height:27px;padding:0 10px;border:1px solid rgba(255,255,255,.13);border-radius:999px;color:#ddd9ff;background:rgba(255,255,255,.07);font-size:8px;font-weight:900;letter-spacing:1px}
+        .command-title{margin:12px 0 0;max-width:560px;font-size:clamp(29px,4vw,42px);line-height:1.02;letter-spacing:-1.3px}
+        .command-subtitle{max-width:600px;margin:10px 0 0;color:rgba(255,255,255,.68);font-size:11px;line-height:1.65}
+        .streak-chip{flex-shrink:0;display:flex;align-items:center;gap:9px;min-height:48px;padding:0 14px;border:1px solid rgba(255,223,153,.16);border-radius:15px;background:rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+        .streak-fire{font-size:23px}.streak-chip strong{display:block;color:#fff2bd;font-size:13px}.streak-chip span{display:block;margin-top:1px;color:rgba(255,255,255,.54);font-size:8px;font-weight:750}
+        .xp-zone{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;margin-top:24px;padding:18px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:rgba(14,16,57,.20);backdrop-filter:blur(14px)}
+        .xp-level-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}.level-badge{min-height:31px;display:inline-flex;align-items:center;padding:0 11px;border-radius:10px;color:#2f275d;background:linear-gradient(135deg,#fff0b8,#ffd98b);font-size:9px;font-weight:950;letter-spacing:.5px}.level-title{color:white;font-size:12px;font-weight:900}.xp-numbers{margin-left:auto;color:rgba(255,255,255,.64);font-size:9px;font-weight:800}.xp-numbers strong{color:white}
+        .xp-track{height:11px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.11)}.xp-fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,#ffe69b,#ffd171 45%,#8ee1ff);box-shadow:0 0 22px rgba(255,218,120,.24);transition:width .8s ease}.xp-helper{display:flex;justify-content:space-between;gap:10px;margin-top:8px;color:rgba(255,255,255,.48);font-size:8px;font-weight:700}
+        .continue-button{min-width:175px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border-radius:13px;color:#33265c;background:linear-gradient(135deg,#fff4c9,#ffe09a);box-shadow:0 14px 28px rgba(21,16,65,.18);font-size:10px;font-weight:950;text-decoration:none;transition:.18s ease}.continue-button:hover{transform:translateY(-2px)}
+        .command-grid{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);gap:14px;margin-top:14px}.command-card{padding:17px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(17,17,59,.19);backdrop-filter:blur(12px)}.command-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.command-card-head strong{font-size:11px}.command-card-head span{color:rgba(255,255,255,.50);font-size:8px;font-weight:800}
+        .mission-list{display:grid;gap:8px}.mission-item{min-height:52px;display:grid;grid-template-columns:33px minmax(0,1fr) auto;align-items:center;gap:9px;padding:8px 9px;border:1px solid rgba(255,255,255,.06);border-radius:12px;background:rgba(255,255,255,.035)}.mission-item.done{border-color:rgba(127,232,179,.14);background:rgba(83,195,139,.08)}.mission-icon{width:33px;height:33px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.07);font-size:14px}.mission-copy strong{display:block;font-size:9px}.mission-copy span{display:block;margin-top:3px;color:rgba(255,255,255,.43);font-size:7.5px}.mission-reward{color:#ffe6a0;font-size:8px;font-weight:900}.mission-item.done .mission-reward{color:#91e6b8}
+        .weekly-chart{height:154px;display:flex;align-items:flex-end;justify-content:space-between;gap:7px;padding-top:6px}.week-column{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}.week-xp{min-height:12px;color:rgba(255,255,255,.48);font-size:7px;font-weight:800}.week-bar-track{width:100%;max-width:27px;height:104px;display:flex;align-items:flex-end;overflow:hidden;border-radius:8px;background:rgba(255,255,255,.055)}.week-bar{width:100%;min-height:8px;border-radius:8px;background:linear-gradient(180deg,#ffe08d,#9a8bff 58%,#75b7ff);box-shadow:0 0 15px rgba(159,136,255,.20)}.week-label{color:rgba(255,255,255,.50);font-size:7px;font-weight:800}
+        .achievement-strip{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-top:14px}.achievement{min-height:73px;display:flex;align-items:center;gap:9px;padding:11px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(255,255,255,.035)}.achievement.locked{opacity:.44;filter:grayscale(.8)}.achievement-icon{width:38px;height:38px;flex-shrink:0;display:grid;place-items:center;border-radius:11px;background:rgba(255,255,255,.08);font-size:17px}.achievement strong{display:block;font-size:8.5px}.achievement span{display:block;margin-top:3px;color:rgba(255,255,255,.43);font-size:7px;line-height:1.35}
+        @media(max-width:980px){.command-grid{grid-template-columns:1fr}.achievement-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+        @media(max-width:650px){.command-center{padding:18px}.command-top{display:block}.streak-chip{width:fit-content;margin-top:14px}.xp-zone{grid-template-columns:1fr}.continue-button{min-height:46px}.achievement-strip{grid-template-columns:1fr}}
+
+
+
+        /* =========================================
+           DASHBOARD V4 — PREMIUM STANDARD TYPOGRAPHY
+           Larger, easier-to-read command center text
+        ========================================= */
+
+        .command-center {
+            padding: 31px;
+        }
+
+        .command-eyebrow {
+            min-height: 31px;
+            padding: 0 12px;
+
+            font-size: 10px;
+            letter-spacing: 1.05px;
+        }
+
+        .command-title {
+            max-width: 700px;
+
+            font-size:
+                clamp(36px, 4.3vw, 54px);
+
+            line-height: 1.01;
+
+            letter-spacing: -1.65px;
+        }
+
+        .command-subtitle {
+            max-width: 760px;
+
+            margin-top: 13px;
+
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        .streak-chip {
+            min-height: 58px;
+
+            gap: 10px;
+
+            padding: 0 16px;
+
+            border-radius: 17px;
+        }
+
+        .streak-fire {
+            font-size: 27px;
+        }
+
+        .streak-chip strong {
+            font-size: 15px;
+        }
+
+        .streak-chip span {
+            margin-top: 3px;
+
+            font-size: 10px;
+        }
+
+        .xp-zone {
+            margin-top: 27px;
+            padding: 21px;
+
+            border-radius: 20px;
+        }
+
+        .level-badge {
+            min-height: 35px;
+
+            padding: 0 13px;
+
+            font-size: 11px;
+        }
+
+        .level-title {
+            font-size: 15px;
+        }
+
+        .xp-numbers {
+            font-size: 11px;
+        }
+
+        .xp-track {
+            height: 13px;
+        }
+
+        .xp-helper {
+            margin-top: 9px;
+
+            font-size: 10px;
+        }
+
+        .continue-button {
+            min-width: 205px;
+
+            min-height: 56px;
+
+            padding: 0 21px;
+
+            border-radius: 15px;
+
+            font-size: 12px;
+        }
+
+        .command-grid {
+            gap: 16px;
+
+            margin-top: 16px;
+        }
+
+        .command-card {
+            padding: 20px;
+
+            border-radius: 20px;
+        }
+
+        .command-card-head {
+            margin-bottom: 15px;
+        }
+
+        .command-card-head strong {
+            font-size: 14px;
+        }
+
+        .command-card-head span {
+            font-size: 10px;
+        }
+
+        .mission-list {
+            gap: 10px;
+        }
+
+        .mission-item {
+            min-height: 63px;
+
+            grid-template-columns:
+                40px
+                minmax(0, 1fr)
+                auto;
+
+            gap: 11px;
+
+            padding: 10px 11px;
+
+            border-radius: 14px;
+        }
+
+        .mission-icon {
+            width: 40px;
+            height: 40px;
+
+            border-radius: 12px;
+
+            font-size: 17px;
+        }
+
+        .mission-copy strong {
+            font-size: 12px;
+        }
+
+        .mission-copy span {
+            margin-top: 4px;
+
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        .mission-reward {
+            font-size: 10px;
+        }
+
+        .weekly-chart {
+            height: 178px;
+
+            gap: 9px;
+        }
+
+        .week-xp {
+            min-height: 15px;
+
+            font-size: 9px;
+        }
+
+        .week-bar-track {
+            max-width: 32px;
+            height: 119px;
+
+            border-radius: 10px;
+        }
+
+        .week-bar {
+            border-radius: 10px;
+        }
+
+        .week-label {
+            font-size: 9px;
+        }
+
+        .achievement-strip {
+            gap: 11px;
+
+            margin-top: 16px;
+        }
+
+        .achievement {
+            min-height: 86px;
+
+            gap: 11px;
+
+            padding: 13px;
+
+            border-radius: 16px;
+        }
+
+        .achievement-icon {
+            width: 44px;
+            height: 44px;
+
+            border-radius: 13px;
+
+            font-size: 20px;
+        }
+
+        .achievement strong {
+            font-size: 11px;
+        }
+
+        .achievement span {
+            margin-top: 4px;
+
+            font-size: 9px;
+            line-height: 1.4;
+        }
+
+        /* Make the whole sidebar easier to read too. */
+
+        .nav-label {
+            font-size: 10px;
+        }
+
+        .nav-item {
+            min-height: 49px;
+
+            font-size: 14px;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+        }
+
+        .premium-nav-badge {
+            font-size: 9px;
+        }
+
+        @media (max-width: 650px) {
+
+            .command-center {
+                padding: 20px;
+            }
+
+            .command-title {
+                font-size: 37px;
+            }
+
+            .command-subtitle {
+                font-size: 13px;
+            }
+
+            .xp-helper {
+                font-size: 9px;
+            }
+
+            .mission-copy strong {
+                font-size: 11px;
+            }
+
+            .mission-copy span {
+                font-size: 9px;
+            }
+
+        }
+
+
+
+
+        /* DASHBOARD V5 — ANALYTICS ENTRY */
+
+        .analytics-nav-item {
+            position: relative;
+        }
+
+        .analytics-new-badge {
+            margin-left: auto;
+            min-height: 22px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0 7px;
+            border-radius: 999px;
+            color: #fff0b8;
+            background: linear-gradient(135deg, rgba(113,86,234,.45), rgba(177,117,246,.35));
+            font-size: 8px;
+            font-weight: 950;
+            letter-spacing: .6px;
+        }
+
+        .analytics-launch {
+            display: grid;
+            grid-template-columns: auto minmax(0,1fr) auto auto;
+            align-items: center;
+            gap: 18px;
+            margin-top: 18px;
+            padding: 20px 21px;
+            border: 1px solid rgba(107,87,238,.14);
+            border-radius: 20px;
+            color: #232640;
+            background:
+                radial-gradient(circle at 90% 10%, rgba(111,145,255,.12), transparent 28%),
+                linear-gradient(135deg, rgba(255,255,255,.97), rgba(247,244,255,.97));
+            box-shadow: 0 18px 45px rgba(61,48,140,.08);
+            text-decoration: none;
+            transition: .18s ease;
+        }
+
+        .analytics-launch:hover {
+            transform: translateY(-2px);
+            border-color: rgba(107,87,238,.25);
+            box-shadow: 0 24px 55px rgba(61,48,140,.12);
+        }
+
+        .analytics-launch-icon {
+            width: 55px;
+            height: 55px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            color: white;
+            background: linear-gradient(135deg, #5e4dde, #8664ef 55%, #5f8cff);
+            box-shadow: 0 13px 28px rgba(94,76,225,.21);
+            font-size: 24px;
+        }
+
+        .analytics-launch-copy span {
+            display: block;
+            color: #6b57ee;
+            font-size: 9px;
+            font-weight: 950;
+            letter-spacing: 1px;
+        }
+
+        .analytics-launch-copy strong {
+            display: block;
+            margin-top: 5px;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .analytics-launch-copy p {
+            margin: 4px 0 0;
+            color: #85899b;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .analytics-launch-stats {
+            display: flex;
+            gap: 8px;
+        }
+
+        .analytics-launch-stats div {
+            min-width: 72px;
+            padding: 9px 10px;
+            border: 1px solid #eceaf7;
+            border-radius: 12px;
+            background: rgba(255,255,255,.74);
+            text-align: center;
+        }
+
+        .analytics-launch-stats b {
+            display: block;
+            font-size: 15px;
+        }
+
+        .analytics-launch-stats span {
+            display: block;
+            margin-top: 2px;
+            color: #9a9eb1;
+            font-size: 7px;
+            font-weight: 850;
+        }
+
+        .analytics-launch-arrow {
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 14px;
+            border-radius: 11px;
+            color: white;
+            background: #2c2f4b;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        @media (max-width: 900px) {
+            .analytics-launch {
+                grid-template-columns: auto minmax(0,1fr);
+            }
+
+            .analytics-launch-stats,
+            .analytics-launch-arrow {
+                grid-column: 1 / -1;
+            }
+
+            .analytics-launch-arrow {
+                width: 100%;
+            }
+        }
+
+
+
+
+        /* =========================================
+           DASHBOARD V6 — PROFILE CENTER ENTRY
+        ========================================= */
+
+        .profile-link {
+            color: inherit;
+            text-decoration: none;
+
+            transition:
+                .18s ease;
+        }
+
+        .profile-link:hover {
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(107, 87, 238, .22);
+
+            box-shadow:
+                0 14px 30px
+                rgba(61, 48, 140, .10);
+        }
+
+        .profile-nav-item {
+            position: relative;
+        }
+
+        .profile-new-badge {
+            margin-left: auto;
+
+            min-height: 22px;
+
+            display: inline-flex;
+            align-items: center;
+
+            padding: 0 7px;
+
+            border-radius: 999px;
+
+            color: #e4ddff;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(94, 77, 222, .46),
+                    rgba(135, 98, 239, .34)
+                );
+
+            font-size: 8px;
+            font-weight: 950;
+
+            letter-spacing: .6px;
+        }
+
+
+</style>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/midnight_royal_v2.css') }}">
+</head>
+
+<body class="lmx-page lmx-dashboard {% if session.get('user_id') %}lmx-authenticated{% endif %}">
+{% if session.get('user_id') %}
+    {% include 'app_sidebar.html' %}
+{% endif %}
+
+<div class="app-shell">
+
+    <!-- ======================================
+         SIDEBAR
+    ======================================= -->
+
+    
+
+
+    <!-- ======================================
+         MAIN
+    ======================================= -->
+
+    <main class="main">
+
+        <div class="content">
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+                <div class="topbar-copy">
+
+                    <small>
+                        YOUR LEARNING SPACE
+                    </small>
+
+                    <h1>
+                        Welcome back,
+                        {{ session.get('username', 'Learner') }} 👋
+                    </h1>
+
+                </div>
+
+
+                <a
+                    href="{{ url_for('profile') }}"
+                    class="profile profile-link"
+                    title="Open Profile & Achievements"
+                >
+
+                    <div class="profile-avatar">
+                        {{ session.get('username', 'L')[0]|upper }}
+                    </div>
+
+                    <div class="profile-info">
+
+                        <strong>
+                            {{ session.get('username', 'Learner') }}
+                        </strong>
+
+                        <span>
+                            Level {{ gamification.level|default(1) }}
+                            • View profile →
+                        </span>
+
+                    </div>
+
+                </a>
+
+            </header>
+
+
+            <!-- DASHBOARD V4 — LEARNING COMMAND CENTER -->
+            <section class="command-center">
+                <div class="command-top">
+                    <div>
+                        <div class="command-eyebrow">✦ LEARNING COMMAND CENTER</div>
+                        <h2 class="command-title">Keep your momentum going, {{ session.get('username', 'Learner') }}.</h2>
+                        <p class="command-subtitle">Earn XP from real learning actions, build your streak and finish today's missions. Your LinguaMind level grows with your progress.</p>
+                    </div>
+                    <div class="streak-chip"><div class="streak-fire">🔥</div><div><strong>{{ gamification.streak|default(1) }} day streak</strong><span>Keep learning every day</span></div></div>
+                </div>
+
+                <div class="xp-zone">
+                    <div>
+                        <div class="xp-level-row">
+                            <span class="level-badge">LEVEL {{ gamification.level|default(1) }}</span>
+                            <span class="level-title">{{ gamification.title|default('Starter')|upper }}</span>
+                            <span class="xp-numbers"><strong>{{ gamification.total_xp|default(0) }} XP</strong> total</span>
+                        </div>
+                        <div class="xp-track"><div class="xp-fill" data-progress="{{ gamification.progress_percent|default(0) }}"></div></div>
+                        <div class="xp-helper"><span>{{ gamification.current_level_xp|default(0) }} / {{ gamification.level_requirement|default(200) }} XP in this level</span><span>Next: Level {{ (gamification.level|default(1)) + 1 }}</span></div>
+                    </div>
+                    {% if active_plan %}<a href="{{ url_for('study_plan') }}" class="continue-button">▶ Continue Study Plan</a>{% else %}<a href="{{ url_for('ai_teacher') }}" class="continue-button">✦ Start Learning</a>{% endif %}
+                </div>
+
+                <div class="command-grid">
+                    <article class="command-card">
+                        <div class="command-card-head"><strong>🎯 Today's Missions</strong><span>{{ gamification.missions_done|default(0) }} / {{ gamification.missions_total|default(3) }} complete</span></div>
+                        <div class="mission-list">
+                            {% for mission in gamification.missions %}
+                            <div class="mission-item {% if mission.done %}done{% endif %}">
+                                <div class="mission-icon">{% if mission.done %}✓{% else %}{{ mission.icon }}{% endif %}</div>
+                                <div class="mission-copy"><strong>{{ mission.title }}</strong><span>{{ mission.detail }}</span></div>
+                                <div class="mission-reward">{% if mission.done %}CLAIMED{% else %}+{{ mission.reward }} XP{% endif %}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </article>
+
+                    <article class="command-card">
+                        <div class="command-card-head"><strong>📊 Weekly XP</strong><span>Last 7 days</span></div>
+                        <div class="weekly-chart">
+                            {% for day in gamification.weekly_activity %}
+                            <div class="week-column"><div class="week-xp">{{ day.xp }}</div><div class="week-bar-track"><div class="week-bar" data-height="{{ day.height }}"></div></div><div class="week-label">{{ day.label }}</div></div>
+                            {% endfor %}
+                        </div>
+                    </article>
+                </div>
+
+                <div class="achievement-strip">
+                    {% for badge in gamification.achievements %}
+                    <div class="achievement {% if not badge.unlocked %}locked{% endif %}">
+                        <div class="achievement-icon">{% if badge.unlocked %}{{ badge.icon }}{% else %}🔒{% endif %}</div>
+                        <div><strong>{{ badge.title }}</strong><span>{{ badge.detail }}</span></div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <a
+                href="{{ url_for('analytics') }}"
+                class="analytics-launch"
+            >
+                <div class="analytics-launch-icon">📈</div>
+
+                <div class="analytics-launch-copy">
+                    <span>NEW • PROGRESS INTELLIGENCE</span>
+                    <strong>
+                        See what is improving — and what to study next.
+                    </strong>
+                    <p>
+                        Full XP activity, quiz skill breakdown,
+                        vocabulary mastery and smart learning insights.
+                    </p>
+                </div>
+
+                <div class="analytics-launch-stats">
+                    <div>
+                        <b>{{ gamification.total_xp|default(0) }}</b>
+                        <span>XP</span>
+                    </div>
+                    <div>
+                        <b>{{ gamification.streak|default(0) }}</b>
+                        <span>STREAK</span>
+                    </div>
+                </div>
+
+                <div class="analytics-launch-arrow">
+                    View Analytics →
+                </div>
+            </a>
+
+
+            <!-- STATS -->
+
+            <section class="section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <span>YOUR NUMBERS</span>
+                        <h2>Learning overview</h2>
+                    </div>
+
+                    <p>
+                        Your vocabulary progress at a glance.
+                    </p>
+
+                </div>
+
+
+                <div class="stats-grid">
+
+                    <article class="stat-card stat-purple">
+
+                        <div class="stat-top">
+                            <div class="stat-icon">📚</div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ total|default(0) }}
+                        </div>
+
+                        <div class="stat-label">
+                            Total words
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card stat-blue">
+
+                        <div class="stat-top">
+                            <div class="stat-icon">✨</div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ new_count|default(0) }}
+                        </div>
+
+                        <div class="stat-label">
+                            New words
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card stat-orange">
+
+                        <div class="stat-top">
+                            <div class="stat-icon">⚡</div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ learning_count|default(0) }}
+                        </div>
+
+                        <div class="stat-label">
+                            Learning
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card stat-green">
+
+                        <div class="stat-top">
+                            <div class="stat-icon">✓</div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ mastered_count|default(0) }}
+                        </div>
+
+                        <div class="stat-label">
+                            Mastered
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card stat-pink">
+
+                        <div class="stat-top">
+                            <div class="stat-icon">♥</div>
+                        </div>
+
+                        <div class="stat-number">
+                            {{ favorites_count|default(0) }}
+                        </div>
+
+                        <div class="stat-label">
+                            Favorites
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- PROGRESS + QUICK -->
+
+            <section class="section">
+
+                <div class="dashboard-grid">
+
+
+                    <!-- PROGRESS PANEL -->
+
+                    <article class="panel">
+
+                        <div class="panel-header">
+
+                            <div>
+                                <small>PROGRESS</small>
+                                <h3>Your learning journey</h3>
+                            </div>
+
+                            <span>
+                                📈
+                            </span>
+
+                        </div>
+
+
+                        <div class="panel-body">
+
+                            <div class="progress-main">
+
+                                <div
+                                    class="progress-ring"
+                                    data-progress="{{ progress|default(0) }}"
+                                >
+
+                                    <svg viewBox="0 0 120 120">
+
+                                        <circle
+                                            class="track"
+                                            cx="60"
+                                            cy="60"
+                                            r="54"
+                                        ></circle>
+
+                                        <circle
+                                            class="value"
+                                            cx="60"
+                                            cy="60"
+                                            r="54"
+                                        ></circle>
+
+                                    </svg>
+
+                                    <div class="progress-number">
+                                        {{ progress|default(0) }}%
+                                    </div>
+
+                                </div>
+
+
+                                <div class="progress-details">
+
+                                    <h4>
+                                        Keep building your vocabulary
+                                    </h4>
+
+                                    <p>
+                                        Words marked as Mastered count
+                                        toward your overall vocabulary progress.
+                                    </p>
+
+
+                                    <div class="mini-progress">
+
+                                        <span>
+                                            Mastered words
+                                        </span>
+
+                                        <span>
+                                            {{ mastered_count|default(0) }}
+                                            /
+                                            {{ total|default(0) }}
+                                        </span>
+
+                                        <div class="mini-track">
+
+                                            <div
+                                                class="mini-fill"
+                                                data-progress="{{ progress|default(0) }}"
+                                            ></div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- QUICK ACTIONS -->
+
+                    <article class="panel">
+
+                        <div class="panel-header">
+
+                            <div>
+                                <small>SHORTCUTS</small>
+                                <h3>Quick actions</h3>
+                            </div>
+
+                            <span>⚡</span>
+
+                        </div>
+
+
+                        <div class="panel-body">
+
+                            <div class="quick-grid">
+
+                                <a
+                                    href="{{ url_for('add_word') }}"
+                                    class="quick-card"
+                                >
+
+                                    <div class="quick-icon">
+                                        ＋
+                                    </div>
+
+                                    <div>
+                                        <strong>Add word</strong>
+                                        <span>Grow your vocabulary</span>
+                                    </div>
+
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for('ai_teacher') }}"
+                                    class="quick-card"
+                                >
+
+                                    <div class="quick-icon">
+                                        ✦
+                                    </div>
+
+                                    <div>
+                                        <strong>Ask AI</strong>
+                                        <span>Practice English instantly</span>
+                                    </div>
+
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for('quiz') }}"
+                                    class="quick-card"
+                                >
+
+                                    <div class="quick-icon">
+                                        ✓
+                                    </div>
+
+                                    <div>
+                                        <strong>Start quiz</strong>
+                                        <span>Test what you know</span>
+                                    </div>
+
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for('vocabulary') }}"
+                                    class="quick-card"
+                                >
+
+                                    <div class="quick-icon">
+                                        📖
+                                    </div>
+
+                                    <div>
+                                        <strong>Review words</strong>
+                                        <span>Continue learning</span>
+                                    </div>
+
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for('study_plan') }}"
+                                    class="quick-card"
+                                >
+
+                                    <div class="quick-icon">
+                                        ◷
+                                    </div>
+
+                                    <div>
+                                        <strong>Study plan</strong>
+                                        <span>Follow your AI coach</span>
+                                    </div>
+
+                                </a>
+
+
+                                <a
+                                    href="{{ url_for('scan_text') }}"
+                                    class="quick-card"
+                                >
+
+                                    <div class="quick-icon">
+                                        ▣
+                                    </div>
+
+                                    <div>
+                                        <strong>Scan text</strong>
+                                        <span>Learn from any image</span>
+                                    </div>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+            <!-- ======================================
+     QUIZ PERFORMANCE
+======================================= -->
+
+<section class="section">
+
+    <div class="section-heading">
+
+        <div>
+            <span>QUIZ PROGRESS</span>
+            <h2>Your practice performance</h2>
+        </div>
+
+        <p>
+            Real results from your completed quizzes.
+        </p>
+
+    </div>
+
+
+    <div class="quiz-performance">
+
+
+        <article class="quiz-performance-card">
+
+            <div class="quiz-performance-icon">
+                ✓
+            </div>
+
+            <div>
+
+                <div class="quiz-performance-number">
+                    {{ quizzes_completed|default(0) }}
+                </div>
+
+                <div class="quiz-performance-label">
+                    Quizzes completed
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <article class="quiz-performance-card">
+
+            <div class="quiz-performance-icon">
+                📊
+            </div>
+
+            <div>
+
+                <div class="quiz-performance-number">
+                    {{ average_quiz_score|default(0) }}%
+                </div>
+
+                <div class="quiz-performance-label">
+                    Average score
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <article class="quiz-performance-card">
+
+            <div class="quiz-performance-icon">
+                🏆
+            </div>
+
+            <div>
+
+                <div class="quiz-performance-number">
+                    {{ best_quiz_score|default(0) }}%
+                </div>
+
+                <div class="quiz-performance-label">
+                    Best score
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <article
+            class="
+                quiz-performance-card
+                latest-quiz-card
+            "
+        >
+
+            <small>
+                LATEST QUIZ
+            </small>
+
+
+            {% if latest_quiz %}
+
+                <h3>
+                    {{ latest_quiz['category'] }}
+                </h3>
+
+                <p>
+                    {{ latest_quiz['difficulty']|capitalize }}
+                    difficulty
+                </p>
+
+                <div class="latest-score">
+
+                    {{ latest_quiz['percentage'] }}%
+
+                    <span>
+                        {{ latest_quiz['score'] }}
+                        /
+                        {{ latest_quiz['total_questions'] }}
+                        correct
+                    </span>
+
+                </div>
+
+            {% else %}
+
+                <h3>
+                    No quiz results yet
+                </h3>
+
+                <p>
+                    Complete your first Smart Quiz
+                    and your performance will appear here.
+                </p>
+
+                <a
+                    href="{{ url_for('quiz') }}"
+                    class="quiz-history-link"
+                >
+                    Start your first quiz →
+                </a>
+
+            {% endif %}
+
+        </article>
+
+
+    </div>
+
+</section>
+
+            <!-- LEARNING TOOLS -->
+
+            <section class="section">
+
+                <div class="section-heading">
+
+                    <div>
+                        <span>LEARNING TOOLS</span>
+                        <h2>Continue learning</h2>
+                    </div>
+
+                    <p>
+                        Choose what you want to improve next.
+                    </p>
+
+                </div>
+
+
+                <div class="learning-grid">
+
+                    <article class="learning-card">
+
+                        <div class="learning-card-icon">
+                            ✦
+                        </div>
+
+                        <h3>
+                            AI English Teacher
+                        </h3>
+
+                        <p>
+                            Ask questions, correct grammar,
+                            practice IELTS, SAT English,
+                            vocabulary and conversation.
+                        </p>
+
+                        <a
+                            href="{{ url_for('ai_teacher') }}"
+                            class="learning-link"
+                        >
+                            Open AI Teacher →
+                        </a>
+
+                    </article>
+
+
+                    <article class="learning-card">
+
+                        <div class="learning-card-icon">
+                            ✓
+                        </div>
+
+                        <h3>
+                            Smart Quiz
+                        </h3>
+
+                        <p>
+                            Choose a category, answer
+                            multiple-choice questions and
+                            receive instant explanations.
+                        </p>
+
+                        <a
+                            href="{{ url_for('quiz') }}"
+                            class="learning-link"
+                        >
+                            Start practice →
+                        </a>
+
+                    </article>
+
+
+                    <article class="learning-card">
+
+                        <div class="learning-card-icon">
+                            📚
+                        </div>
+
+                        <h3>
+                            Vocabulary Library
+                        </h3>
+
+                        <p>
+                            Save English words, track
+                            learning status and keep your
+                            vocabulary organized.
+                        </p>
+
+                        <a
+                            href="{{ url_for('vocabulary') }}"
+                            class="learning-link"
+                        >
+                            Open vocabulary →
+                        </a>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <footer class="footer">
+
+                <span>
+                    LinguaMind
+                </span>
+
+                <span>
+                    Learn smarter. Practice consistently.
+                </span>
+
+            </footer>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /* =========================================
+       PROGRESS ANIMATION
+    ========================================= */
+
+    document
+        .querySelectorAll("[data-progress]")
+        .forEach(function(element) {
+
+            let value =
+                Number(
+                    element.dataset.progress
+                ) || 0;
+
+            value =
+                Math.max(
+                    0,
+                    Math.min(100, value)
+                );
+
+
+            if (
+                element.classList.contains(
+                    "mini-fill"
+                )
+            ) {
+
+                element.style.width =
+                    value + "%";
+
+            }
+
+
+            if (
+                element.classList.contains(
+                    "progress-ring"
+                )
+            ) {
+
+                const circle =
+                    element.querySelector(
+                        ".value"
+                    );
+
+                const circumference =
+                    339.292;
+
+                const offset =
+                    circumference -
+                    (
+                        value / 100
+                    ) * circumference;
+
+                circle.style.strokeDashoffset =
+                    offset;
+
+            }
+
+        });
+
+
+
+        /* =========================================
+           DASHBOARD V4 DYNAMIC BARS
+           Keeps Jinja values out of CSS inline styles
+           so VS Code does not report false CSS errors.
+        ========================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                document
+                    .querySelectorAll(
+                        ".xp-fill[data-progress]"
+                    )
+                    .forEach(
+                        function(element) {
+
+                            const value =
+                                Number(
+                                    element.dataset.progress
+                                );
+
+                            const safeValue =
+                                Math.max(
+                                    0,
+                                    Math.min(
+                                        100,
+                                        Number.isFinite(value)
+                                            ? value
+                                            : 0
+                                    )
+                                );
+
+                            element.style.width =
+                                safeValue + "%";
+                        }
+                    );
+
+
+                document
+                    .querySelectorAll(
+                        ".week-bar[data-height]"
+                    )
+                    .forEach(
+                        function(element) {
+
+                            const value =
+                                Number(
+                                    element.dataset.height
+                                );
+
+                            const safeValue =
+                                Math.max(
+                                    8,
+                                    Math.min(
+                                        100,
+                                        Number.isFinite(value)
+                                            ? value
+                                            : 8
+                                    )
+                                );
+
+                            element.style.height =
+                                safeValue + "%";
+                        }
+                    );
+
+            }
+        );
+
+
+</script>
+
+</body>
+</html>

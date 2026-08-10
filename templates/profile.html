@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Profile & Achievements — LinguaMind
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        :root {
+            --purple: #6b57ee;
+            --purple-2: #8b68f3;
+            --blue: #5f8cff;
+
+            --text: #23263f;
+            --muted: #85899e;
+
+            --border:
+                rgba(89, 78, 156, .11);
+
+            --surface:
+                rgba(255,255,255,.89);
+
+            --shadow:
+                0 20px 54px
+                rgba(53, 42, 126, .085);
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            margin: 0;
+
+            color: var(--text);
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 7%,
+                    rgba(110,87,239,.11),
+                    transparent 25%
+                ),
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(76,138,255,.10),
+                    transparent 25%
+                ),
+                linear-gradient(
+                    145deg,
+                    #f7f8ff,
+                    #ffffff 45%,
+                    #f3f1ff
+                );
+        }
+
+
+        button,
+        a {
+            font-family: inherit;
+        }
+
+
+        .page {
+            min-height: 100vh;
+
+            padding:
+                28px
+                5.5%
+                70px;
+        }
+
+
+        .container {
+            width: min(100%, 1380px);
+
+            margin: 0 auto;
+        }
+
+
+        /* =========================================
+           TOPBAR
+        ========================================= */
+
+        .topbar {
+            min-height: 72px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 16px;
+
+            margin-bottom: 20px;
+            padding:
+                11px
+                13px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,.74);
+
+            box-shadow:
+                0 12px 34px
+                rgba(52,42,120,.055);
+
+            backdrop-filter:
+                blur(18px);
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            color: var(--text);
+
+            text-decoration: none;
+        }
+
+
+        .brand-icon {
+            width: 49px;
+            height: 49px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 15px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5d4bdd,
+                    #8d64f2
+                );
+
+            box-shadow:
+                0 13px 28px
+                rgba(97,75,222,.21);
+
+            font-size: 23px;
+        }
+
+
+        .brand strong {
+            display: block;
+
+            font-size: 18px;
+            font-weight: 950;
+        }
+
+
+        .brand span {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #9397ab;
+
+            font-size: 9px;
+            font-weight: 850;
+
+            letter-spacing: 1.15px;
+        }
+
+
+        .top-actions {
+            display: flex;
+
+            gap: 8px;
+        }
+
+
+        .top-link {
+            min-height: 42px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 0 14px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 12px;
+
+            color: #62677e;
+
+            background:
+                rgba(255,255,255,.82);
+
+            font-size: 11px;
+            font-weight: 850;
+
+            text-decoration: none;
+
+            transition:
+                .17s ease;
+        }
+
+
+        .top-link:hover {
+            transform:
+                translateY(-1px);
+
+            border-color:
+                rgba(107,87,238,.22);
+        }
+
+
+        .top-link.primary {
+            color: white;
+
+            border-color:
+                transparent;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5e4dde,
+                    #8664ef
+                );
+
+            box-shadow:
+                0 11px 24px
+                rgba(94,76,225,.18);
+        }
+
+
+        /* =========================================
+           PROFILE HERO
+        ========================================= */
+
+        .profile-hero {
+            position: relative;
+            overflow: hidden;
+
+            display: grid;
+            grid-template-columns:
+                minmax(0, 1.15fr)
+                minmax(360px, .85fr);
+
+            gap: 25px;
+
+            padding: 32px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.11);
+
+            border-radius: 30px;
+
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at 88% 12%,
+                    rgba(107,166,255,.34),
+                    transparent 29%
+                ),
+                radial-gradient(
+                    circle at 8% 95%,
+                    rgba(197,109,255,.19),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #29235e,
+                    #4939b9 48%,
+                    #365ec2
+                );
+
+            box-shadow:
+                0 28px 72px
+                rgba(59,48,154,.20);
+        }
+
+
+        .profile-hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 390px;
+            height: 390px;
+
+            right: -165px;
+            top: -220px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.10);
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 0 52px rgba(255,255,255,.024),
+                0 0 0 104px rgba(255,255,255,.013);
+
+            pointer-events: none;
+        }
+
+
+        .identity,
+        .level-card {
+            position: relative;
+            z-index: 2;
+        }
+
+
+        .identity {
+            display: flex;
+            align-items: center;
+
+            gap: 20px;
+        }
+
+
+        .avatar {
+            width: 118px;
+            height: 118px;
+
+            flex-shrink: 0;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid
+                rgba(255,255,255,.15);
+
+            border-radius: 31px;
+
+            color: #342969;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff1b8,
+                    #ffd98d
+                );
+
+            box-shadow:
+                0 20px 45px
+                rgba(20,15,65,.18),
+                inset 0 1px 0
+                rgba(255,255,255,.40);
+
+            font-size: 47px;
+            font-weight: 950;
+        }
+
+
+        .identity-copy small {
+            display: inline-flex;
+            align-items: center;
+
+            min-height: 28px;
+
+            padding: 0 10px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.13);
+
+            border-radius: 999px;
+
+            color: #dedaff;
+
+            background:
+                rgba(255,255,255,.07);
+
+            font-size: 9px;
+            font-weight: 900;
+
+            letter-spacing: 1px;
+        }
+
+
+        .identity-copy h1 {
+            margin:
+                12px
+                0
+                0;
+
+            font-size:
+                clamp(38px, 4.5vw, 58px);
+
+            line-height: 1;
+
+            letter-spacing: -1.8px;
+        }
+
+
+        .identity-copy p {
+            margin:
+                9px
+                0
+                0;
+
+            color:
+                rgba(255,255,255,.62);
+
+            font-size: 13px;
+        }
+
+
+        .identity-chips {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 8px;
+
+            margin-top: 18px;
+        }
+
+
+        .identity-chip {
+            min-height: 34px;
+
+            display: inline-flex;
+            align-items: center;
+
+            padding: 0 11px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.10);
+
+            border-radius: 10px;
+
+            color:
+                rgba(255,255,255,.82);
+
+            background:
+                rgba(255,255,255,.06);
+
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+
+        .identity-chip.plan {
+            color: #fff0b8;
+
+            border-color:
+                rgba(255,224,145,.13);
+
+            background:
+                rgba(255,224,145,.07);
+        }
+
+
+        .level-card {
+            align-self: stretch;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            padding: 21px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.10);
+
+            border-radius: 22px;
+
+            background:
+                rgba(14,16,57,.20);
+
+            backdrop-filter:
+                blur(14px);
+        }
+
+
+        .level-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 14px;
+        }
+
+
+        .level-badge {
+            min-height: 34px;
+
+            display: inline-flex;
+            align-items: center;
+
+            padding: 0 12px;
+
+            border-radius: 11px;
+
+            color: #33285f;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff0b8,
+                    #ffd98b
+                );
+
+            font-size: 10px;
+            font-weight: 950;
+
+            letter-spacing: .7px;
+        }
+
+
+        .level-title {
+            color: #fff1bd;
+
+            font-size: 12px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+        }
+
+
+        .level-xp {
+            margin-top: 24px;
+        }
+
+
+        .level-xp strong {
+            color: white;
+
+            font-size: 36px;
+            font-weight: 950;
+        }
+
+
+        .level-xp span {
+            margin-left: 5px;
+
+            color:
+                rgba(255,255,255,.50);
+
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+
+        .xp-track {
+            height: 12px;
+
+            overflow: hidden;
+
+            margin-top: 14px;
+
+            border-radius: 999px;
+
+            background:
+                rgba(255,255,255,.11);
+        }
+
+
+        .xp-fill {
+            width: 0;
+            height: 100%;
+
+            border-radius: inherit;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffe69b,
+                    #ffd171 45%,
+                    #8ee1ff
+                );
+
+            box-shadow:
+                0 0 22px
+                rgba(255,218,120,.24);
+
+            transition:
+                width .8s ease;
+        }
+
+
+        .xp-helper {
+            display: flex;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-top: 9px;
+
+            color:
+                rgba(255,255,255,.48);
+
+            font-size: 9px;
+            font-weight: 750;
+        }
+
+
+        /* =========================================
+           STATS
+        ========================================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns:
+                repeat(5, minmax(0,1fr));
+
+            gap: 13px;
+
+            margin-top: 18px;
+        }
+
+
+        .stat {
+            min-height: 126px;
+
+            padding: 18px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 18px;
+
+            background:
+                var(--surface);
+
+            box-shadow:
+                var(--shadow);
+
+            backdrop-filter:
+                blur(14px);
+        }
+
+
+        .stat-icon {
+            width: 38px;
+            height: 38px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #efecff,
+                    #eaf2ff
+                );
+
+            font-size: 17px;
+        }
+
+
+        .stat strong {
+            display: block;
+
+            margin-top: 13px;
+
+            font-size: 27px;
+            font-weight: 950;
+        }
+
+
+        .stat span {
+            display: block;
+
+            margin-top: 4px;
+
+            color: #8c91a6;
+
+            font-size: 9px;
+            font-weight: 850;
+
+            text-transform: uppercase;
+
+            letter-spacing: .6px;
+        }
+
+
+        /* =========================================
+           SECTION
+        ========================================= */
+
+        .section {
+            margin-top: 20px;
+        }
+
+
+        .section-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 18px;
+
+            margin-bottom: 13px;
+        }
+
+
+        .section-head small {
+            display: block;
+
+            color: var(--purple);
+
+            font-size: 9px;
+            font-weight: 950;
+
+            letter-spacing: 1px;
+        }
+
+
+        .section-head h2 {
+            margin:
+                5px
+                0
+                0;
+
+            font-size: 22px;
+
+            letter-spacing: -.4px;
+        }
+
+
+        .section-head p {
+            max-width: 500px;
+
+            margin: 0;
+
+            color: #9195a8;
+
+            font-size: 10px;
+            line-height: 1.55;
+
+            text-align: right;
+        }
+
+
+        /* =========================================
+           ACHIEVEMENTS
+        ========================================= */
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, minmax(0,1fr));
+
+            gap: 13px;
+        }
+
+
+        .achievement {
+            position: relative;
+            overflow: hidden;
+
+            min-height: 225px;
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 19px;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,.90);
+
+            box-shadow:
+                var(--shadow);
+
+            transition:
+                .18s ease;
+        }
+
+
+        .achievement:hover {
+            transform:
+                translateY(-3px);
+
+            border-color:
+                rgba(107,87,238,.20);
+
+            box-shadow:
+                0 25px 58px
+                rgba(53,42,126,.12);
+        }
+
+
+        .achievement.unlocked {
+            background:
+                radial-gradient(
+                    circle at 90% 7%,
+                    rgba(255,217,120,.12),
+                    transparent 26%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.97),
+                    rgba(249,247,255,.97)
+                );
+        }
+
+
+        .achievement.locked {
+            opacity: .72;
+        }
+
+
+        .achievement-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 12px;
+        }
+
+
+        .achievement-icon {
+            width: 49px;
+            height: 49px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eeeaff,
+                    #e8f1ff
+                );
+
+            font-size: 22px;
+        }
+
+
+        .achievement.unlocked
+        .achievement-icon {
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff0b8,
+                    #ffdc92
+                );
+
+            box-shadow:
+                0 12px 25px
+                rgba(204,155,49,.14);
+        }
+
+
+        .achievement-state {
+            min-height: 27px;
+
+            display: inline-flex;
+            align-items: center;
+
+            padding: 0 9px;
+
+            border-radius: 999px;
+
+            color: #8d91a4;
+
+            background:
+                #f1f1f6;
+
+            font-size: 8px;
+            font-weight: 950;
+
+            letter-spacing: .55px;
+        }
+
+
+        .achievement.unlocked
+        .achievement-state {
+            color: #2d825b;
+
+            background:
+                #e8f7ef;
+        }
+
+
+        .achievement h3 {
+            margin:
+                18px
+                0
+                0;
+
+            font-size: 17px;
+        }
+
+
+        .achievement p {
+            margin:
+                6px
+                0
+                0;
+
+            color: #8c90a4;
+
+            font-size: 10px;
+            line-height: 1.55;
+        }
+
+
+        .achievement-progress {
+            margin-top: auto;
+            padding-top: 18px;
+        }
+
+
+        .achievement-progress-row {
+            display: flex;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-bottom: 7px;
+
+            color: #8c90a4;
+
+            font-size: 8px;
+            font-weight: 850;
+        }
+
+
+        .achievement-progress-row b {
+            color: #565b72;
+        }
+
+
+        .achievement-track {
+            height: 8px;
+
+            overflow: hidden;
+
+            border-radius: 999px;
+
+            background:
+                #ececf3;
+        }
+
+
+        .achievement-fill {
+            width: 0;
+            height: 100%;
+
+            border-radius: inherit;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #6957e8,
+                    #8f6af3,
+                    #69a7ff
+                );
+
+            transition:
+                width .8s ease;
+        }
+
+
+        .achievement.unlocked
+        .achievement-fill {
+            background:
+                linear-gradient(
+                    90deg,
+                    #ffd777,
+                    #ffbd58
+                );
+        }
+
+
+        /* =========================================
+           LOWER GRID
+        ========================================= */
+
+        .lower-grid {
+            display: grid;
+            grid-template-columns:
+                minmax(0,1.08fr)
+                minmax(340px,.92fr);
+
+            gap: 16px;
+
+            margin-top: 20px;
+        }
+
+
+        .panel {
+            overflow: hidden;
+
+            border:
+                1px solid
+                var(--border);
+
+            border-radius: 21px;
+
+            background:
+                rgba(255,255,255,.89);
+
+            box-shadow:
+                var(--shadow);
+
+            backdrop-filter:
+                blur(14px);
+        }
+
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 14px;
+
+            padding:
+                19px
+                20px;
+
+            border-bottom:
+                1px solid
+                #efeff5;
+        }
+
+
+        .panel-head small {
+            display: block;
+
+            color: var(--purple);
+
+            font-size: 9px;
+            font-weight: 950;
+
+            letter-spacing: 1px;
+        }
+
+
+        .panel-head h2 {
+            margin:
+                4px
+                0
+                0;
+
+            font-size: 18px;
+        }
+
+
+        .panel-head span {
+            color: #969aad;
+
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+
+        .panel-body {
+            padding: 20px;
+        }
+
+
+        /* NEXT ACHIEVEMENT */
+
+        .next-achievement {
+            padding: 19px;
+
+            border:
+                1px solid
+                rgba(107,87,238,.13);
+
+            border-radius: 18px;
+
+            background:
+                radial-gradient(
+                    circle at 95% 0%,
+                    rgba(104,150,255,.10),
+                    transparent 28%
+                ),
+                linear-gradient(
+                    135deg,
+                    #f8f6ff,
+                    #f5f8ff
+                );
+        }
+
+
+        .next-achievement-icon {
+            width: 57px;
+            height: 57px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 17px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eeeaff,
+                    #e7f0ff
+                );
+
+            font-size: 26px;
+        }
+
+
+        .next-achievement h3 {
+            margin:
+                15px
+                0
+                6px;
+
+            font-size: 20px;
+        }
+
+
+        .next-achievement p {
+            margin: 0;
+
+            color: #7f8499;
+
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+
+        .next-track {
+            height: 10px;
+
+            overflow: hidden;
+
+            margin-top: 16px;
+
+            border-radius: 999px;
+
+            background:
+                #e9e8f2;
+        }
+
+
+        .next-fill {
+            width: 0;
+            height: 100%;
+
+            border-radius: inherit;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #6b57ee,
+                    #8f6af3,
+                    #69a7ff
+                );
+
+            transition:
+                width .8s ease;
+        }
+
+
+        .next-meta {
+            display: flex;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-top: 8px;
+
+            color: #8d91a5;
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+
+        /* WEEKLY */
+
+        .weekly-chart {
+            height: 220px;
+
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 9px;
+        }
+
+
+        .week-column {
+            flex: 1;
+            min-width: 0;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+
+            gap: 7px;
+        }
+
+
+        .week-xp {
+            color: #777c92;
+
+            font-size: 9px;
+            font-weight: 850;
+        }
+
+
+        .week-track {
+            width: 100%;
+            max-width: 35px;
+            height: 155px;
+
+            display: flex;
+            align-items: flex-end;
+
+            overflow: hidden;
+
+            border-radius: 11px;
+
+            background:
+                #f0eff6;
+        }
+
+
+        .week-fill {
+            width: 100%;
+            height: 8%;
+
+            border-radius: 11px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #ffe295,
+                    #a58aff 56%,
+                    #69adff
+                );
+
+            transition:
+                height .8s ease;
+        }
+
+
+        .week-label {
+            color: #959aad;
+
+            font-size: 9px;
+            font-weight: 850;
+        }
+
+
+        /* PLAN */
+
+        .plan-card {
+            margin-top: 16px;
+            padding: 19px;
+
+            border:
+                1px solid
+                rgba(107,87,238,.13);
+
+            border-radius: 18px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #292e50,
+                    #45398d
+                );
+
+            color: white;
+        }
+
+
+        .plan-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+        }
+
+
+        .plan-top strong {
+            font-size: 17px;
+        }
+
+
+        .plan-badge {
+            min-height: 28px;
+
+            display: inline-flex;
+            align-items: center;
+
+            padding: 0 10px;
+
+            border-radius: 999px;
+
+            color: #fff1ba;
+
+            background:
+                rgba(255,226,147,.09);
+
+            font-size: 8px;
+            font-weight: 950;
+
+            letter-spacing: .7px;
+        }
+
+
+        .plan-price {
+            margin-top: 16px;
+
+            color: #fff0b8;
+
+            font-size: 26px;
+            font-weight: 950;
+        }
+
+
+        .plan-status {
+            display: grid;
+
+            gap: 7px;
+
+            margin-top: 15px;
+        }
+
+
+        .plan-row {
+            display: flex;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            color:
+                rgba(255,255,255,.56);
+
+            font-size: 9px;
+        }
+
+
+        .plan-row b {
+            color:
+                rgba(255,255,255,.88);
+        }
+
+
+        .plan-action {
+            width: 100%;
+            min-height: 44px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-top: 16px;
+
+            border-radius: 12px;
+
+            color: #33275f;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff2c2,
+                    #ffdda0
+                );
+
+            font-size: 10px;
+            font-weight: 950;
+
+            text-decoration: none;
+        }
+
+
+        @media (max-width: 1120px) {
+
+            .profile-hero,
+            .lower-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns:
+                    repeat(3, minmax(0,1fr));
+            }
+
+            .achievement-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0,1fr));
+            }
+
+        }
+
+
+        @media (max-width: 760px) {
+
+            .page {
+                padding:
+                    18px
+                    15px
+                    55px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .brand span {
+                display: none;
+            }
+
+            .top-actions {
+                display: grid;
+            }
+
+            .profile-hero {
+                padding: 23px;
+            }
+
+            .identity {
+                align-items: flex-start;
+            }
+
+            .avatar {
+                width: 86px;
+                height: 86px;
+
+                border-radius: 24px;
+
+                font-size: 35px;
+            }
+
+            .identity-copy h1 {
+                font-size: 38px;
+            }
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, minmax(0,1fr));
+            }
+
+            .section-head {
+                display: block;
+            }
+
+            .section-head p {
+                margin-top: 6px;
+
+                text-align: left;
+            }
+
+        }
+
+
+        @media (max-width: 520px) {
+
+            .identity {
+                display: block;
+            }
+
+            .identity-copy {
+                margin-top: 17px;
+            }
+
+            .achievement-grid,
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .level-top {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/midnight_royal_v2.css') }}">
+</head>
+
+
+<body class="lmx-page lmx-profile {% if session.get('user_id') %}lmx-authenticated{% endif %}">
+{% if session.get('user_id') %}
+    {% include 'app_sidebar.html' %}
+{% endif %}
+
+<div class="page">
+
+    <div class="container">
+
+
+        <header class="topbar">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="brand"
+            >
+
+                <div class="brand-icon">
+                    🧠
+                </div>
+
+                <div>
+                    <strong>
+                        LinguaMind
+                    </strong>
+
+                    <span>
+                        LEARNER PROFILE
+                    </span>
+                </div>
+
+            </a>
+
+
+            <div class="top-actions">
+
+                <a
+                    href="{{ url_for('analytics') }}"
+                    class="top-link"
+                >
+                    📈 Analytics
+                </a>
+
+                <a
+                    href="{{ url_for('settings') }}"
+                    class="top-link"
+                >
+                    ⚙ Settings
+                </a>
+
+                
+
+            </div>
+
+        </header>
+
+
+        <section class="profile-hero">
+
+
+            <div class="identity">
+
+                <div class="avatar">
+                    {{ user["full_name"][0]|upper }}
+                </div>
+
+
+                <div class="identity-copy">
+
+                    <small>
+                        ✦ LINGUAMIND LEARNER
+                    </small>
+
+                    <h1>
+                        {{ user["full_name"] }}
+                    </h1>
+
+                    <p>
+                        {{ user["email"] }}
+                    </p>
+
+
+                    <div class="identity-chips">
+
+                        <div class="identity-chip">
+                            Level
+                            {{ gamification.level }}
+                            •
+                            {{ gamification.title }}
+                        </div>
+
+                        <div class="identity-chip">
+                            🔥
+                            {{ gamification.streak }}
+                            day streak
+                        </div>
+
+                        <div class="identity-chip">
+                            🏆
+                            {{ unlocked_achievements }}
+                            / {{ achievements|length }}
+                            achievements
+                        </div>
+
+                        <div class="identity-chip plan">
+                            {% if subscription.is_pro %}
+                                👑
+                            {% else %}
+                                ◇
+                            {% endif %}
+
+                            {{ plan_label }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="level-card">
+
+                <div class="level-top">
+
+                    <div class="level-badge">
+                        LEVEL {{ gamification.level }}
+                    </div>
+
+                    <div class="level-title">
+                        {{ gamification.title }}
+                    </div>
+
+                </div>
+
+
+                <div class="level-xp">
+
+                    <strong>
+                        {{ gamification.total_xp }}
+                    </strong>
+
+                    <span>
+                        TOTAL XP
+                    </span>
+
+                </div>
+
+
+                <div class="xp-track">
+
+                    <div
+                        class="xp-fill"
+                        data-progress="{{ gamification.progress_percent }}"
+                    ></div>
+
+                </div>
+
+
+                <div class="xp-helper">
+
+                    <span>
+                        {{ gamification.current_level_xp }}
+                        /
+                        {{ gamification.level_requirement }}
+                        XP this level
+                    </span>
+
+                    <span>
+                        Next: Level
+                        {{ gamification.level + 1 }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="stats">
+
+            <article class="stat">
+                <div class="stat-icon">📚</div>
+                <strong>
+                    {{ total_words }}
+                </strong>
+                <span>
+                    Total Words
+                </span>
+            </article>
+
+
+            <article class="stat">
+                <div class="stat-icon">🎓</div>
+                <strong>
+                    {{ mastered_words }}
+                </strong>
+                <span>
+                    Mastered Words
+                </span>
+            </article>
+
+
+            <article class="stat">
+                <div class="stat-icon">✓</div>
+                <strong>
+                    {{ quiz_attempts }}
+                </strong>
+                <span>
+                    Quizzes
+                </span>
+            </article>
+
+
+            <article class="stat">
+                <div class="stat-icon">⚡</div>
+                <strong>
+                    {{ quiz_best }}%
+                </strong>
+                <span>
+                    Best Quiz Score
+                </span>
+            </article>
+
+
+            <article class="stat">
+                <div class="stat-icon">🔥</div>
+                <strong>
+                    {{ gamification.streak }}
+                </strong>
+                <span>
+                    Day Streak
+                </span>
+            </article>
+
+        </section>
+
+
+        <section class="section">
+
+            <div class="section-head">
+
+                <div>
+                    <small>
+                        ACHIEVEMENT VAULT
+                    </small>
+
+                    <h2>
+                        Your badges & milestones
+                    </h2>
+                </div>
+
+                <p>
+                    Every badge is connected to real learning actions
+                    inside LinguaMind.
+                </p>
+
+            </div>
+
+
+            <div class="achievement-grid">
+
+                {% for achievement in achievements %}
+
+                    <article
+                        class="achievement
+                        {% if achievement.unlocked %}
+                            unlocked
+                        {% else %}
+                            locked
+                        {% endif %}"
+                    >
+
+                        <div class="achievement-top">
+
+                            <div class="achievement-icon">
+                                {{ achievement.icon }}
+                            </div>
+
+                            <div class="achievement-state">
+                                {% if achievement.unlocked %}
+                                    UNLOCKED
+                                {% else %}
+                                    LOCKED
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+
+                        <h3>
+                            {{ achievement.title }}
+                        </h3>
+
+                        <p>
+                            {{ achievement.detail }}
+                        </p>
+
+
+                        <div class="achievement-progress">
+
+                            <div class="achievement-progress-row">
+
+                                <span>
+                                    Progress
+                                </span>
+
+                                <b>
+                                    {{ achievement.current }}
+                                    /
+                                    {{ achievement.target }}
+
+                                    {% if achievement.unit == "%" %}
+                                        %
+                                    {% else %}
+                                        {{ achievement.unit }}
+                                    {% endif %}
+                                </b>
+
+                            </div>
+
+
+                            <div class="achievement-track">
+
+                                <div
+                                    class="achievement-fill"
+                                    data-progress="{{ achievement.progress_percent }}"
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+
+        <div class="lower-grid">
+
+
+            <article class="panel">
+
+                <div class="panel-head">
+
+                    <div>
+                        <small>
+                            NEXT MILESTONE
+                        </small>
+
+                        <h2>
+                            Your next achievement
+                        </h2>
+                    </div>
+
+                    <span>
+                        {{ unlocked_achievements }}
+                        unlocked
+                    </span>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    {% if next_achievement %}
+
+                        <div class="next-achievement">
+
+                            <div class="next-achievement-icon">
+                                {{ next_achievement.icon }}
+                            </div>
+
+                            <h3>
+                                {{ next_achievement.title }}
+                            </h3>
+
+                            <p>
+                                {{ next_achievement.detail }}
+                            </p>
+
+
+                            <div class="next-track">
+
+                                <div
+                                    class="next-fill"
+                                    data-progress="{{ next_achievement.progress_percent }}"
+                                ></div>
+
+                            </div>
+
+
+                            <div class="next-meta">
+
+                                <span>
+                                    {{ next_achievement.progress_percent }}%
+                                    complete
+                                </span>
+
+                                <span>
+                                    {{ next_achievement.current }}
+                                    /
+                                    {{ next_achievement.target }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="next-achievement">
+
+                            <div class="next-achievement-icon">
+                                👑
+                            </div>
+
+                            <h3>
+                                Achievement Vault complete
+                            </h3>
+
+                            <p>
+                                You have unlocked every current
+                                LinguaMind achievement.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="plan-card">
+
+                        <div class="plan-top">
+
+                            <strong>
+                                {% if subscription.is_pro %}
+                                    👑
+                                {% else %}
+                                    ◇
+                                {% endif %}
+
+                                {{ plan_label }}
+                            </strong>
+
+                            <div class="plan-badge">
+                                {{ subscription.status|upper }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="plan-price">
+                            {{ plan_price }}
+                        </div>
+
+
+                        <div class="plan-status">
+
+                            <div class="plan-row">
+                                <span>
+                                    Plan
+                                </span>
+                                <b>
+                                    {{ plan_label }}
+                                </b>
+                            </div>
+
+                            <div class="plan-row">
+                                <span>
+                                    Status
+                                </span>
+                                <b>
+                                    {{ subscription.status }}
+                                </b>
+                            </div>
+
+                            <div class="plan-row">
+                                <span>
+                                    Started
+                                </span>
+                                <b>
+                                    {{ subscription.started_at or "—" }}
+                                </b>
+                            </div>
+
+                            <div class="plan-row">
+                                <span>
+                                    Expires
+                                </span>
+                                <b>
+                                    {{ subscription.expires_at or "—" }}
+                                </b>
+                            </div>
+
+                        </div>
+
+
+                        <a
+                            href="{{ url_for('pricing') }}"
+                            class="plan-action"
+                        >
+                            {% if subscription.is_pro %}
+                                View Pro Plans
+                            {% else %}
+                                👑 Explore LinguaMind Pro
+                            {% endif %}
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <article class="panel">
+
+                <div class="panel-head">
+
+                    <div>
+                        <small>
+                            ACTIVITY
+                        </small>
+
+                        <h2>
+                            Weekly XP
+                        </h2>
+                    </div>
+
+                    <span>
+                        {{ weekly_xp_total }}
+                        XP
+                    </span>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div class="weekly-chart">
+
+                        {% for day in weekly_activity %}
+
+                            <div class="week-column">
+
+                                <div class="week-xp">
+                                    {{ day.xp }}
+                                </div>
+
+                                <div class="week-track">
+
+                                    <div
+                                        class="week-fill"
+                                        data-height="{{ day.height }}"
+                                    ></div>
+
+                                </div>
+
+                                <div class="week-label">
+                                    {{ day.label }}
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            document
+                .querySelectorAll(
+                    "[data-progress]"
+                )
+                .forEach(
+                    function(element) {
+
+                        const value =
+                            Number(
+                                element.dataset.progress
+                            );
+
+                        const safeValue =
+                            Math.max(
+                                0,
+                                Math.min(
+                                    100,
+                                    Number.isFinite(value)
+                                        ? value
+                                        : 0
+                                )
+                            );
+
+                        element.style.width =
+                            safeValue
+                            +
+                            "%";
+                    }
+                );
+
+
+            document
+                .querySelectorAll(
+                    ".week-fill[data-height]"
+                )
+                .forEach(
+                    function(element) {
+
+                        const value =
+                            Number(
+                                element.dataset.height
+                            );
+
+                        const safeValue =
+                            Math.max(
+                                8,
+                                Math.min(
+                                    100,
+                                    Number.isFinite(value)
+                                        ? value
+                                        : 8
+                                )
+                            );
+
+                        element.style.height =
+                            safeValue
+                            +
+                            "%";
+                    }
+                );
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

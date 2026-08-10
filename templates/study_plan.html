@@ -1,0 +1,4459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AI Study Coach — LinguaMind</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        :root {
+            --ink: #17162f;
+            --ink-2: #34334e;
+            --muted: #7f849c;
+
+            --violet: #7257f0;
+            --violet-2: #8c67ff;
+            --violet-3: #bd6dff;
+            --violet-soft: #f0ebff;
+
+            --blue: #4d82ff;
+            --cyan: #55d8ff;
+
+            --green: #1fa76a;
+            --green-soft: #e9faf1;
+
+            --amber: #f0a33e;
+            --red: #df5369;
+
+            --line: rgba(104, 83, 214, .15);
+
+            --glass:
+                rgba(255, 255, 255, .78);
+
+            --glass-strong:
+                rgba(255, 255, 255, .91);
+        }
+
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+
+        body {
+            overflow: hidden;
+
+            color: var(--ink);
+
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 5% 4%,
+                    rgba(101, 72, 236, .40),
+                    transparent 27%
+                ),
+                radial-gradient(
+                    circle at 93% 5%,
+                    rgba(193, 91, 255, .31),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 75% 98%,
+                    rgba(61, 123, 255, .23),
+                    transparent 32%
+                ),
+                radial-gradient(
+                    circle at 16% 84%,
+                    rgba(97, 209, 255, .14),
+                    transparent 27%
+                ),
+                linear-gradient(
+                    135deg,
+                    #e6e2ff 0%,
+                    #f8f6ff 38%,
+                    #edf3ff 70%,
+                    #f4ebff 100%
+                );
+        }
+
+
+        body::before {
+            content: "";
+
+            position: fixed;
+            inset: 0;
+
+            pointer-events: none;
+
+            opacity: .38;
+
+            background:
+                linear-gradient(
+                    rgba(255,255,255,.26) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,.23) 1px,
+                    transparent 1px
+                );
+
+            background-size:
+                44px
+                44px;
+
+            mask-image:
+                linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,.44),
+                    transparent 82%
+                );
+        }
+
+
+        body::after {
+            content: "";
+
+            position: fixed;
+
+            width: 600px;
+            height: 600px;
+
+            right: -210px;
+            top: 170px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(183, 93, 255, .18);
+
+            filter:
+                blur(105px);
+
+            pointer-events: none;
+        }
+
+
+        button,
+        input,
+        select,
+        textarea,
+        a {
+            font-family: inherit;
+        }
+
+
+        button {
+            cursor: pointer;
+        }
+
+
+        .coach-page {
+            position: relative;
+            z-index: 1;
+
+            width: 100%;
+            height: 100vh;
+
+            display: grid;
+            grid-template-rows:
+                auto
+                minmax(0, 1fr);
+
+            gap: 15px;
+
+            padding:
+                16px
+                22px
+                20px;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           TOPBAR
+        ===================================================== */
+
+        .coach-topbar {
+            position: relative;
+            z-index: 20;
+
+            width: 100%;
+            max-width: 1620px;
+            min-height: 100px;
+
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 22px;
+
+            padding:
+                16px
+                20px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(108, 84, 231, .19);
+
+            border-radius: 27px;
+
+            background:
+                radial-gradient(
+                    circle at 80% 18%,
+                    rgba(151, 91, 255, .18),
+                    transparent 31%
+                ),
+                linear-gradient(
+                    135deg,
+                    rgba(255,255,255,.94),
+                    rgba(244,240,255,.89)
+                );
+
+            backdrop-filter:
+                blur(28px)
+                saturate(150%);
+
+            -webkit-backdrop-filter:
+                blur(28px)
+                saturate(150%);
+
+            box-shadow:
+                0 24px 65px
+                rgba(62, 48, 137, .17),
+                inset 0 1px 0
+                rgba(255,255,255,.90);
+        }
+
+
+        .coach-topbar::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: 25px;
+            right: 25px;
+
+            height: 4px;
+
+            border-radius:
+                0 0 24px 24px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    #5843df 13%,
+                    #7954ef 42%,
+                    #a65eff 69%,
+                    #55b8ff 88%,
+                    transparent
+                );
+
+            box-shadow:
+                0 4px 18px
+                rgba(112, 82, 239, .34);
+        }
+
+
+        .coach-topbar::after {
+            content: "";
+
+            position: absolute;
+
+            width: 310px;
+            height: 310px;
+
+            right: 135px;
+            top: -215px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(145, 86, 255, .14);
+
+            filter:
+                blur(24px);
+
+            pointer-events: none;
+        }
+
+
+        .coach-brand {
+            position: relative;
+            z-index: 2;
+
+            min-width: 0;
+
+            display: flex;
+            align-items: center;
+
+            gap: 15px;
+        }
+
+
+        .coach-logo {
+            position: relative;
+
+            width: 61px;
+            height: 61px;
+
+            flex-shrink: 0;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid
+                rgba(255,255,255,.58);
+
+            border-radius: 20px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f3bd5,
+                    #7253ed 52%,
+                    #9e68fa
+                );
+
+            box-shadow:
+                0 14px 32px
+                rgba(81, 61, 204, .36),
+                0 0 0 7px
+                rgba(115, 86, 235, .08);
+
+            font-size: 28px;
+        }
+
+
+        .coach-logo::after {
+            content: "";
+
+            position: absolute;
+
+            width: 9px;
+            height: 9px;
+
+            right: 3px;
+            bottom: 3px;
+
+            border:
+                2px solid
+                white;
+
+            border-radius: 50%;
+
+            background:
+                #22b978;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(34,185,120,.11);
+        }
+
+
+        .coach-brand-copy small {
+            display: block;
+
+            margin-bottom: 4px;
+
+            color: #684fe4;
+
+            font-size: 11px;
+            font-weight: 950;
+
+            letter-spacing: 1.7px;
+        }
+
+
+        .coach-brand-copy h1 {
+            margin: 0;
+
+            color: #15162d;
+
+            font-size: 29px;
+            line-height: 1.12;
+
+            font-weight: 950;
+
+            letter-spacing: -.9px;
+        }
+
+
+        .coach-brand-copy p {
+            margin:
+                6px
+                0
+                0;
+
+            color: #777d98;
+
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+
+        .topbar-actions {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .adaptive-pill {
+            min-height: 44px;
+
+            display: inline-flex;
+            align-items: center;
+
+            gap: 8px;
+
+            padding:
+                0
+                14px;
+
+            border:
+                1px solid
+                rgba(32,165,102,.17);
+
+            border-radius: 14px;
+
+            color: #217c53;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(238,252,245,.97),
+                    rgba(225,249,237,.92)
+                );
+
+            box-shadow:
+                0 8px 22px
+                rgba(39,160,98,.08),
+                inset 0 1px 0
+                rgba(255,255,255,.9);
+
+            font-size: 12px;
+            font-weight: 900;
+
+            white-space: nowrap;
+        }
+
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+
+            border-radius: 50%;
+
+            background: var(--green);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(31,167,106,.12),
+                0 0 15px
+                rgba(31,167,106,.32);
+
+            animation:
+                pulse
+                2s
+                ease-in-out
+                infinite;
+        }
+
+
+        @keyframes pulse {
+            50% {
+                transform:
+                    scale(1.18);
+            }
+        }
+
+
+        .dashboard-button {
+            min-height: 47px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding:
+                0
+                18px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.26);
+
+            border-radius: 15px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5140da,
+                    #7356ec 54%,
+                    #9669f7
+                );
+
+            box-shadow:
+                0 13px 30px
+                rgba(89, 67, 217, .30),
+                inset 0 1px 0
+                rgba(255,255,255,.22);
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 900;
+
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease;
+        }
+
+
+        .dashboard-button:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 17px 36px
+                rgba(89, 67, 217, .38);
+        }
+
+
+        /* =====================================================
+           WORKSPACE
+        ===================================================== */
+
+        .coach-workspace {
+            width: 100%;
+            max-width: 1620px;
+            min-height: 0;
+
+            margin: 0 auto;
+
+            display: grid;
+            grid-template-columns:
+                430px
+                minmax(0, 1fr);
+
+            gap: 16px;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           BUILDER PANEL
+        ===================================================== */
+
+        .builder-panel {
+            min-height: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(94, 77, 190, .18);
+
+            border-radius: 26px;
+
+            background:
+                radial-gradient(
+                    circle at 15% 0%,
+                    rgba(119, 89, 239, .15),
+                    transparent 34%
+                ),
+                linear-gradient(
+                    160deg,
+                    rgba(255,255,255,.92),
+                    rgba(239,236,255,.88)
+                );
+
+            backdrop-filter:
+                blur(25px)
+                saturate(140%);
+
+            -webkit-backdrop-filter:
+                blur(25px)
+                saturate(140%);
+
+            box-shadow:
+                0 22px 58px
+                rgba(55, 45, 119, .15),
+                inset 0 1px 0
+                rgba(255,255,255,.91);
+        }
+
+
+        .builder-head {
+            position: relative;
+
+            flex-shrink: 0;
+
+            padding:
+                20px
+                19px
+                17px;
+
+            border-bottom:
+                1px solid
+                rgba(90, 77, 157, .10);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(253,252,255,.96),
+                    rgba(235,230,255,.91)
+                );
+        }
+
+
+        .builder-head::after {
+            content: "";
+
+            position: absolute;
+
+            left: 19px;
+            bottom: -1px;
+
+            width: 64px;
+            height: 3px;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #604be5,
+                    #9a67f7
+                );
+        }
+
+
+        .builder-kicker {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #6750e6;
+
+            font-size: 11px;
+            font-weight: 950;
+
+            letter-spacing: 1.4px;
+        }
+
+
+        .builder-head h2 {
+            margin: 0;
+
+            color: #1d1e39;
+
+            font-size: 21px;
+            font-weight: 950;
+
+            letter-spacing: -.45px;
+        }
+
+
+        .builder-head p {
+            margin:
+                7px
+                0
+                0;
+
+            color: #80869b;
+
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+
+        .builder-scroll {
+            flex: 1;
+            min-height: 0;
+
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            padding: 16px;
+        }
+
+
+        .builder-scroll::-webkit-scrollbar {
+            width: 7px;
+        }
+
+
+        .builder-scroll::-webkit-scrollbar-thumb {
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #c5baef,
+                    #8e7be8
+                );
+        }
+
+
+        .builder-section {
+            margin-bottom: 18px;
+        }
+
+
+        .field-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            margin-bottom: 9px;
+
+            color: #3a3c55;
+
+            font-size: 11px;
+            font-weight: 950;
+
+            letter-spacing: .55px;
+        }
+
+
+        .field-label span {
+            color: #999daf;
+
+            font-size: 9px;
+            font-weight: 750;
+
+            letter-spacing: 0;
+        }
+
+
+        /* PLAN LENGTH */
+
+        .period-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 7px;
+        }
+
+
+        .period-button {
+            min-height: 48px;
+
+            border:
+                1px solid
+                rgba(84,78,128,.13);
+
+            border-radius: 13px;
+
+            color: #696d83;
+
+            background:
+                rgba(255,255,255,.85);
+
+            font-size: 10px;
+            font-weight: 900;
+
+            transition: .18s ease;
+        }
+
+
+        .period-button:hover {
+            transform:
+                translateY(-1px);
+
+            border-color:
+                rgba(104,79,231,.24);
+        }
+
+
+        .period-button.active {
+            color: #6048de;
+
+            border-color:
+                rgba(104,79,231,.31);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e9e3ff,
+                    #f7f4ff
+                );
+
+            box-shadow:
+                0 8px 18px
+                rgba(88,66,215,.10),
+                inset 0 0 0 1px
+                rgba(104,79,231,.05);
+        }
+
+
+        /* GOAL CARDS */
+
+        .goal-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 8px;
+        }
+
+
+        .goal-card {
+            position: relative;
+
+            min-height: 94px;
+
+            display: flex;
+            align-items: flex-start;
+
+            gap: 10px;
+
+            padding: 11px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(84,78,128,.12);
+
+            border-radius: 15px;
+
+            color: var(--ink);
+
+            background:
+                radial-gradient(
+                    circle at 90% 8%,
+                    rgba(109,82,232,.06),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.91),
+                    rgba(247,245,255,.87)
+                );
+
+            text-align: left;
+
+            box-shadow:
+                0 6px 16px
+                rgba(58,53,101,.035);
+
+            transition:
+                transform .18s ease,
+                border-color .18s ease,
+                box-shadow .18s ease,
+                background .18s ease;
+        }
+
+
+        .goal-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 72px;
+            height: 72px;
+
+            right: -31px;
+            bottom: -34px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(107,80,231,.055);
+        }
+
+
+        .goal-card:hover {
+            transform:
+                translateY(-2px);
+
+            border-color:
+                rgba(104,79,231,.23);
+
+            box-shadow:
+                0 11px 24px
+                rgba(75,58,159,.08);
+        }
+
+
+        .goal-card.active {
+            border-color:
+                rgba(104,79,231,.46);
+
+            background:
+                radial-gradient(
+                    circle at 90% 8%,
+                    rgba(120,95,236,.15),
+                    transparent 36%
+                ),
+                linear-gradient(
+                    145deg,
+                    #eae5ff,
+                    #faf8ff
+                );
+
+            box-shadow:
+                0 12px 28px
+                rgba(81,62,186,.13),
+                inset 0 0 0 1px
+                rgba(104,79,231,.10);
+        }
+
+
+        .goal-card.hot {
+            border-color:
+                rgba(78, 118, 255, .17);
+
+            background:
+                radial-gradient(
+                    circle at 88% 10%,
+                    rgba(77,130,255,.11),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.93),
+                    rgba(241,246,255,.90)
+                );
+        }
+
+
+        .goal-card.hot.active {
+            border-color:
+                rgba(77,130,255,.46);
+
+            background:
+                radial-gradient(
+                    circle at 88% 10%,
+                    rgba(77,130,255,.19),
+                    transparent 35%
+                ),
+                linear-gradient(
+                    145deg,
+                    #e8efff,
+                    #f8faff
+                );
+        }
+
+
+        .goal-icon {
+            width: 38px;
+            height: 38px;
+
+            flex-shrink: 0;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid
+                rgba(104,79,231,.10);
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #ebe6ff,
+                    #f8f6ff
+                );
+
+            font-size: 18px;
+        }
+
+
+        .goal-card.hot
+        .goal-icon {
+            background:
+                linear-gradient(
+                    135deg,
+                    #e7efff,
+                    #f7faff
+                );
+        }
+
+
+        .goal-copy {
+            position: relative;
+            z-index: 2;
+
+            min-width: 0;
+        }
+
+
+        .goal-copy strong {
+            display: block;
+
+            color: #272940;
+
+            font-size: 11px;
+            line-height: 1.25;
+
+            font-weight: 950;
+        }
+
+
+        .goal-copy small {
+            display: block;
+
+            margin-top: 4px;
+
+            color: #8b90a5;
+
+            font-size: 8px;
+            line-height: 1.45;
+
+            font-weight: 650;
+        }
+
+
+        .goal-badge {
+            position: absolute;
+
+            top: 7px;
+            right: 7px;
+
+            z-index: 3;
+
+            padding:
+                3px
+                6px;
+
+            border-radius: 20px;
+
+            color: #426fd5;
+
+            background:
+                #eaf1ff;
+
+            font-size: 7px;
+            font-weight: 950;
+
+            letter-spacing: .45px;
+        }
+
+
+        .sat-math-feature {
+            grid-column:
+                1 / -1;
+
+            min-height: 102px;
+
+            border-color:
+                rgba(67, 113, 255, .38) !important;
+
+            background:
+                radial-gradient(
+                    circle at 88% 10%,
+                    rgba(81, 137, 255, .23),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at 8% 100%,
+                    rgba(94, 207, 255, .14),
+                    transparent 31%
+                ),
+                linear-gradient(
+                    145deg,
+                    #e9f1ff,
+                    #fbfdff
+                ) !important;
+
+            box-shadow:
+                0 14px 31px
+                rgba(61, 100, 210, .13),
+                inset 0 0 0 1px
+                rgba(76, 122, 255, .08);
+        }
+
+
+        .sat-math-feature::before {
+            content: "∑";
+
+            position: absolute;
+
+            right: 22px;
+            bottom: -29px;
+
+            color:
+                rgba(62, 113, 236, .06);
+
+            font-size: 105px;
+            font-weight: 950;
+        }
+
+
+        .sat-math-feature
+        .goal-icon {
+            color: #315dbf;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #dfeaff,
+                    #f4f8ff
+                );
+        }
+
+
+        .sat-math-feature
+        .goal-copy strong {
+            color: #244b9e;
+
+            font-size: 13px;
+        }
+
+
+        /* FORM */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 9px;
+        }
+
+
+        .field.full {
+            grid-column:
+                1 / -1;
+        }
+
+
+        .field label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #3b3d55;
+
+            font-size: 10px;
+            font-weight: 950;
+
+            letter-spacing: .45px;
+        }
+
+
+        .field select,
+        .field input,
+        .field textarea {
+            width: 100%;
+
+            outline: none;
+
+            border:
+                1px solid
+                rgba(84,78,128,.14);
+
+            border-radius: 12px;
+
+            color: #303247;
+
+            background:
+                rgba(255,255,255,.94);
+
+            font-size: 12px;
+            font-weight: 650;
+
+            transition: .18s ease;
+        }
+
+
+        .field select,
+        .field input {
+            height: 46px;
+
+            padding:
+                0
+                12px;
+        }
+
+
+        .field textarea {
+            min-height: 82px;
+            max-height: 150px;
+
+            padding: 12px;
+
+            resize: vertical;
+
+            line-height: 1.55;
+        }
+
+
+        .field select:focus,
+        .field input:focus,
+        .field textarea:focus {
+            border-color:
+                #7b67ec;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(104,79,231,.08);
+        }
+
+
+        /* EXAM MODE */
+
+        .exam-card {
+            padding: 13px;
+
+            border:
+                1px solid
+                rgba(240,163,62,.14);
+
+            border-radius: 15px;
+
+            background:
+                radial-gradient(
+                    circle at 95% 0%,
+                    rgba(240,163,62,.10),
+                    transparent 36%
+                ),
+                linear-gradient(
+                    135deg,
+                    rgba(255,251,239,.91),
+                    rgba(255,247,227,.77)
+                );
+        }
+
+
+        .exam-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 14px;
+        }
+
+
+        .exam-top strong {
+            display: block;
+
+            color: #3c3a33;
+
+            font-size: 12px;
+            font-weight: 950;
+        }
+
+
+        .exam-top p {
+            margin:
+                3px
+                0
+                0;
+
+            color: #8b806a;
+
+            font-size: 9px;
+            line-height: 1.45;
+        }
+
+
+        .switch {
+            position: relative;
+
+            width: 48px;
+            height: 28px;
+
+            flex-shrink: 0;
+
+            border: none;
+            border-radius: 20px;
+
+            background:
+                #dddfe8;
+
+            transition: .18s ease;
+        }
+
+
+        .switch::after {
+            content: "";
+
+            position: absolute;
+
+            width: 21px;
+            height: 21px;
+
+            left: 4px;
+            top: 3.5px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            box-shadow:
+                0 3px 8px
+                rgba(39,42,73,.16);
+
+            transition: .18s ease;
+        }
+
+
+        .switch.active {
+            background:
+                linear-gradient(
+                    135deg,
+                    #6550e5,
+                    #9268f6
+                );
+        }
+
+
+        .switch.active::after {
+            transform:
+                translateX(19px);
+        }
+
+
+        .exam-fields {
+            display: none;
+
+            margin-top: 12px;
+
+            padding-top: 12px;
+
+            border-top:
+                1px solid
+                rgba(160,124,48,.11);
+        }
+
+
+        .exam-fields.show {
+            display: block;
+        }
+
+
+        /* BUILDER FOOTER */
+
+        .builder-footer {
+            flex-shrink: 0;
+
+            padding: 14px;
+
+            border-top:
+                1px solid
+                rgba(90,77,157,.10);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(250,249,255,.90),
+                    rgba(239,236,255,.84)
+                );
+        }
+
+
+        .generate-button {
+            width: 100%;
+            min-height: 54px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 9px;
+
+            border: none;
+            border-radius: 14px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f3bd5,
+                    #6d50e8 52%,
+                    #9967f7
+                );
+
+            box-shadow:
+                0 14px 31px
+                rgba(82,61,205,.29),
+                inset 0 1px 0
+                rgba(255,255,255,.22);
+
+            font-size: 13px;
+            font-weight: 950;
+
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease;
+        }
+
+
+        .generate-button:hover {
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 18px 36px
+                rgba(82,61,205,.37);
+        }
+
+
+        .generate-button:disabled {
+            cursor: wait;
+
+            opacity: .70;
+
+            transform: none;
+        }
+
+
+        .generate-spinner {
+            width: 17px;
+            height: 17px;
+
+            display: none;
+
+            border:
+                2px solid
+                rgba(255,255,255,.36);
+
+            border-top-color:
+                white;
+
+            border-radius: 50%;
+
+            animation:
+                spin
+                .75s
+                linear
+                infinite;
+        }
+
+
+        @keyframes spin {
+            to {
+                transform:
+                    rotate(360deg);
+            }
+        }
+
+
+        .generate-note {
+            margin-top: 8px;
+
+            color: #969aad;
+
+            font-size: 9px;
+            line-height: 1.45;
+
+            text-align: center;
+        }
+
+
+        .planner-error {
+            display: none;
+
+            margin-bottom: 10px;
+
+            padding:
+                11px
+                12px;
+
+            border:
+                1px solid
+                rgba(223,83,105,.13);
+
+            border-radius: 11px;
+
+            color: #c64b64;
+
+            background:
+                #fff0f3;
+
+            font-size: 11px;
+            line-height: 1.5;
+
+            font-weight: 750;
+        }
+
+
+        /* =====================================================
+           PLAN STAGE
+        ===================================================== */
+
+        .plan-stage {
+            position: relative;
+
+            min-width: 0;
+            min-height: 0;
+
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            border:
+                1px solid
+                rgba(94, 77, 190, .18);
+
+            border-radius: 26px;
+
+            background:
+                radial-gradient(
+                    circle at 12% 12%,
+                    rgba(104, 80, 229, .10),
+                    transparent 29%
+                ),
+                radial-gradient(
+                    circle at 90% 72%,
+                    rgba(176, 96, 255, .08),
+                    transparent 29%
+                ),
+                linear-gradient(
+                    150deg,
+                    rgba(255,255,255,.94),
+                    rgba(243,240,255,.90)
+                );
+
+            backdrop-filter:
+                blur(24px)
+                saturate(140%);
+
+            -webkit-backdrop-filter:
+                blur(24px)
+                saturate(140%);
+
+            box-shadow:
+                0 23px 62px
+                rgba(52, 43, 116, .16),
+                inset 0 1px 0
+                rgba(255,255,255,.93);
+
+            scroll-behavior: smooth;
+        }
+
+
+        .plan-stage::-webkit-scrollbar {
+            width: 7px;
+        }
+
+
+        .plan-stage::-webkit-scrollbar-thumb {
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #c2b8ed,
+                    #8d7be8
+                );
+        }
+
+
+        .plan-stage::before {
+            content: "";
+
+            position: absolute;
+            z-index: 5;
+
+            top: 0;
+            left: 30px;
+            right: 30px;
+
+            height: 3px;
+
+            border-radius:
+                0 0 20px 20px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    #5b46e2,
+                    #855ef2,
+                    #be70ff,
+                    #57adff,
+                    transparent
+                );
+        }
+
+
+        /* EMPTY EXPERIENCE */
+
+        .empty-experience {
+            min-height: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 36px;
+        }
+
+
+        .empty-inner {
+            width: 100%;
+            max-width: 810px;
+
+            text-align: center;
+        }
+
+
+        .ai-orbit {
+            position: relative;
+
+            width: 155px;
+            height: 155px;
+
+            display: grid;
+            place-items: center;
+
+            margin:
+                0
+                auto
+                25px;
+
+            border:
+                1px solid
+                rgba(104,79,231,.15);
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(119,91,236,.09),
+                    transparent 65%
+                );
+        }
+
+
+        .ai-orbit::before {
+            content: "";
+
+            position: absolute;
+
+            width: 114px;
+            height: 114px;
+
+            border:
+                1px dashed
+                rgba(104,79,231,.24);
+
+            border-radius: 50%;
+
+            animation:
+                orbitRotate
+                13s
+                linear
+                infinite;
+        }
+
+
+        .ai-orbit::after {
+            content: "";
+
+            position: absolute;
+
+            width: 9px;
+            height: 9px;
+
+            top: 18px;
+            right: 30px;
+
+            border-radius: 50%;
+
+            background: #5a83ff;
+
+            box-shadow:
+                0 0 0 6px
+                rgba(90,131,255,.10),
+                0 0 18px
+                rgba(90,131,255,.32);
+        }
+
+
+        @keyframes orbitRotate {
+            to {
+                transform:
+                    rotate(360deg);
+            }
+        }
+
+
+        .ai-core {
+            width: 82px;
+            height: 82px;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid
+                rgba(255,255,255,.65);
+
+            border-radius: 25px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5541da,
+                    #7557ec 54%,
+                    #a16df8
+                );
+
+            box-shadow:
+                0 17px 35px
+                rgba(88,66,215,.28),
+                0 0 0 9px
+                rgba(104,79,231,.06);
+
+            font-size: 34px;
+        }
+
+
+        .empty-kicker {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 7px;
+
+            margin-bottom: 10px;
+
+            padding:
+                7px
+                11px;
+
+            border:
+                1px solid
+                rgba(104,79,231,.13);
+
+            border-radius: 20px;
+
+            color: #6550e3;
+
+            background:
+                #eee9ff;
+
+            font-size: 9px;
+            font-weight: 950;
+
+            letter-spacing: .7px;
+        }
+
+
+        .empty-inner h2 {
+            margin:
+                0
+                0
+                9px;
+
+            color: #1c1d37;
+
+            font-size: 28px;
+            font-weight: 950;
+
+            letter-spacing: -.7px;
+        }
+
+
+        .empty-inner > p {
+            max-width: 650px;
+
+            margin:
+                0
+                auto;
+
+            color: #80859b;
+
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+
+        .feature-ribbon {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 9px;
+
+            margin-top: 28px;
+        }
+
+
+        .feature-chip {
+            padding:
+                13px
+                10px;
+
+            border:
+                1px solid
+                rgba(83,77,126,.10);
+
+            border-radius: 14px;
+
+            color: #5f6277;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.89),
+                    rgba(247,245,255,.86)
+                );
+
+            font-size: 10px;
+            line-height: 1.45;
+
+            font-weight: 800;
+        }
+
+
+        .feature-chip strong {
+            display: block;
+
+            margin-bottom: 3px;
+
+            color: #2d2f47;
+
+            font-size: 11px;
+        }
+
+
+        .feature-chip.sat-math {
+            border-color:
+                rgba(77,130,255,.17);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    #edf3ff,
+                    #fafcff
+                );
+        }
+
+
+        /* ACTIVE PLAN */
+
+        .active-plan {
+            padding: 18px;
+        }
+
+
+        .plan-hero {
+            position: relative;
+
+            overflow: hidden;
+
+            padding: 22px;
+
+            border:
+                1px solid
+                rgba(104,79,231,.14);
+
+            border-radius: 21px;
+
+            color: white;
+
+            background:
+                radial-gradient(
+                    circle at 82% 24%,
+                    rgba(190,118,255,.30),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at 10% 100%,
+                    rgba(73,145,255,.18),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #4d3acb,
+                    #6950e2 52%,
+                    #8c5ef0
+                );
+
+            box-shadow:
+                0 16px 35px
+                rgba(70,53,176,.18);
+        }
+
+
+        .plan-hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 240px;
+            height: 240px;
+
+            right: -95px;
+            bottom: -140px;
+
+            border:
+                34px solid
+                rgba(255,255,255,.05);
+
+            border-radius: 50%;
+        }
+
+
+        .plan-hero-top {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 16px;
+        }
+
+
+        .plan-period {
+            display: inline-flex;
+            align-items: center;
+
+            gap: 6px;
+
+            margin-bottom: 9px;
+
+            padding:
+                6px
+                9px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.16);
+
+            border-radius: 20px;
+
+            background:
+                rgba(255,255,255,.09);
+
+            color:
+                rgba(255,255,255,.91);
+
+            font-size: 9px;
+            font-weight: 950;
+
+            letter-spacing: .7px;
+
+            text-transform: uppercase;
+        }
+
+
+        .plan-hero h2 {
+            max-width: 700px;
+
+            margin:
+                0
+                0
+                8px;
+
+            font-size: 25px;
+            line-height: 1.22;
+
+            font-weight: 950;
+
+            letter-spacing: -.6px;
+        }
+
+
+        .plan-hero p {
+            max-width: 790px;
+
+            margin: 0;
+
+            color:
+                rgba(255,255,255,.78);
+
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+
+        .exam-countdown {
+            position: relative;
+            z-index: 2;
+
+            min-width: 120px;
+
+            padding: 12px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.15);
+
+            border-radius: 14px;
+
+            background:
+                rgba(24,18,78,.17);
+
+            backdrop-filter:
+                blur(9px);
+
+            text-align: center;
+        }
+
+
+        .exam-countdown strong {
+            display: block;
+
+            font-size: 23px;
+            font-weight: 950;
+        }
+
+
+        .exam-countdown span {
+            display: block;
+
+            margin-top: 2px;
+
+            color:
+                rgba(255,255,255,.70);
+
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+
+        .coach-message {
+            position: relative;
+            z-index: 2;
+
+            margin-top: 14px;
+
+            padding: 12px;
+
+            border:
+                1px solid
+                rgba(255,255,255,.12);
+
+            border-radius: 13px;
+
+            color:
+                rgba(255,255,255,.87);
+
+            background:
+                rgba(255,255,255,.07);
+
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+
+        .progress-card {
+            display: grid;
+            grid-template-columns:
+                auto
+                1fr
+                auto;
+
+            align-items: center;
+
+            gap: 14px;
+
+            margin-top: 13px;
+
+            padding: 15px;
+
+            border:
+                1px solid
+                rgba(83,77,126,.10);
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.92),
+                    rgba(247,245,255,.88)
+                );
+        }
+
+
+        .progress-icon {
+            width: 43px;
+            height: 43px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 13px;
+
+            color: #644ce2;
+
+            background:
+                #ece7ff;
+
+            font-size: 19px;
+        }
+
+
+        .progress-copy strong {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #31334b;
+
+            font-size: 12px;
+            font-weight: 950;
+        }
+
+
+        .progress-track {
+            height: 8px;
+
+            overflow: hidden;
+
+            border-radius: 20px;
+
+            background:
+                #e9e8f0;
+        }
+
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+
+            border-radius: inherit;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #5944df,
+                    #8461f2,
+                    #b16bff
+                );
+
+            transition:
+                width
+                .35s ease;
+        }
+
+
+        .progress-percent {
+            color: #5f49df;
+
+            font-size: 19px;
+            font-weight: 950;
+        }
+
+
+        .section-title {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin:
+                18px
+                2px
+                10px;
+        }
+
+
+        .section-title small {
+            display: block;
+
+            margin-bottom: 3px;
+
+            color: #6750e5;
+
+            font-size: 10px;
+            font-weight: 950;
+
+            letter-spacing: 1.1px;
+        }
+
+
+        .section-title h3 {
+            margin: 0;
+
+            color: #25273f;
+
+            font-size: 18px;
+            font-weight: 950;
+        }
+
+
+        .section-title > span {
+            color: #9498ab;
+
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+
+        .milestone-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 9px;
+        }
+
+
+        .milestone-card {
+            min-height: 105px;
+
+            padding: 13px;
+
+            border:
+                1px solid
+                rgba(83,77,126,.10);
+
+            border-radius: 14px;
+
+            background:
+                radial-gradient(
+                    circle at 92% 7%,
+                    rgba(104,79,231,.08),
+                    transparent 34%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.91),
+                    rgba(247,245,255,.87)
+                );
+
+            box-shadow:
+                0 6px 16px
+                rgba(60,54,104,.035);
+        }
+
+
+        .milestone-card strong {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #5f49df;
+
+            font-size: 11px;
+            font-weight: 950;
+        }
+
+
+        .milestone-card p {
+            margin: 0;
+
+            color: #73778c;
+
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+
+        .tasks-list {
+            display: grid;
+
+            gap: 9px;
+        }
+
+
+        .task-card {
+            display: grid;
+            grid-template-columns:
+                auto
+                minmax(0, 1fr)
+                auto;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 13px;
+
+            border:
+                1px solid
+                rgba(83,77,126,.10);
+
+            border-radius: 15px;
+
+            background:
+                radial-gradient(
+                    circle at 94% 5%,
+                    rgba(104,79,231,.06),
+                    transparent 34%
+                ),
+                linear-gradient(
+                    145deg,
+                    rgba(255,255,255,.93),
+                    rgba(248,247,255,.89)
+                );
+
+            box-shadow:
+                0 7px 19px
+                rgba(60,54,104,.04);
+
+            transition:
+                opacity .18s ease,
+                transform .18s ease,
+                border-color .18s ease;
+        }
+
+
+        .task-card:hover {
+            transform:
+                translateY(-1px);
+
+            border-color:
+                rgba(104,79,231,.20);
+        }
+
+
+        .task-card.completed {
+            opacity: .64;
+        }
+
+
+        .task-card.completed
+        .task-title {
+            text-decoration:
+                line-through;
+        }
+
+
+        .task-check {
+            width: 36px;
+            height: 36px;
+
+            display: grid;
+            place-items: center;
+
+            border:
+                1px solid
+                rgba(104,79,231,.15);
+
+            border-radius: 11px;
+
+            color: #654ee4;
+
+            background:
+                #eee9ff;
+
+            font-size: 15px;
+            font-weight: 950;
+        }
+
+
+        .task-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+
+            gap: 6px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .task-badge {
+            padding:
+                5px
+                8px;
+
+            border-radius: 20px;
+
+            color: #5d48de;
+
+            background:
+                #ece7ff;
+
+            font-size: 9px;
+            font-weight: 950;
+
+            text-transform: capitalize;
+        }
+
+
+        .task-badge.sat-math {
+            color: #416bc9;
+
+            background: #eaf1ff;
+        }
+
+
+        .task-badge.speaking {
+            color: #188258;
+
+            background: #e8f9f0;
+        }
+
+
+        .task-date {
+            color: #989caf;
+
+            font-size: 9px;
+            font-weight: 750;
+        }
+
+
+        .task-title {
+            margin: 0;
+
+            color: #292b43;
+
+            font-size: 13px;
+            font-weight: 950;
+        }
+
+
+        .task-description {
+            max-width: 780px;
+
+            margin:
+                5px
+                0
+                0;
+
+            color: #7a7e93;
+
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+
+        .task-actions {
+            display: flex;
+            align-items: center;
+
+            gap: 7px;
+        }
+
+
+        .start-task,
+        .done-button {
+            min-height: 38px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            padding:
+                0
+                11px;
+
+            border-radius: 10px;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            text-decoration: none;
+
+            white-space: nowrap;
+
+            transition: .18s ease;
+        }
+
+
+        .start-task {
+            border: none;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #5541da,
+                    #7557ec
+                );
+
+            box-shadow:
+                0 8px 17px
+                rgba(88,66,215,.18);
+        }
+
+
+        .start-task:hover {
+            transform:
+                translateY(-1px);
+        }
+
+
+        .done-button {
+            border:
+                1px solid
+                rgba(83,77,126,.11);
+
+            color: #65697e;
+
+            background:
+                rgba(255,255,255,.90);
+        }
+
+
+        .plan-footnote {
+            margin-top: 11px;
+
+            padding:
+                12px;
+
+            border:
+                1px solid
+                rgba(104,79,231,.09);
+
+            border-radius: 12px;
+
+            color: #8a8ea2;
+
+            background:
+                rgba(246,244,255,.65);
+
+            font-size: 10px;
+            line-height: 1.55;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1120px) {
+
+            .coach-workspace {
+                grid-template-columns:
+                    370px
+                    minmax(0, 1fr);
+            }
+
+
+            .feature-ribbon {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .milestone-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 880px) {
+
+            html,
+            body {
+                height: auto;
+                min-height: 100%;
+
+                overflow-y: auto;
+            }
+
+
+            .coach-page {
+                height: auto;
+                min-height: 100vh;
+
+                display: block;
+
+                padding: 12px;
+
+                overflow: visible;
+            }
+
+
+            .coach-topbar {
+                margin-bottom: 12px;
+            }
+
+
+            .coach-workspace {
+                display: block;
+
+                overflow: visible;
+            }
+
+
+            .builder-panel {
+                height: auto;
+
+                margin-bottom: 12px;
+            }
+
+
+            .builder-scroll {
+                max-height: none;
+
+                overflow: visible;
+            }
+
+
+            .plan-stage {
+                overflow: visible;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .coach-topbar {
+                min-height: 82px;
+
+                align-items: flex-start;
+
+                padding: 12px 13px;
+
+                border-radius: 20px;
+            }
+
+
+            .coach-logo {
+                width: 49px;
+                height: 49px;
+
+                border-radius: 15px;
+
+                font-size: 23px;
+            }
+
+
+            .coach-brand-copy h1 {
+                font-size: 22px;
+            }
+
+
+            .coach-brand-copy p,
+            .adaptive-pill {
+                display: none;
+            }
+
+
+            .dashboard-button {
+                min-height: 42px;
+
+                padding:
+                    0
+                    12px;
+            }
+
+
+            .period-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .goal-grid,
+            .form-grid,
+            .feature-ribbon,
+            .milestone-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .task-card {
+                grid-template-columns:
+                    auto
+                    1fr;
+            }
+
+
+            .task-actions {
+                grid-column:
+                    1 / -1;
+
+                padding-left: 48px;
+            }
+
+
+            .plan-hero-top {
+                display: block;
+            }
+
+
+            .exam-countdown {
+                width: fit-content;
+
+                margin-top: 13px;
+            }
+
+        }
+
+    </style>
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/midnight_royal_v2.css') }}">
+</head>
+
+
+<body class="lmx-page lmx-study-plan {% if session.get('user_id') %}lmx-authenticated{% endif %}">
+{% if session.get('user_id') %}
+    {% include 'app_sidebar.html' %}
+{% endif %}
+
+
+{% set saved_goal = profile['main_goal'] if profile else 'general_english' %}
+{% set saved_level = profile['current_level'] if profile else 'not_sure' %}
+{% set saved_minutes = profile['daily_minutes'] if profile else 60 %}
+{% set saved_days = profile['days_per_week'] if profile else 6 %}
+{% set saved_has_exam = profile['has_exam'] if profile else 0 %}
+{% set saved_exam_type = profile['exam_type'] if profile and profile['exam_type'] else '' %}
+{% set saved_exam_date = profile['exam_date'] if profile and profile['exam_date'] else '' %}
+{% set saved_target = profile['target_score'] if profile and profile['target_score'] else '' %}
+{% set saved_weak = profile['weak_areas'] if profile and profile['weak_areas'] else '' %}
+{% set saved_period = active_plan['period_type'] if active_plan else 'weekly' %}
+
+
+<div
+    class="coach-page"
+    id="coachPage"
+    data-saved-goal="{{ saved_goal }}"
+    data-saved-period="{{ saved_period }}"
+    data-saved-has-exam="{{ saved_has_exam }}"
+>
+
+
+    <!-- =========================================
+         TOPBAR
+    ========================================== -->
+
+    <header class="coach-topbar">
+
+
+        <div class="coach-brand">
+
+            <div class="coach-logo">
+                ◷
+            </div>
+
+
+            <div class="coach-brand-copy">
+
+                <small>
+                    LINGUAMIND AI COACH
+                </small>
+
+                <h1>
+                    AI Study Coach
+                </h1>
+
+                <p>
+                    Gemini builds the strategy. LinguaMind helps you execute it.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-actions">
+
+            <div class="adaptive-pill">
+                <span class="online-dot"></span>
+                ∑ SAT Math + English Ready
+            </div>
+
+            
+
+        </div>
+
+
+    </header>
+
+
+    <!-- =========================================
+         WORKSPACE
+    ========================================== -->
+
+    <main class="coach-workspace">
+
+
+        <!-- =========================================
+             BUILDER
+        ========================================== -->
+
+        <aside class="builder-panel">
+
+
+            <div class="builder-head">
+
+                <span class="builder-kicker">
+                    YOUR GOAL + YOUR REAL TIME
+                </span>
+
+                <h2>
+                    Build my personal plan
+                </h2>
+
+                <p>
+                    Choose what matters. Gemini will keep the workload inside the time you actually have.
+                </p>
+
+            </div>
+
+
+            <div class="builder-scroll">
+
+
+                <!-- PLAN LENGTH -->
+
+                <section class="builder-section">
+
+                    <div class="field-label">
+                        PLAN LENGTH
+                        <span>roadmap depth</span>
+                    </div>
+
+
+                    <div class="period-grid">
+
+                        <button
+                            type="button"
+                            class="period-button"
+                            data-period="daily"
+                        >
+                            Today
+                        </button>
+
+                        <button
+                            type="button"
+                            class="period-button"
+                            data-period="weekly"
+                        >
+                            7 Days
+                        </button>
+
+                        <button
+                            type="button"
+                            class="period-button"
+                            data-period="monthly"
+                        >
+                            Monthly
+                        </button>
+
+                        <button
+                            type="button"
+                            class="period-button"
+                            data-period="yearly"
+                        >
+                            Yearly
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <!-- MAIN GOAL -->
+
+                <section class="builder-section">
+
+                    <div class="field-label">
+                        EXAM & LEARNING TRACK
+                        <span>SAT Math is fully available</span>
+                    </div>
+
+
+                    <div class="goal-grid">
+
+
+                        <button
+                            type="button"
+                            class="goal-card hot sat-math-feature"
+                            data-goal="sat_math"
+                        >
+
+                            <span class="goal-badge">
+                                SAT MATH
+                            </span>
+
+                            <span class="goal-icon">
+                                ∑
+                            </span>
+
+                            <span class="goal-copy">
+                                <strong>SAT Math</strong>
+                                <small>Algebra, Advanced Math, Data Analysis, Geometry & Trigonometry.</small>
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="goal-card hot"
+                            data-goal="sat_full"
+                        >
+
+                            <span class="goal-badge">
+                                FULL SAT
+                            </span>
+
+                            <span class="goal-icon">
+                                🚀
+                            </span>
+
+                            <span class="goal-copy">
+                                <strong>Full SAT</strong>
+                                <small>Balanced SAT Reading & Writing plus SAT Math.</small>
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="goal-card hot"
+                            data-goal="sat_english"
+                        >
+
+                            <span class="goal-icon">
+                                📖
+                            </span>
+
+                            <span class="goal-copy">
+                                <strong>SAT Reading & Writing</strong>
+                                <small>Digital SAT English, conventions, transitions and reasoning.</small>
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="goal-card"
+                            data-goal="ielts"
+                        >
+
+                            <span class="goal-icon">
+                                🎯
+                            </span>
+
+                            <span class="goal-copy">
+                                <strong>IELTS</strong>
+                                <small>Reading, Listening, Writing and Speaking.</small>
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="goal-card"
+                            data-goal="general_english"
+                        >
+
+                            <span class="goal-icon">
+                                🌍
+                            </span>
+
+                            <span class="goal-copy">
+                                <strong>General English</strong>
+                                <small>Balanced everyday English growth.</small>
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="goal-card"
+                            data-goal="speaking"
+                        >
+
+                            <span class="goal-icon">
+                                🎙️
+                            </span>
+
+                            <span class="goal-copy">
+                                <strong>Speaking</strong>
+                                <small>Active conversation, fluency and useful correction.</small>
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="goal-card"
+                            data-goal="vocabulary"
+                        >
+
+                            <span class="goal-icon">
+                                📚
+                            </span>
+
+                            <span class="goal-copy">
+                                <strong>Vocabulary</strong>
+                                <small>Useful words, phrases, collocations and review.</small>
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="goal-card"
+                            data-goal="grammar"
+                        >
+
+                            <span class="goal-icon">
+                                ✍️
+                            </span>
+
+                            <span class="goal-copy">
+                                <strong>Grammar</strong>
+                                <small>Practical grammar with guided exercises and quizzes.</small>
+                            </span>
+
+                        </button>
+
+
+                    </div>
+
+                </section>
+
+
+                <!-- STUDY SETTINGS -->
+
+                <section class="builder-section">
+
+                    <div class="field-label">
+                        STUDY SETTINGS
+                        <span>keep it realistic</span>
+                    </div>
+
+
+                    <div class="form-grid">
+
+
+                        <div class="field">
+
+                            <label for="currentLevel">
+                                CURRENT LEVEL
+                            </label>
+
+                            <select id="currentLevel">
+
+                                <option
+                                    value="not_sure"
+                                    {% if saved_level == 'not_sure' %}selected{% endif %}
+                                >
+                                    Not sure
+                                </option>
+
+                                <option
+                                    value="A1"
+                                    {% if saved_level == 'A1' %}selected{% endif %}
+                                >
+                                    A1
+                                </option>
+
+                                <option
+                                    value="A2"
+                                    {% if saved_level == 'A2' %}selected{% endif %}
+                                >
+                                    A2
+                                </option>
+
+                                <option
+                                    value="B1"
+                                    {% if saved_level == 'B1' %}selected{% endif %}
+                                >
+                                    B1
+                                </option>
+
+                                <option
+                                    value="B2"
+                                    {% if saved_level == 'B2' %}selected{% endif %}
+                                >
+                                    B2
+                                </option>
+
+                                <option
+                                    value="C1"
+                                    {% if saved_level == 'C1' %}selected{% endif %}
+                                >
+                                    C1
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="dailyMinutes">
+                                TIME / DAY
+                            </label>
+
+                            <select id="dailyMinutes">
+
+                                {% for minutes in [30, 45, 60, 90, 120, 180, 240] %}
+
+                                <option
+                                    value="{{ minutes }}"
+                                    {% if saved_minutes == minutes %}selected{% endif %}
+                                >
+                                    {% if minutes < 60 %}
+                                        {{ minutes }} min
+                                    {% elif minutes == 60 %}
+                                        1 hour
+                                    {% elif minutes == 90 %}
+                                        1.5 hours
+                                    {% elif minutes == 120 %}
+                                        2 hours
+                                    {% elif minutes == 180 %}
+                                        3 hours
+                                    {% else %}
+                                        4 hours
+                                    {% endif %}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field full">
+
+                            <label for="daysPerWeek">
+                                STUDY DAYS / WEEK
+                            </label>
+
+                            <select id="daysPerWeek">
+
+                                {% for days in [3, 4, 5, 6, 7] %}
+
+                                <option
+                                    value="{{ days }}"
+                                    {% if saved_days == days %}selected{% endif %}
+                                >
+                                    {{ days }} days
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
+                </section>
+
+
+                <!-- EXAM MODE -->
+
+                <section class="builder-section">
+
+                    <div class="exam-card">
+
+                        <div class="exam-top">
+
+                            <div>
+
+                                <strong>
+                                    Preparing for an exam?
+                                </strong>
+
+                                <p>
+                                    Add the date and Gemini will pace the plan toward that deadline.
+                                </p>
+
+                            </div>
+
+
+                            <button
+                                type="button"
+                                class="switch"
+                                id="examSwitch"
+                                aria-label="Toggle exam mode"
+                            ></button>
+
+                        </div>
+
+
+                        <div
+                            class="exam-fields"
+                            id="examFields"
+                        >
+
+                            <div class="form-grid">
+
+
+                                <div class="field">
+
+                                    <label for="examType">
+                                        EXAM
+                                    </label>
+
+                                    <select id="examType">
+
+                                        <option
+                                            value="SAT"
+                                            {% if saved_exam_type == 'SAT' %}selected{% endif %}
+                                        >
+                                            SAT
+                                        </option>
+
+                                        <option
+                                            value="IELTS"
+                                            {% if saved_exam_type == 'IELTS' %}selected{% endif %}
+                                        >
+                                            IELTS
+                                        </option>
+
+                                        <option
+                                            value="Other"
+                                            {% if saved_exam_type == 'Other' %}selected{% endif %}
+                                        >
+                                            Other
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+
+                                <div class="field">
+
+                                    <label for="examDate">
+                                        EXAM DATE
+                                    </label>
+
+                                    <input
+                                        type="date"
+                                        id="examDate"
+                                        min="{{ today_iso }}"
+                                        value="{{ saved_exam_date }}"
+                                    >
+
+                                </div>
+
+
+                                <div class="field full">
+
+                                    <label for="targetScore">
+                                        TARGET SCORE
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="targetScore"
+                                        value="{{ saved_target }}"
+                                        placeholder="Example: SAT 1450, IELTS 7.5"
+                                    >
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- WEAK AREAS -->
+
+                <section class="builder-section">
+
+                    <div class="field">
+
+                        <label for="weakAreas">
+                            WHAT FEELS DIFFICULT?
+                        </label>
+
+                        <textarea
+                            id="weakAreas"
+                            placeholder="Example: SAT algebra, main idea, vocabulary, IELTS speaking confidence..."
+                        >{{ saved_weak }}</textarea>
+
+                    </div>
+
+                </section>
+
+
+            </div>
+
+
+            <div class="builder-footer">
+
+                <div
+                    class="planner-error"
+                    id="plannerError"
+                ></div>
+
+
+                <button
+                    type="button"
+                    class="generate-button"
+                    id="generateButton"
+                >
+
+                    <span
+                        class="generate-spinner"
+                        id="generateSpinner"
+                    ></span>
+
+                    <span id="generateButtonText">
+                        ✦ Build with Gemini
+                    </span>
+
+                </button>
+
+
+                <div class="generate-note">
+                    Your plan uses your goal, available time, vocabulary progress, quiz performance and exam deadline.
+                </div>
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- =========================================
+             PLAN STAGE
+        ========================================== -->
+
+        <section
+            class="plan-stage"
+            id="planStage"
+        >
+
+
+            {% if not active_plan %}
+
+
+            <div class="empty-experience">
+
+                <div class="empty-inner">
+
+
+                    <div class="ai-orbit">
+
+                        <div class="ai-core">
+                            ✦
+                        </div>
+
+                    </div>
+
+
+                    <div class="empty-kicker">
+                        ✦ PERSONAL ADAPTIVE ROADMAP
+                    </div>
+
+
+                    <h2>
+                        Your AI coach is ready
+                    </h2>
+
+
+                    <p>
+                        Choose a goal and the time you can really give it.
+                        Gemini will create a practical plan that LinguaMind can follow with you —
+                        including SAT Math, SAT English, speaking, IELTS, vocabulary and grammar.
+                    </p>
+
+
+                    <div class="feature-ribbon">
+
+
+                        <div class="feature-chip sat-math">
+
+                            <strong>
+                                ∑ SAT Math
+                            </strong>
+
+                            Algebra, Advanced Math, Data Analysis and Geometry.
+
+                        </div>
+
+
+                        <div class="feature-chip">
+
+                            <strong>
+                                📖 SAT English
+                            </strong>
+
+                            Reading & Writing practice matched to your level.
+
+                        </div>
+
+
+                        <div class="feature-chip">
+
+                            <strong>
+                                🎙️ Speaking
+                            </strong>
+
+                            Guided AI Teacher conversation sessions.
+
+                        </div>
+
+
+                        <div class="feature-chip">
+
+                            <strong>
+                                🗓 Exam-aware
+                            </strong>
+
+                            Your deadline changes the pace and priorities.
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="active-plan">
+
+
+                <section class="plan-hero">
+
+
+                    <div class="plan-hero-top">
+
+                        <div>
+
+                            <div class="plan-period">
+                                ✦ {{ active_plan['period_type'] }} plan
+                            </div>
+
+                            <h2>
+                                {{ active_plan['title'] }}
+                            </h2>
+
+                            <p>
+                                {{ active_plan['summary'] }}
+                            </p>
+
+                        </div>
+
+
+                        {% if active_plan['exam_date'] %}
+
+                        <div class="exam-countdown">
+
+                            <strong>
+                                {% if exam_days_left is not none %}
+                                    {{ exam_days_left }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </strong>
+
+                            <span>
+                                DAYS TO EXAM
+                            </span>
+
+                        </div>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                    {% if active_plan['coach_message'] %}
+
+                    <div class="coach-message">
+                        ✦ {{ active_plan['coach_message'] }}
+                    </div>
+
+                    {% endif %}
+
+
+                </section>
+
+
+                <section class="progress-card">
+
+
+                    <div class="progress-icon">
+                        ◷
+                    </div>
+
+
+                    <div class="progress-copy">
+
+                        <strong>
+                            {{ completed_tasks }} of {{ total_tasks }} tasks completed
+                        </strong>
+
+                        <div class="progress-track">
+
+                            <div
+                                class="progress-fill"
+                                id="planProgressFill"
+                                data-progress="{{ plan_progress }}"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="progress-percent"
+                        id="progressPercent"
+                    >
+                        {{ plan_progress }}%
+                    </div>
+
+
+                </section>
+
+
+                {% if plan_data.get('milestones') %}
+
+                <div class="section-title">
+
+                    <div>
+
+                        <small>
+                            ROADMAP
+                        </small>
+
+                        <h3>
+                            Big-picture direction
+                        </h3>
+
+                    </div>
+
+                    <span>
+                        Gemini keeps the long plan simple and measurable
+                    </span>
+
+                </div>
+
+
+                <div class="milestone-grid">
+
+
+                    {% for milestone in plan_data.get('milestones', []) %}
+
+                    <div class="milestone-card">
+
+                        <strong>
+                            {{ milestone.get('label', 'Milestone') }}
+                        </strong>
+
+                        <p>
+                            {{ milestone.get('goal', '') }}
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+
+                </div>
+
+                {% endif %}
+
+
+                <div class="section-title">
+
+                    <div>
+
+                        <small>
+                            ACTION PLAN
+                        </small>
+
+                        <h3>
+                            What to do next
+                        </h3>
+
+                    </div>
+
+                    <span>
+                        Start a task and LinguaMind will guide the session
+                    </span>
+
+                </div>
+
+
+                <div class="tasks-list">
+
+
+                    {% for task in tasks %}
+
+
+                    <article
+                        id="task-{{ task['id'] }}"
+                        class="task-card {% if task['status'] == 'completed' %}completed{% endif %}"
+                    >
+
+
+                        <button
+                            type="button"
+                            class="task-check js-task-toggle"
+                            data-task-id="{{ task['id'] }}"
+                            title="Mark task complete"
+                        >
+                            {% if task['status'] == 'completed' %}
+                                ✓
+                            {% else %}
+                                ○
+                            {% endif %}
+                        </button>
+
+
+                        <div class="task-copy">
+
+
+                            <div class="task-meta">
+
+                                <span
+                                    class="task-badge {% if task['category'] == 'sat_math' %}sat-math{% elif task['category'] in ['speaking', 'ielts_speaking'] %}speaking{% endif %}"
+                                >
+                                    {{ task['category'].replace('_', ' ') }}
+                                </span>
+
+                                <span class="task-date">
+                                    {{ task['task_date'] }}
+                                    · {{ task['minutes'] }} min
+                                    · {{ task['difficulty'] }}
+                                </span>
+
+                            </div>
+
+
+                            <h4 class="task-title">
+                                {{ task['title'] }}
+                            </h4>
+
+
+                            <p class="task-description">
+                                {{ task['description'] or 'Open the task and let LinguaMind guide the session.' }}
+                            </p>
+
+
+                        </div>
+
+
+                        <div class="task-actions">
+
+
+                            <a
+                                href="{{ url_for('start_study_task', task_id=task['id']) }}"
+                                class="start-task"
+                            >
+                                Start Session →
+                            </a>
+
+
+                            <button
+                                type="button"
+                                class="done-button js-task-toggle"
+                                data-task-id="{{ task['id'] }}"
+                            >
+                                {% if task['status'] == 'completed' %}
+                                    Undo
+                                {% else %}
+                                    ✓ Done
+                                {% endif %}
+                            </button>
+
+
+                        </div>
+
+
+                    </article>
+
+
+                    {% else %}
+
+
+                    <div class="plan-footnote">
+                        No immediate tasks were created. Rebuild the plan and Gemini will create your next guided sessions.
+                    </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+                <div class="plan-footnote">
+                    Monthly and yearly plans intentionally keep the long roadmap in milestones and generate only the next actionable sessions.
+                    This prevents the plan from becoming overwhelming or outdated.
+                </div>
+
+
+            </div>
+
+
+            {% endif %}
+
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+<script>
+
+    const page =
+        document.getElementById(
+            "coachPage"
+        );
+
+
+    const periodButtons =
+        document.querySelectorAll(
+            ".period-button"
+        );
+
+
+    const goalCards =
+        document.querySelectorAll(
+            ".goal-card"
+        );
+
+
+    const examSwitch =
+        document.getElementById(
+            "examSwitch"
+        );
+
+
+    const examFields =
+        document.getElementById(
+            "examFields"
+        );
+
+
+    const generateButton =
+        document.getElementById(
+            "generateButton"
+        );
+
+
+    const generateSpinner =
+        document.getElementById(
+            "generateSpinner"
+        );
+
+
+    const generateButtonText =
+        document.getElementById(
+            "generateButtonText"
+        );
+
+
+    const plannerError =
+        document.getElementById(
+            "plannerError"
+        );
+
+
+    let selectedPeriod =
+        page.dataset.savedPeriod
+        ||
+        "weekly";
+
+
+    let selectedGoal =
+        page.dataset.savedGoal
+        ||
+        "general_english";
+
+
+    let hasExam =
+        page.dataset.savedHasExam
+        ===
+        "1";
+
+
+    /* =========================================
+       SELECT PERIOD
+    ========================================= */
+
+    function syncPeriodUI() {
+
+        periodButtons.forEach(
+            function(button) {
+
+                button.classList.toggle(
+                    "active",
+                    button.dataset.period
+                    ===
+                    selectedPeriod
+                );
+
+            }
+        );
+
+    }
+
+
+    periodButtons.forEach(
+        function(button) {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    selectedPeriod =
+                        this.dataset.period;
+
+
+                    syncPeriodUI();
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =========================================
+       SELECT GOAL
+    ========================================= */
+
+    function syncGoalUI() {
+
+        goalCards.forEach(
+            function(card) {
+
+                card.classList.toggle(
+                    "active",
+                    card.dataset.goal
+                    ===
+                    selectedGoal
+                );
+
+            }
+        );
+
+
+        syncExamTypeToGoal();
+
+    }
+
+
+    function syncExamTypeToGoal() {
+
+        if (
+            !hasExam
+        ) {
+
+            return;
+
+        }
+
+
+        const examType =
+            document.getElementById(
+                "examType"
+            );
+
+
+        if (
+            [
+                "sat",
+                "sat_full",
+                "sat_english",
+                "sat_math"
+            ].includes(
+                selectedGoal
+            )
+        ) {
+
+            examType.value =
+                "SAT";
+
+        } else if (
+            selectedGoal ===
+            "ielts"
+        ) {
+
+            examType.value =
+                "IELTS";
+
+        }
+
+    }
+
+
+    goalCards.forEach(
+        function(card) {
+
+            card.addEventListener(
+                "click",
+                function() {
+
+                    selectedGoal =
+                        this.dataset.goal;
+
+
+                    syncGoalUI();
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =========================================
+       EXAM
+    ========================================= */
+
+    function syncExamUI() {
+
+        examSwitch.classList.toggle(
+            "active",
+            hasExam
+        );
+
+
+        examFields.classList.toggle(
+            "show",
+            hasExam
+        );
+
+
+        syncExamTypeToGoal();
+
+    }
+
+
+    examSwitch.addEventListener(
+        "click",
+        function() {
+
+            hasExam =
+                !hasExam;
+
+
+            syncExamUI();
+
+        }
+    );
+
+
+    /* =========================================
+       GENERATE PLAN
+    ========================================= */
+
+    async function generatePlan() {
+
+        plannerError.style.display =
+            "none";
+
+
+        const examDate =
+            document
+                .getElementById(
+                    "examDate"
+                )
+                .value;
+
+
+        if (
+            hasExam
+            &&
+            !examDate
+        ) {
+
+            plannerError.textContent =
+                "Please choose your exam date.";
+
+
+            plannerError.style.display =
+                "block";
+
+
+            return;
+
+        }
+
+
+        const payload = {
+
+            period_type:
+                selectedPeriod,
+
+            main_goal:
+                selectedGoal,
+
+            current_level:
+                document
+                    .getElementById(
+                        "currentLevel"
+                    )
+                    .value,
+
+            daily_minutes:
+                Number(
+                    document
+                        .getElementById(
+                            "dailyMinutes"
+                        )
+                        .value
+                ),
+
+            days_per_week:
+                Number(
+                    document
+                        .getElementById(
+                            "daysPerWeek"
+                        )
+                        .value
+                ),
+
+            has_exam:
+                hasExam,
+
+            exam_type:
+                hasExam
+                ?
+                document
+                    .getElementById(
+                        "examType"
+                    )
+                    .value
+                :
+                "",
+
+            exam_date:
+                hasExam
+                ?
+                examDate
+                :
+                "",
+
+            target_score:
+                hasExam
+                ?
+                document
+                    .getElementById(
+                        "targetScore"
+                    )
+                    .value
+                :
+                "",
+
+            weak_areas:
+                document
+                    .getElementById(
+                        "weakAreas"
+                    )
+                    .value
+
+        };
+
+
+        generateButton.disabled =
+            true;
+
+
+        generateSpinner.style.display =
+            "block";
+
+
+        generateButtonText.textContent =
+            "Gemini is building your plan...";
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/study_plan/generate",
+                    {
+                        method:
+                            "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                payload
+                            )
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok
+                ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.error
+                    ||
+                    "Could not create the study plan."
+                );
+
+            }
+
+
+            window.location.href =
+                data.redirect
+                ||
+                "/study_plan";
+
+
+        } catch (error) {
+
+            plannerError.textContent =
+                error.message;
+
+
+            plannerError.style.display =
+                "block";
+
+
+        } finally {
+
+            generateButton.disabled =
+                false;
+
+
+            generateSpinner.style.display =
+                "none";
+
+
+            generateButtonText.textContent =
+                "✦ Build with Gemini";
+
+        }
+
+    }
+
+
+    generateButton.addEventListener(
+        "click",
+        generatePlan
+    );
+
+
+    /* =========================================
+       TASK TOGGLE
+    ========================================= */
+
+    async function toggleTask(
+        taskId,
+        sourceButton
+    ) {
+
+        sourceButton.disabled =
+            true;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/study_tasks/"
+                    +
+                    taskId
+                    +
+                    "/toggle",
+                    {
+                        method:
+                            "POST"
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok
+                ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.error
+                    ||
+                    "Could not update this task."
+                );
+
+            }
+
+
+            const card =
+                document.getElementById(
+                    "task-"
+                    +
+                    taskId
+                );
+
+
+            const taskButtons =
+                card
+                ?
+                card.querySelectorAll(
+                    ".js-task-toggle"
+                )
+                :
+                [];
+
+
+            const completed =
+                data.status
+                ===
+                "completed";
+
+
+            if (
+                card
+            ) {
+
+                card.classList.toggle(
+                    "completed",
+                    completed
+                );
+
+            }
+
+
+            taskButtons.forEach(
+                function(button) {
+
+                    if (
+                        button.classList.contains(
+                            "task-check"
+                        )
+                    ) {
+
+                        button.textContent =
+                            completed
+                            ?
+                            "✓"
+                            :
+                            "○";
+
+                    } else {
+
+                        button.textContent =
+                            completed
+                            ?
+                            "Undo"
+                            :
+                            "✓ Done";
+
+                    }
+
+                }
+            );
+
+
+            const progress =
+                document.getElementById(
+                    "planProgressFill"
+                );
+
+
+            const percent =
+                document.getElementById(
+                    "progressPercent"
+                );
+
+
+            if (
+                progress
+            ) {
+
+                progress.style.width =
+                    data.percentage
+                    +
+                    "%";
+
+            }
+
+
+            if (
+                percent
+            ) {
+
+                percent.textContent =
+                    data.percentage
+                    +
+                    "%";
+
+            }
+
+
+        } catch (error) {
+
+            alert(
+                error.message
+            );
+
+
+        } finally {
+
+            sourceButton.disabled =
+                false;
+
+        }
+
+    }
+
+
+    document
+        .querySelectorAll(
+            ".js-task-toggle"
+        )
+        .forEach(
+            function(button) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        const taskId =
+                            Number(
+                                this.dataset.taskId
+                            );
+
+
+                        if (
+                            Number.isFinite(
+                                taskId
+                            )
+                        ) {
+
+                            toggleTask(
+                                taskId,
+                                this
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =========================================
+       PROGRESS INIT
+    ========================================= */
+
+    const progressFill =
+        document.getElementById(
+            "planProgressFill"
+        );
+
+
+    if (
+        progressFill
+    ) {
+
+        const value =
+            Math.max(
+                0,
+                Math.min(
+                    100,
+                    Number(
+                        progressFill.dataset.progress
+                        ||
+                        0
+                    )
+                )
+            );
+
+
+        progressFill.style.width =
+            value
+            +
+            "%";
+
+    }
+
+
+    syncPeriodUI();
+    syncGoalUI();
+    syncExamUI();
+
+</script>
+
+
+</body>
+
+</html>

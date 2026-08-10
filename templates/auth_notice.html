@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinguaMind Notice</title>
+
+<style>
+*{box-sizing:border-box}:root{--bg:#040612;--text:#f7f4ff;--muted:#8791b3}
+html{background:var(--bg)}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:22px;color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 8% 4%,rgba(121,65,255,.20),transparent 24%),radial-gradient(circle at 92% 8%,rgba(64,111,255,.14),transparent 24%),radial-gradient(circle at 68% 92%,rgba(225,69,195,.07),transparent 27%),linear-gradient(145deg,#040612 0%,#07091b 47%,#080c23 100%)}
+body:before{content:"";position:fixed;inset:0;z-index:-1;opacity:.20;background-image:radial-gradient(rgba(255,255,255,.24) .55px,transparent .7px);background-size:28px 28px;mask-image:linear-gradient(to bottom,black,transparent 82%)}
+.pub-card{position:relative;width:min(650px,100%);overflow:hidden;padding:34px;border:1px solid rgba(145,91,255,.21);border-radius:28px;background:radial-gradient(circle at 90% 8%,rgba(255,83,191,.075),transparent 28%),linear-gradient(145deg,rgba(12,17,47,.98),rgba(7,11,32,.99));box-shadow:0 32px 82px rgba(0,0,0,.39),0 0 50px rgba(118,61,255,.07),inset 0 1px 0 rgba(255,255,255,.03);text-align:center}
+.pub-card:before{content:"";position:absolute;top:0;left:36px;right:36px;height:3px;border-radius:0 0 999px 999px;background:linear-gradient(90deg,transparent,#7a4cff 16%,#b45bff 48%,#ff5fc4 78%,transparent);box-shadow:0 0 19px rgba(173,84,255,.38)}
+.pub-logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px;color:#fff;text-decoration:none}.pub-logo i{width:43px;height:43px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,#7045e6,#9858ff 54%,#4c86ff);box-shadow:0 11px 25px rgba(98,55,219,.27);font-style:normal}.pub-logo strong{font-size:18px;font-weight:950;letter-spacing:-.5px}.pub-logo b{color:#a96dff}
+.pub-icon{width:74px;height:74px;margin:0 auto 18px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);border-radius:22px;color:#fff;background:linear-gradient(135deg,#673edc,#8950e8 54%,#4b69c9);box-shadow:0 16px 34px rgba(80,48,185,.24);font-size:30px}.error .pub-icon{background:linear-gradient(135deg,#a63264,#7a3cb5)}
+.eyebrow{color:#a778ff;font-size:9px;font-weight:950;letter-spacing:1.45px}.error .eyebrow{color:#ff89ae}
+.pub-card h1{margin:9px 0 11px;color:#fff;font-size:clamp(27px,5vw,38px);line-height:1.08;letter-spacing:-1.2px}.pub-card p{width:min(500px,100%);margin:0 auto;color:#8791b3;font-size:11px;line-height:1.7}
+.pub-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:9px;margin-top:25px}.pub-primary,.pub-secondary{min-height:45px;display:inline-flex;align-items:center;justify-content:center;padding:0 16px;border-radius:12px;font-size:9.5px;font-weight:920;text-decoration:none;transition:.18s ease}.pub-primary{color:#fff;border:1px solid rgba(169,115,255,.38);background:radial-gradient(circle at 90% 8%,rgba(255,205,107,.12),transparent 30%),linear-gradient(135deg,#5528bb,#7540db 54%,#4657bf);box-shadow:0 12px 27px rgba(79,38,180,.25)}.pub-secondary{color:#cfd5e8;border:1px solid rgba(118,95,196,.18);background:rgba(9,14,39,.93)}.pub-primary:hover,.pub-secondary:hover{transform:translateY(-2px)}.pub-secondary:hover{color:#fff;border-color:rgba(151,96,255,.34)}
+.error-number{margin:0;color:transparent;background:linear-gradient(90deg,#a36eff,#775fff 49%,#4b84ff);-webkit-background-clip:text;background-clip:text;font-size:clamp(92px,17vw,170px);line-height:.82;font-weight:1000;letter-spacing:-9px;filter:drop-shadow(0 0 28px rgba(122,82,255,.10))}
+</style>
+
+</head>
+<body>
+<section class="pub-card {{ notice_type or '' }}">
+<a href="{{ url_for('home') }}" class="pub-logo"><i>🧠</i><strong>Lingua<b>Mind</b></strong></a>
+<div class="pub-icon">{% if notice_type == 'error' %}!{% else %}✓{% endif %}</div>
+<div class="eyebrow">{{ eyebrow }}</div>
+<h1>{{ title }}</h1>
+<p>{{ message }}</p>
+<div class="pub-actions">
+{% if primary_url and primary_label %}<a href="{{ primary_url }}" class="pub-primary">{{ primary_label }}</a>{% endif %}
+{% if secondary_url and secondary_label %}<a href="{{ secondary_url }}" class="pub-secondary">{{ secondary_label }}</a>{% endif %}
+</div>
+</section>
+</body>
+</html>

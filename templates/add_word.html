@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Word — LinguaMind</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/midnight_royal_v2.css') }}">
+<style>
+*{box-sizing:border-box}
+body.lmx-page{margin:0}
+.sp-shell{min-height:100vh;padding:22px}
+.sp-top{max-width:1180px;margin:0 auto 16px;min-height:92px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 19px;border:1px solid rgba(145,91,255,.19);border-radius:24px;background:radial-gradient(circle at 88% 8%,rgba(83,116,255,.10),transparent 28%),linear-gradient(135deg,rgba(11,15,43,.98),rgba(7,11,31,.98));box-shadow:0 24px 58px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.025)}
+.sp-title{display:flex;align-items:center;gap:13px}
+.sp-icon{width:52px;height:52px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.08);border-radius:16px;color:#fff;background:linear-gradient(135deg,#6742d7,#8a50ea 52%,#4a69ca);box-shadow:0 12px 26px rgba(80,48,185,.22);font-size:21px}
+.sp-copy small{display:block;margin-bottom:4px;color:#a778ff;font-size:8px;font-weight:950;letter-spacing:1.25px}
+.sp-copy h1{margin:0;color:#fff;font-size:24px;font-weight:950;letter-spacing:-.7px}
+.sp-copy p{margin:5px 0 0;color:#7f8aac;font-size:10px;line-height:1.5}
+.sp-card{width:min(760px,100%);margin:0 auto;overflow:hidden;border:1px solid rgba(134,96,224,.18);border-radius:24px;background:radial-gradient(circle at 92% 6%,rgba(126,67,255,.07),transparent 30%),linear-gradient(145deg,rgba(12,17,47,.98),rgba(7,11,32,.98));box-shadow:0 26px 66px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.025)}
+.sp-head{padding:20px 22px 16px;border-bottom:1px solid rgba(255,255,255,.05)}
+.sp-head h2{margin:0 0 6px;color:#fff;font-size:19px;font-weight:930}
+.sp-head p{margin:0;color:#7f8aad;font-size:10px;line-height:1.55}
+.sp-form{padding:20px 22px 22px}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.sp-field{display:block}.sp-field.full{grid-column:1/-1}
+.sp-field>span{display:block;margin:0 0 7px 2px;color:#aeb7d3;font-size:8.5px;font-weight:900;letter-spacing:.35px}
+.sp-field input,.sp-field textarea,.sp-field select{width:100%;border:1px solid rgba(118,95,196,.19)!important;border-radius:13px!important;outline:none!important;color:#f3f5ff!important;background:rgba(5,10,28,.94)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.018)!important;font:inherit;font-size:10.5px}
+.sp-field input,.sp-field select{height:49px;padding:0 13px}.sp-field textarea{min-height:120px;resize:vertical;padding:13px;line-height:1.6}
+.sp-field input::placeholder,.sp-field textarea::placeholder{color:#5f6a8c}.sp-field input:focus,.sp-field textarea:focus,.sp-field select:focus{border-color:rgba(151,95,255,.52)!important;box-shadow:0 0 0 3px rgba(126,66,255,.10),0 0 22px rgba(126,66,255,.055)!important}.sp-field select option{color:#f3f5ff;background:#090e28}
+.sp-help{margin-top:7px;color:#667192;font-size:8px;line-height:1.5}
+.sp-error{margin:16px 22px 0;padding:12px 13px;border:1px solid rgba(255,102,137,.22);border-radius:12px;color:#ffadbd;background:rgba(111,29,52,.18);font-size:9.5px;line-height:1.5}
+.sp-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:18px;padding-top:17px;border-top:1px solid rgba(255,255,255,.05)}
+.sp-primary,.sp-secondary{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 15px;border-radius:12px;font-size:9.5px;font-weight:920;text-decoration:none;cursor:pointer;transition:.18s ease}
+.sp-primary{border:1px solid rgba(169,115,255,.38);color:#fff;background:radial-gradient(circle at 90% 8%,rgba(255,205,107,.12),transparent 30%),linear-gradient(135deg,#5528bb,#7540db 54%,#4657bf);box-shadow:0 12px 27px rgba(79,38,180,.25)}.sp-primary:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(79,38,180,.33)}
+.sp-secondary{border:1px solid rgba(118,95,196,.18);color:#cfd5e8;background:rgba(9,14,39,.93)}.sp-secondary:hover{color:#fff;border-color:rgba(151,96,255,.34);transform:translateY(-2px)}
+@media(max-width:920px){.sp-shell{padding:72px 14px 18px}}
+@media(max-width:640px){.sp-top{align-items:flex-start;flex-direction:column}.sp-grid{grid-template-columns:1fr}.sp-field.full{grid-column:auto}.sp-actions{align-items:stretch;flex-direction:column-reverse}.sp-primary,.sp-secondary{width:100%}}
+</style>
+
+</head>
+<body class="lmx-page lmx-vocabulary lmx-authenticated">
+{% include 'app_sidebar.html' %}
+<main class="sp-shell">
+<header class="sp-top">
+<div class="sp-title"><div class="sp-icon">＋</div><div class="sp-copy"><small>VOCABULARY BUILDER</small><h1>Add a new word</h1><p>Save a word, translation and example sentence.</p></div></div>
+<a href="{{ url_for('vocabulary') }}" class="sp-secondary">▣ Vocabulary</a>
+</header>
+<section class="sp-card">
+<div class="sp-head"><h2>Create vocabulary entry</h2><p>English and Uzbek are required. The example sentence is optional.</p></div>
+<form class="sp-form" method="POST" action="{{ url_for('add_word') }}">
+<div class="sp-grid">
+<label class="sp-field"><span>ENGLISH WORD</span><input type="text" name="english_word" placeholder="Beautiful" autocomplete="off" required></label>
+<label class="sp-field"><span>UZBEK TRANSLATION</span><input type="text" name="uzbek_word" placeholder="Chiroyli" autocomplete="off" required></label>
+<label class="sp-field full"><span>EXAMPLE SENTENCE</span><textarea name="example_sentence" placeholder="This is a beautiful place."></textarea></label>
+<label class="sp-field full"><span>LEARNING STATUS</span><select name="status"><option value="New" selected>New</option><option value="Learning">Learning</option><option value="Mastered">Mastered</option></select><div class="sp-help">New = just added · Learning = practicing · Mastered = learned confidently</div></label>
+</div>
+<div class="sp-actions"><a href="{{ url_for('vocabulary') }}" class="sp-secondary">Cancel</a><button type="submit" class="sp-primary">＋ Add to Vocabulary</button></div>
+</form>
+</section>
+</main>
+</body>
+</html>

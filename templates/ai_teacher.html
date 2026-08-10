@@ -1,0 +1,3168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Teacher — LinguaMind</title>
+
+    <style>
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --ink: #17182f;
+    --ink-2: #34364f;
+    --muted: #81869e;
+    --violet: #6a55ed;
+    --violet-2: #8c68f7;
+    --violet-3: #b46cff;
+    --violet-soft: #f1edff;
+    --green: #25ae70;
+    --red: #e55d70;
+    --line: rgba(87, 77, 151, .13);
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+    color: var(--ink);
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(circle at 7% 5%, rgba(112, 78, 239, .33), transparent 27%),
+        radial-gradient(circle at 93% 7%, rgba(187, 93, 255, .27), transparent 26%),
+        radial-gradient(circle at 74% 97%, rgba(69, 130, 255, .18), transparent 30%),
+        radial-gradient(circle at 25% 88%, rgba(129, 100, 244, .14), transparent 27%),
+        linear-gradient(135deg, #e9e6ff 0%, #f8f7ff 40%, #eef3ff 70%, #f4edff 100%);
+}
+
+/* Premium mesh / light texture */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .42;
+    background:
+        linear-gradient(rgba(255,255,255,.24) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.22) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,.35), transparent 74%);
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    width: 520px;
+    height: 520px;
+    right: -180px;
+    top: 160px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: rgba(174, 93, 255, .16);
+    filter: blur(95px);
+}
+
+button,
+textarea,
+a {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.page {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    height: 100vh;
+    min-height: 0;
+
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 15px;
+
+    padding: 16px 22px 20px;
+
+    overflow: hidden;
+}
+
+/* =====================================================
+   TOPBAR — ALWAYS VISIBLE
+===================================================== */
+
+.topbar {
+    position: relative;
+    z-index: 20;
+
+    width: 100%;
+    max-width: 1600px;
+    min-height: 96px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+
+    padding: 16px 20px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(105, 82, 227, .18);
+    border-radius: 26px;
+
+    background:
+        radial-gradient(circle at 82% 20%, rgba(161, 108, 255, .17), transparent 30%),
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(246,242,255,.88));
+
+    backdrop-filter: blur(26px) saturate(145%);
+    -webkit-backdrop-filter: blur(26px) saturate(145%);
+
+    box-shadow:
+        0 22px 60px rgba(62, 48, 137, .16),
+        inset 0 1px 0 rgba(255,255,255,.86);
+}
+
+.topbar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 4px;
+    border-radius: 0 0 20px 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #5c49e4 14%,
+            #825cf3 47%,
+            #bc6fff 78%,
+            transparent
+        );
+
+    box-shadow: 0 4px 18px rgba(112, 82, 239, .32);
+}
+
+.topbar::after {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    right: 145px;
+    top: -180px;
+    border-radius: 50%;
+    background: rgba(152, 95, 255, .13);
+    filter: blur(22px);
+    pointer-events: none;
+}
+
+.brand {
+    position: relative;
+    z-index: 2;
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand-icon {
+    position: relative;
+
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(255,255,255,.58);
+    border-radius: 19px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5541db, #7757ed 54%, #a16df9);
+
+    box-shadow:
+        0 13px 30px rgba(88, 67, 215, .34),
+        0 0 0 6px rgba(113, 84, 235, .08);
+
+    font-size: 27px;
+}
+
+.brand-icon::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    right: 3px;
+    bottom: 3px;
+    border: 2px solid white;
+    border-radius: 50%;
+    background: #2bbb78;
+    box-shadow: 0 0 0 4px rgba(43,187,120,.10);
+}
+
+.brand-copy {
+    min-width: 0;
+}
+
+.brand-copy small {
+    display: block;
+    margin-bottom: 4px;
+
+    color: #684fe4;
+
+    font-size: 10px;
+    font-weight: 950;
+    letter-spacing: 1.65px;
+}
+
+.brand-copy h1 {
+    margin: 0;
+
+    color: #16172f;
+
+    font-size: 26px;
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: -.8px;
+}
+
+.brand-copy p {
+    margin: 6px 0 0;
+
+    color: #777d98;
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.topbar-actions {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.status-pill {
+    min-height: 43px;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 0 13px;
+
+    border: 1px solid rgba(43, 174, 112, .18);
+    border-radius: 14px;
+
+    color: #207e52;
+
+    background:
+        linear-gradient(135deg, rgba(239,252,245,.95), rgba(227,249,237,.91));
+
+    box-shadow:
+        0 8px 22px rgba(39, 160, 98, .09),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    font-size: 11px;
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    box-shadow:
+        0 0 0 4px rgba(37,174,112,.12),
+        0 0 15px rgba(37,174,112,.35);
+
+    animation: onlinePulse 2s ease-in-out infinite;
+}
+
+@keyframes onlinePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.18); }
+}
+
+.dashboard-button {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 0 18px;
+
+    border: 1px solid rgba(255,255,255,.26);
+    border-radius: 15px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5542dc, #7356ec 54%, #976bf7);
+
+    box-shadow:
+        0 13px 30px rgba(89, 67, 217, .30),
+        inset 0 1px 0 rgba(255,255,255,.22);
+
+    text-decoration: none;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.dashboard-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 17px 36px rgba(89, 67, 217, .38),
+        inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+/* =====================================================
+   WORKSPACE
+===================================================== */
+
+.teacher-workspace {
+    width: 100%;
+    max-width: 1600px;
+    min-height: 0;
+
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 285px minmax(0, 1fr);
+    gap: 16px;
+
+    overflow: hidden;
+}
+
+/* =====================================================
+   HISTORY
+===================================================== */
+
+.chat-history {
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(94, 77, 190, .17);
+    border-radius: 25px;
+
+    background:
+        radial-gradient(circle at 10% 0%, rgba(117, 89, 239, .13), transparent 32%),
+        linear-gradient(160deg, rgba(255,255,255,.91), rgba(241,238,255,.87));
+
+    backdrop-filter: blur(23px) saturate(135%);
+    -webkit-backdrop-filter: blur(23px) saturate(135%);
+
+    box-shadow:
+        0 20px 55px rgba(55, 45, 119, .14),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.history-header {
+    position: relative;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding: 19px 17px 16px;
+
+    border-bottom: 1px solid rgba(90, 77, 157, .10);
+
+    background:
+        linear-gradient(135deg, rgba(251,249,255,.94), rgba(235,230,255,.90));
+}
+
+.history-header::after {
+    content: "";
+    position: absolute;
+    left: 17px;
+    bottom: -1px;
+    width: 56px;
+    height: 3px;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #604be5, #9a67f7);
+}
+
+.history-header small {
+    display: block;
+    margin-bottom: 4px;
+
+    color: #6951e5;
+
+    font-size: 9px;
+    font-weight: 950;
+    letter-spacing: 1.45px;
+}
+
+.history-header h2 {
+    margin: 0;
+
+    color: #1c1d38;
+
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: -.35px;
+}
+
+.history-new {
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: none;
+    border-radius: 13px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5844df, #8260f2 60%, #a16ef9);
+
+    box-shadow:
+        0 10px 22px rgba(89, 67, 218, .27);
+
+    font-size: 22px;
+
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.history-new:hover {
+    transform: translateY(-2px) rotate(3deg);
+    box-shadow: 0 14px 26px rgba(89, 67, 218, .34);
+}
+
+.history-list {
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 12px 10px;
+}
+
+.history-list::-webkit-scrollbar,
+.chat-messages::-webkit-scrollbar {
+    width: 7px;
+}
+
+.history-list::-webkit-scrollbar-track,
+.chat-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.history-list::-webkit-scrollbar-thumb,
+.chat-messages::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background: linear-gradient(180deg, #c2b8ed, #8d7be8);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    margin-bottom: 7px;
+    padding: 5px;
+
+    border: 1px solid transparent;
+    border-radius: 13px;
+
+    background: transparent;
+
+    transition: .18s ease;
+}
+
+.history-item:hover {
+    border-color: rgba(108, 86, 221, .13);
+
+    background:
+        linear-gradient(135deg, rgba(255,255,255,.76), rgba(239,235,255,.78));
+
+    transform: translateX(2px);
+}
+
+.history-item.active {
+    border-color: rgba(108, 86, 221, .20);
+
+    background:
+        linear-gradient(135deg, #e9e4ff, #f7f4ff);
+
+    box-shadow:
+        inset 3px 0 #6650e6,
+        0 7px 20px rgba(75, 61, 154, .07);
+}
+
+.history-open {
+    flex: 1;
+    min-width: 0;
+
+    padding: 10px;
+
+    border: none;
+    background: transparent;
+
+    text-align: left;
+}
+
+.history-title {
+    display: block;
+
+    overflow: hidden;
+
+    color: #30324c;
+
+    font-size: 12px;
+    font-weight: 780;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.history-delete {
+    width: 31px;
+    height: 31px;
+
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 9px;
+
+    color: #a4a7b5;
+    background: transparent;
+
+    transition: .18s ease;
+}
+
+.history-delete:hover {
+    color: var(--red);
+    background: #fff0f3;
+}
+
+.history-empty {
+    padding: 28px 12px;
+
+    color: #9296a9;
+
+    font-size: 11px;
+    line-height: 1.65;
+    text-align: center;
+}
+
+.history-footer {
+    flex-shrink: 0;
+
+    padding: 11px;
+
+    border-top: 1px solid rgba(90, 77, 157, .10);
+
+    background: rgba(248,247,255,.72);
+}
+
+.clear-history-button {
+    width: 100%;
+    min-height: 42px;
+
+    border: 1px solid rgba(91, 81, 147, .10);
+    border-radius: 12px;
+
+    color: #85899a;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(249,248,255,.90));
+
+    font-size: 11px;
+    font-weight: 800;
+
+    transition: .18s ease;
+}
+
+.clear-history-button:hover {
+    color: var(--red);
+    border-color: rgba(229,93,112,.18);
+    background: #fff4f6;
+}
+
+/* =====================================================
+   CHAT CARD
+===================================================== */
+
+.chat-card {
+    position: relative;
+
+    min-width: 0;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(94, 77, 190, .17);
+    border-radius: 25px;
+
+    background:
+        linear-gradient(160deg, rgba(255,255,255,.94), rgba(245,242,255,.90));
+
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+
+    box-shadow:
+        0 22px 60px rgba(52, 43, 116, .15),
+        inset 0 1px 0 rgba(255,255,255,.92);
+}
+
+.chat-card::before {
+    content: "";
+    position: absolute;
+    z-index: 6;
+    top: 0;
+    left: 28px;
+    right: 28px;
+    height: 3px;
+    border-radius: 0 0 20px 20px;
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #604be5,
+            #8760f1,
+            #bd70ff,
+            transparent
+        );
+}
+
+.chat-topbar {
+    position: relative;
+    z-index: 4;
+
+    flex-shrink: 0;
+
+    min-height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 13px 17px;
+
+    border-bottom: 1px solid rgba(90, 77, 157, .10);
+
+    background:
+        radial-gradient(circle at 84% 0%, rgba(146, 101, 248, .13), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,.96), rgba(244,241,255,.92));
+}
+
+.ai-status {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.ai-mini-avatar {
+    position: relative;
+
+    width: 43px;
+    height: 43px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(117, 89, 232, .16);
+    border-radius: 14px;
+
+    background:
+        linear-gradient(135deg, #eeeaff, #f8f5ff);
+
+    box-shadow:
+        0 8px 20px rgba(93, 70, 207, .12);
+
+    font-size: 21px;
+}
+
+.ai-mini-avatar::after {
+    content: "";
+    position: absolute;
+    right: -1px;
+    bottom: -1px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid white;
+    border-radius: 50%;
+    background: var(--green);
+}
+
+.ai-status strong {
+    display: block;
+
+    color: #20213c;
+
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.ai-status small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #22975e;
+
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.new-chat {
+    min-height: 40px;
+
+    padding: 0 13px;
+
+    border: 1px solid rgba(89, 78, 150, .13);
+    border-radius: 12px;
+
+    color: #51556c;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(248,247,255,.94));
+
+    box-shadow: 0 6px 16px rgba(56, 50, 96, .05);
+
+    font-size: 11px;
+    font-weight: 850;
+
+    transition: .18s ease;
+}
+
+.new-chat:hover {
+    color: #5f4ae1;
+    border-color: rgba(103, 82, 224, .24);
+    transform: translateY(-1px);
+    box-shadow: 0 9px 20px rgba(83, 66, 176, .10);
+}
+
+/* =====================================================
+   ONLY THIS AREA SCROLLS
+===================================================== */
+
+.chat-messages {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 23px 24px;
+
+    scroll-behavior: smooth;
+
+    background:
+        radial-gradient(circle at 12% 15%, rgba(104, 80, 229, .095), transparent 27%),
+        radial-gradient(circle at 88% 78%, rgba(176, 96, 255, .075), transparent 28%),
+        linear-gradient(145deg, rgba(249,248,255,.95), rgba(255,255,255,.96) 50%, rgba(246,243,255,.93));
+}
+
+.message {
+    display: flex;
+    gap: 10px;
+
+    margin-bottom: 19px;
+}
+
+.message.user {
+    justify-content: flex-end;
+}
+
+.message-avatar {
+    width: 35px;
+    height: 35px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(104, 82, 221, .14);
+    border-radius: 11px;
+
+    background:
+        linear-gradient(135deg, #ece8ff, #f8f5ff);
+
+    box-shadow:
+        0 5px 14px rgba(85, 68, 178, .08);
+
+    font-size: 17px;
+}
+
+.message-bubble {
+    max-width: 72%;
+
+    padding: 13px 16px;
+
+    border-radius: 17px;
+
+    color: #3a3d53;
+
+    background: #f3f4f9;
+
+    font-size: 13px;
+    line-height: 1.7;
+
+    word-break: break-word;
+}
+
+.message.ai .message-bubble {
+    border: 1px solid rgba(70, 70, 112, .09);
+
+    border-bottom-left-radius: 5px;
+
+    background:
+        linear-gradient(135deg, rgba(239,240,248,.97), rgba(248,247,252,.97));
+
+    box-shadow:
+        0 9px 24px rgba(47, 47, 82, .075);
+}
+
+.message.user .message-bubble {
+    color: white;
+
+    border: 1px solid rgba(255,255,255,.14);
+    border-bottom-right-radius: 5px;
+
+    background:
+        linear-gradient(135deg, #5541da, #7052e9 53%, #9166f4);
+
+    box-shadow:
+        0 12px 27px rgba(88, 66, 215, .27);
+}
+
+.message-bubble.ai-formatted strong {
+    color: #252740;
+    font-weight: 900;
+}
+
+.message-bubble.ai-formatted p {
+    margin: 0 0 9px;
+}
+
+.message-bubble.ai-formatted p:last-child {
+    margin-bottom: 0;
+}
+
+.message-bubble.ai-formatted ul {
+    margin: 8px 0 8px 18px;
+    padding: 0;
+}
+
+.message-bubble.ai-formatted li {
+    margin-bottom: 5px;
+}
+
+.message-bubble.ai-formatted code {
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #e7e5f2;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+}
+
+.message-bubble.ai-formatted .teacher-heading {
+    position: relative;
+
+    display: block;
+
+    margin: 10px 0 5px;
+    padding-left: 10px;
+
+    color: #5e49df;
+
+    font-weight: 900;
+}
+
+.message-bubble.ai-formatted .teacher-heading::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 3px;
+    border-radius: 5px;
+    background: linear-gradient(180deg, #6651e8, #a169f7);
+}
+
+.message-bubble.typing {
+    color: #9094a7;
+    animation: teacherPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes teacherPulse {
+    0%, 100% { opacity: .58; }
+    50% { opacity: 1; }
+}
+
+/* =====================================================
+   TEACHER MODE — STAYS AT THE BOTTOM
+===================================================== */
+
+.mode-bar {
+    flex-shrink: 0;
+
+    padding: 10px 16px;
+
+    border-top: 1px solid rgba(90, 77, 157, .09);
+    border-bottom: 1px solid rgba(90, 77, 157, .09);
+
+    background:
+        radial-gradient(circle at 15% 45%, rgba(109, 84, 231, .085), transparent 30%),
+        linear-gradient(135deg, #faf9ff, #f0edf9);
+}
+
+.mode-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    margin-bottom: 8px;
+}
+
+.mode-label strong {
+    color: #30324b;
+
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .9px;
+}
+
+.mode-label span {
+    color: #9296aa;
+
+    font-size: 9px;
+}
+
+.quick-prompts {
+    display: flex;
+    gap: 7px;
+
+    overflow-x: auto;
+}
+
+.quick-prompts::-webkit-scrollbar {
+    height: 0;
+}
+
+.quick-prompt {
+    flex-shrink: 0;
+
+    min-height: 35px;
+
+    padding: 0 11px;
+
+    border: 1px solid rgba(82, 77, 127, .12);
+    border-radius: 20px;
+
+    color: #5e6173;
+
+    background: rgba(255,255,255,.88);
+
+    box-shadow: 0 4px 12px rgba(60, 54, 104, .035);
+
+    font-size: 10px;
+    font-weight: 750;
+
+    transition: .18s ease;
+}
+
+.quick-prompt:hover {
+    color: #5d48de;
+    border-color: rgba(103, 82, 224, .24);
+    transform: translateY(-1px);
+    box-shadow: 0 7px 15px rgba(80, 62, 170, .08);
+}
+
+.mode-button.active {
+    color: #5642db;
+
+    border-color: rgba(99, 76, 225, .32);
+
+    background:
+        linear-gradient(135deg, #e4deff, #f4f1ff);
+
+    box-shadow:
+        0 8px 18px rgba(86, 65, 211, .14);
+
+    font-weight: 900;
+}
+
+/* =====================================================
+   INPUT — ALWAYS VISIBLE
+===================================================== */
+
+.chat-input-area {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+
+    padding: 12px 15px 14px;
+
+    border-top: 1px solid rgba(90, 77, 157, .09);
+
+    background:
+        linear-gradient(135deg, rgba(248,247,255,.97), rgba(237,234,248,.95));
+}
+
+.chat-input-area textarea {
+    flex: 1;
+
+    min-height: 50px;
+    max-height: 112px;
+
+    padding: 14px 15px;
+
+    resize: none;
+
+    outline: none;
+
+    border: 1px solid rgba(88, 78, 144, .18);
+    border-radius: 14px;
+
+    color: #24263e;
+
+    background: rgba(255,255,255,.96);
+
+    box-shadow:
+        0 6px 18px rgba(48, 46, 89, .055),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    font-size: 13px;
+    line-height: 1.55;
+
+    transition: .18s ease;
+}
+
+.chat-input-area textarea:hover {
+    border-color: rgba(102, 82, 214, .26);
+}
+
+.chat-input-area textarea:focus {
+    border-color: #715dec;
+
+    box-shadow:
+        0 0 0 4px rgba(103, 81, 229, .10),
+        0 9px 22px rgba(72, 59, 144, .08);
+}
+
+.send-button {
+    width: 52px;
+    height: 52px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: none;
+    border-radius: 14px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5541da, #7052e9 54%, #9469f6);
+
+    box-shadow:
+        0 12px 26px rgba(88, 66, 215, .30),
+        inset 0 1px 0 rgba(255,255,255,.20);
+
+    font-size: 19px;
+
+    transition: .18s ease;
+}
+
+.send-button:hover {
+    transform: translateY(-2px) scale(1.02);
+
+    box-shadow:
+        0 16px 31px rgba(88, 66, 215, .38),
+        inset 0 1px 0 rgba(255,255,255,.20);
+}
+
+
+/* =====================================================
+   SPEAKING MODE
+===================================================== */
+
+.voice-controls {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.voice-toggle,
+.mic-button {
+    height: 52px;
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    border: 1px solid rgba(88, 78, 144, .16);
+    border-radius: 14px;
+
+    color: #555873;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.98), rgba(246,244,255,.96));
+
+    box-shadow:
+        0 7px 20px rgba(62, 52, 130, .08),
+        inset 0 1px 0 rgba(255,255,255,.90);
+
+    font-size: 11px;
+    font-weight: 850;
+
+    transition: .18s ease;
+}
+
+.voice-toggle {
+    padding: 0 12px;
+    white-space: nowrap;
+}
+
+.mic-button {
+    width: 52px;
+    font-size: 20px;
+}
+
+.voice-toggle:hover,
+.mic-button:hover {
+    color: #5f49df;
+    border-color: rgba(103, 82, 224, .28);
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 10px 24px rgba(82, 64, 178, .13),
+        inset 0 1px 0 rgba(255,255,255,.94);
+}
+
+.voice-toggle.active {
+    color: #207e52;
+    border-color: rgba(37,174,112,.24);
+
+    background:
+        linear-gradient(135deg, rgba(236,252,244,.98), rgba(226,248,237,.96));
+
+    box-shadow:
+        0 9px 22px rgba(37,174,112,.10),
+        inset 0 1px 0 rgba(255,255,255,.94);
+}
+
+.mic-button.listening {
+    color: white;
+    border-color: rgba(255,255,255,.25);
+
+    background:
+        linear-gradient(135deg, #e04e69, #f0647b);
+
+    box-shadow:
+        0 12px 28px rgba(224,78,105,.30),
+        0 0 0 6px rgba(224,78,105,.08);
+
+    animation: micPulse 1.05s ease-in-out infinite;
+}
+
+@keyframes micPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.06);
+    }
+}
+
+.speaking-status {
+    position: absolute;
+    left: 18px;
+    bottom: 73px;
+    z-index: 8;
+
+    display: none;
+    align-items: center;
+    gap: 7px;
+
+    min-height: 32px;
+
+    padding: 0 11px;
+
+    border: 1px solid rgba(224,78,105,.18);
+    border-radius: 12px;
+
+    color: #b33e56;
+
+    background: rgba(255,244,247,.96);
+
+    box-shadow:
+        0 8px 22px rgba(103,58,93,.10);
+
+    font-size: 10px;
+    font-weight: 850;
+}
+
+.speaking-status.show {
+    display: inline-flex;
+}
+
+.speaking-status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #e24d68;
+
+    box-shadow:
+        0 0 0 4px rgba(226,77,104,.10);
+
+    animation: listeningDot 1s ease-in-out infinite;
+}
+
+@keyframes listeningDot {
+    0%, 100% {
+        opacity: .55;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 650px) {
+    .voice-toggle {
+        width: 52px;
+        padding: 0;
+        font-size: 0;
+    }
+
+    .voice-toggle::before {
+        content: "🔊";
+        font-size: 18px;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 900px) {
+    html,
+    body {
+        height: auto;
+        min-height: 100%;
+        overflow-y: auto;
+    }
+
+    .page {
+        height: auto;
+        min-height: 100vh;
+        display: block;
+        padding: 12px;
+        overflow: visible;
+    }
+
+    .topbar {
+        margin-bottom: 12px;
+    }
+
+    .teacher-workspace {
+        display: block;
+        overflow: visible;
+    }
+
+    .chat-history {
+        height: 230px;
+        margin-bottom: 12px;
+    }
+
+    .chat-card {
+        height: 720px;
+    }
+}
+
+@media (max-width: 650px) {
+    .topbar {
+        min-height: 80px;
+        padding: 12px 13px;
+        border-radius: 20px;
+    }
+
+    .brand-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        font-size: 23px;
+    }
+
+    .brand-copy h1 {
+        font-size: 20px;
+    }
+
+    .brand-copy p,
+    .status-pill {
+        display: none;
+    }
+
+    .dashboard-button {
+        min-height: 42px;
+        padding: 0 12px;
+    }
+
+    .message-bubble {
+        max-width: 86%;
+    }
+
+    .mode-label {
+        display: none;
+    }
+}
+
+    </style>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/midnight_royal_v2.css') }}">
+</head>
+
+<body class="lmx-page lmx-ai-teacher {% if session.get('user_id') %}lmx-authenticated{% endif %}">
+{% if session.get('user_id') %}
+    {% include 'app_sidebar.html' %}
+{% endif %}
+<div class="page">
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🤖
+            </div>
+
+            <div class="brand-copy">
+
+                <small>
+                    LINGUAMIND AI
+                </small>
+
+                <h1>
+                    AI English Teacher
+                </h1>
+
+                <p>
+                    Ask questions, practice English, improve grammar,
+                    vocabulary, IELTS and SAT skills.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="topbar-actions">
+
+            <div class="status-pill">
+                <span class="status-dot"></span>
+                Gemini Online
+            </div>
+
+            
+
+        </div>
+
+    </header>
+
+
+    <main class="teacher-workspace">
+
+        <!-- =========================================
+             HISTORY
+        ========================================== -->
+
+        <aside class="chat-history">
+
+            <div class="history-header">
+
+                <div>
+                    <small>HISTORY</small>
+                    <h2>Your Chats</h2>
+                </div>
+
+                <button
+                    type="button"
+                    class="history-new"
+                    onclick="createNewChat()"
+                    title="New Chat"
+                >
+                    +
+                </button>
+
+            </div>
+
+
+            <div
+                id="historyList"
+                class="history-list"
+            >
+                <div class="history-empty">
+                    Loading conversations...
+                </div>
+            </div>
+
+
+            <div class="history-footer">
+
+                <button
+                    type="button"
+                    class="clear-history-button"
+                    onclick="deleteAllChats()"
+                >
+                    🗑 Clear History
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================================
+             CHAT
+        ========================================== -->
+
+        <section class="chat-card">
+
+            <div class="chat-topbar">
+
+                <div class="ai-status">
+
+                    <div class="ai-mini-avatar">
+                        🤖
+                    </div>
+
+                    <div>
+                        <strong>LinguaMind Teacher</strong>
+                        <small>● Online · Gemini AI</small>
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="new-chat"
+                    onclick="clearChat()"
+                >
+                    ＋ New Chat
+                </button>
+
+            </div>
+
+
+            <div
+                id="chatMessages"
+                class="chat-messages"
+            >
+
+                <div class="message ai">
+
+                    <div class="message-avatar">
+                        🤖
+                    </div>
+
+                    <div class="message-bubble ai-formatted">
+
+                        <p>
+                            Hello! 👋 I'm your
+                            <strong>LinguaMind AI English Teacher.</strong>
+                        </p>
+
+                        <p>
+                            Ask me about grammar, vocabulary, speaking,
+                            IELTS or SAT English.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ONLY ONE MODE ROW -->
+            <div class="mode-bar">
+
+                <div class="mode-label">
+                    <strong>TEACHER MODE</strong>
+                    <span>Choose how you want the AI to help you</span>
+                </div>
+
+                <div class="quick-prompts">
+
+                    <button
+                        type="button"
+                        class="quick-prompt mode-button active"
+                        data-mode="general"
+                        onclick="selectMode('general', this)"
+                    >
+                        🤖 General
+                    </button>
+
+                    <button
+                        type="button"
+                        class="quick-prompt mode-button"
+                        data-mode="grammar"
+                        onclick="selectMode('grammar', this)"
+                    >
+                        ✍️ Grammar
+                    </button>
+
+                    <button
+                        type="button"
+                        class="quick-prompt mode-button"
+                        data-mode="vocabulary"
+                        onclick="selectMode('vocabulary', this)"
+                    >
+                        📚 Vocabulary
+                    </button>
+
+                    <button
+                        type="button"
+                        class="quick-prompt mode-button"
+                        data-mode="conversation"
+                        onclick="selectMode('conversation', this)"
+                    >
+                        💬 Conversation
+                    </button>
+
+                    <button
+                        type="button"
+                        class="quick-prompt mode-button"
+                        data-mode="ielts"
+                        onclick="selectMode('ielts', this)"
+                    >
+                        🎯 IELTS
+                    </button>
+
+                    <button
+                        type="button"
+                        class="quick-prompt mode-button"
+                        data-mode="sat"
+                        onclick="selectMode('sat', this)"
+                    >
+                        🧠 SAT
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="quick-prompt mode-button"
+                        data-mode="sat_math"
+                        onclick="selectMode('sat_math', this)"
+                    >
+                        ∑ SAT Math
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="speakingStatus"
+                class="speaking-status"
+            >
+                <span class="speaking-status-dot"></span>
+                <span id="speakingStatusText">
+                    Listening...
+                </span>
+            </div>
+
+            <div class="chat-input-area">
+
+                <textarea
+                    id="messageInput"
+                    placeholder="Ask your AI Teacher..."
+                ></textarea>
+
+                <div class="voice-controls">
+
+                    <button
+                        type="button"
+                        id="voiceToggle"
+                        class="voice-toggle active"
+                        onclick="toggleVoiceReply()"
+                        title="Turn AI voice replies on or off"
+                    >
+                        🔊 Voice ON
+                    </button>
+
+                    <button
+                        type="button"
+                        id="micButton"
+                        class="mic-button"
+                        onclick="toggleMicrophone()"
+                        title="Speak to your AI Teacher"
+                    >
+                        🎤
+                    </button>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="send-button"
+                    onclick="sendMessage()"
+                    title="Send message"
+                >
+                    ➤
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+const input =
+    document.getElementById("messageInput");
+
+const messages =
+    document.getElementById("chatMessages");
+
+const historyList =
+    document.getElementById("historyList");
+
+
+const micButton =
+    document.getElementById("micButton");
+
+const voiceToggle =
+    document.getElementById("voiceToggle");
+
+const speakingStatus =
+    document.getElementById("speakingStatus");
+
+const speakingStatusText =
+    document.getElementById("speakingStatusText");
+
+
+let currentMode = "general";
+let currentChatId = null;
+let isSending = false;
+
+let voiceReplyEnabled = true;
+let recognition = null;
+let isListening = false;
+
+
+/* =========================================
+   PAGE LOAD
+   ========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        await loadChats();
+
+    }
+);
+
+
+/* =========================================
+   ENTER TO SEND
+   ========================================= */
+
+input.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   MODE
+   ========================================= */
+
+function selectMode(mode, button) {
+
+    currentMode = mode;
+
+    document
+        .querySelectorAll(".mode-button")
+        .forEach(function(btn) {
+
+            btn.classList.remove("active");
+
+        });
+
+
+    if (button) {
+        button.classList.add("active");
+    }
+
+
+    const placeholders = {
+
+        general:
+            "Ask your AI Teacher...",
+
+        grammar:
+            "Write a sentence or ask a grammar question...",
+
+        vocabulary:
+            "Ask about a word or learn vocabulary...",
+
+        conversation:
+            "Start an English conversation...",
+
+        ielts:
+            "Ask an IELTS question...",
+
+        sat:
+            "Ask a SAT English question...",
+
+        sat_math:
+            "Ask a SAT Math question or show your work..."
+
+    };
+
+
+    input.placeholder =
+        placeholders[mode]
+        || "Ask your AI Teacher...";
+
+
+    input.focus();
+
+}
+
+
+/* =========================================
+   ESCAPE HTML
+   ========================================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================
+   FORMAT AI
+   ========================================= */
+
+function formatAIResponse(text) {
+
+    let safe = escapeHTML(text);
+
+
+    safe = safe.replace(
+        /\*\*(.*?)\*\*/g,
+        "<strong>$1</strong>"
+    );
+
+
+    safe = safe.replace(
+        /`([^`]+)`/g,
+        "<code>$1</code>"
+    );
+
+
+    const lines =
+        safe.split("\n");
+
+
+    let html = "";
+    let inList = false;
+
+
+    lines.forEach(function(line) {
+
+        const trimmed =
+            line.trim();
+
+
+        if (!trimmed) {
+
+            if (inList) {
+
+                html += "</ul>";
+
+                inList = false;
+
+            }
+
+            return;
+        }
+
+
+        if (
+            trimmed.startsWith("### ")
+        ) {
+
+            if (inList) {
+
+                html += "</ul>";
+
+                inList = false;
+
+            }
+
+            html +=
+                '<span class="teacher-heading">'
+                + trimmed.substring(4)
+                + "</span>";
+
+            return;
+        }
+
+
+        if (
+            trimmed.startsWith("## ")
+        ) {
+
+            if (inList) {
+
+                html += "</ul>";
+
+                inList = false;
+
+            }
+
+            html +=
+                '<span class="teacher-heading">'
+                + trimmed.substring(3)
+                + "</span>";
+
+            return;
+        }
+
+
+        if (
+            trimmed.startsWith("- ")
+            ||
+            trimmed.startsWith("* ")
+        ) {
+
+            if (!inList) {
+
+                html += "<ul>";
+
+                inList = true;
+
+            }
+
+            html +=
+                "<li>"
+                + trimmed.substring(2)
+                + "</li>";
+
+            return;
+        }
+
+
+        if (inList) {
+
+            html += "</ul>";
+
+            inList = false;
+
+        }
+
+
+        html +=
+            "<p>"
+            + trimmed
+            + "</p>";
+
+    });
+
+
+    if (inList) {
+
+        html += "</ul>";
+
+    }
+
+
+    return html;
+
+}
+
+
+/* =========================================
+   ADD MESSAGE
+   ========================================= */
+
+function addMessage(text, sender) {
+
+    const wrapper =
+        document.createElement("div");
+
+
+    wrapper.className =
+        "message "
+        + (
+            sender === "assistant"
+            ? "ai"
+            : sender
+        );
+
+
+    if (
+        sender === "ai"
+        ||
+        sender === "assistant"
+    ) {
+
+        wrapper.innerHTML = `
+            <div class="message-avatar">
+                🤖
+            </div>
+
+            <div
+                class="message-bubble ai-formatted"
+            ></div>
+        `;
+
+
+        wrapper
+            .querySelector(
+                ".message-bubble"
+            )
+            .innerHTML =
+                formatAIResponse(text);
+
+    } else {
+
+        wrapper.innerHTML = `
+            <div class="message-bubble"></div>
+        `;
+
+
+        wrapper
+            .querySelector(
+                ".message-bubble"
+            )
+            .textContent = text;
+
+    }
+
+
+    messages.appendChild(
+        wrapper
+    );
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+}
+
+
+/* =========================================
+   WELCOME
+   ========================================= */
+
+function showWelcome() {
+
+    messages.innerHTML = `
+        <div class="message ai">
+
+            <div class="message-avatar">
+                🤖
+            </div>
+
+            <div
+                class="message-bubble ai-formatted"
+            >
+
+                <p>
+                    Hello! 👋 I'm your
+                    LinguaMind AI English Teacher.
+                </p>
+
+                <p>
+                    Ask me about grammar,
+                    vocabulary, speaking,
+                    IELTS or SAT English.
+                </p>
+
+            </div>
+
+        </div>
+    `;
+
+}
+
+
+/* =========================================
+   LOAD CHAT LIST
+   ========================================= */
+
+async function loadChats(
+    preferredChatId = null
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ai_chats"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        renderHistory(
+            data.chats || []
+        );
+
+
+        if (preferredChatId) {
+
+            await openChat(
+                preferredChatId,
+                false
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !currentChatId
+            &&
+            data.chats
+            &&
+            data.chats.length > 0
+        ) {
+
+            await openChat(
+                data.chats[0].id,
+                false
+            );
+
+        } else if (
+            !data.chats
+            ||
+            data.chats.length === 0
+        ) {
+
+            currentChatId = null;
+
+            showWelcome();
+
+        }
+
+
+    } catch (error) {
+
+        historyList.innerHTML = `
+            <div class="history-empty">
+                Could not load history.
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* =========================================
+   RENDER HISTORY
+   ========================================= */
+
+function renderHistory(chats) {
+
+    historyList.innerHTML = "";
+
+
+    if (!chats.length) {
+
+        historyList.innerHTML = `
+            <div class="history-empty">
+
+                No conversations yet.
+
+                <br><br>
+
+                Start talking with
+                your AI Teacher.
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    chats.forEach(function(chat) {
+
+        const item =
+            document.createElement("div");
+
+
+        item.className =
+            "history-item";
+
+
+        if (
+            chat.id === currentChatId
+        ) {
+
+            item.classList.add(
+                "active"
+            );
+
+        }
+
+
+        const openButton =
+            document.createElement(
+                "button"
+            );
+
+
+        openButton.className =
+            "history-open";
+
+
+        const title =
+            document.createElement(
+                "span"
+            );
+
+
+        title.className =
+            "history-title";
+
+
+        title.textContent =
+            chat.title
+            || "New Chat";
+
+
+        openButton.appendChild(
+            title
+        );
+
+
+        openButton.onclick =
+            function() {
+
+                openChat(
+                    chat.id
+                );
+
+            };
+
+
+        const deleteButton =
+            document.createElement(
+                "button"
+            );
+
+
+        deleteButton.className =
+            "history-delete";
+
+
+        deleteButton.innerHTML =
+            "🗑";
+
+
+        deleteButton.title =
+            "Delete chat";
+
+
+        deleteButton.onclick =
+            function(event) {
+
+                event.stopPropagation();
+
+                deleteChat(
+                    chat.id
+                );
+
+            };
+
+
+        item.appendChild(
+            openButton
+        );
+
+
+        item.appendChild(
+            deleteButton
+        );
+
+
+        historyList.appendChild(
+            item
+        );
+
+    });
+
+}
+
+
+/* =========================================
+   OPEN CHAT
+   ========================================= */
+
+async function openChat(
+    chatId,
+    refreshList = true
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ai_chats/"
+                + chatId
+            );
+
+
+        if (!response.ok) {
+            return;
+        }
+
+
+        const data =
+            await response.json();
+
+
+        currentChatId =
+            data.id;
+
+
+        messages.innerHTML = "";
+
+
+        if (
+            !data.messages
+            ||
+            data.messages.length === 0
+        ) {
+
+            showWelcome();
+
+        } else {
+
+            data.messages.forEach(
+                function(message) {
+
+                    addMessage(
+                        message.content,
+                        message.role
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (refreshList) {
+
+            await refreshHistory();
+
+        }
+
+
+        input.focus();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================================
+   REFRESH ONLY HISTORY
+   ========================================= */
+
+async function refreshHistory() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ai_chats"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        renderHistory(
+            data.chats || []
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================================
+   NEW CHAT
+   ========================================= */
+
+async function createNewChat() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ai_chats",
+                {
+                    method: "POST"
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        currentChatId =
+            data.chat_id;
+
+
+        showWelcome();
+
+
+        await refreshHistory();
+
+
+        input.focus();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================================
+   DELETE ONE CHAT
+   ========================================= */
+
+async function deleteChat(chatId) {
+
+    const confirmed =
+        confirm(
+            "Delete this conversation?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ai_chats/"
+                + chatId,
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        if (!response.ok) {
+            return;
+        }
+
+
+        if (
+            currentChatId === chatId
+        ) {
+
+            currentChatId = null;
+
+        }
+
+
+        await loadChats();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================================
+   DELETE ALL HISTORY
+   ========================================= */
+
+async function deleteAllChats() {
+
+    const confirmed =
+        confirm(
+            "Delete ALL AI Teacher history?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ai_chats",
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        if (!response.ok) {
+            return;
+        }
+
+
+        currentChatId = null;
+
+
+        showWelcome();
+
+
+        await refreshHistory();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+
+/* =========================================
+   SPEAKING MODE
+   ========================================= */
+
+function getSpeechRecognitionClass() {
+
+    return (
+        window.SpeechRecognition
+        ||
+        window.webkitSpeechRecognition
+        ||
+        null
+    );
+
+}
+
+
+function setSpeakingStatus(
+    show,
+    text = "Listening..."
+) {
+
+    speakingStatusText.textContent =
+        text;
+
+    if (show) {
+
+        speakingStatus.classList.add(
+            "show"
+        );
+
+    } else {
+
+        speakingStatus.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+function stopVoiceReply() {
+
+    if (
+        "speechSynthesis" in window
+    ) {
+
+        window.speechSynthesis.cancel();
+
+    }
+
+}
+
+
+function toggleVoiceReply() {
+
+    voiceReplyEnabled =
+        !voiceReplyEnabled;
+
+
+    if (voiceReplyEnabled) {
+
+        voiceToggle.classList.add(
+            "active"
+        );
+
+        voiceToggle.textContent =
+            "🔊 Voice ON";
+
+    } else {
+
+        voiceToggle.classList.remove(
+            "active"
+        );
+
+        voiceToggle.textContent =
+            "🔇 Voice OFF";
+
+        stopVoiceReply();
+
+    }
+
+}
+
+
+function speakAIReply(text) {
+
+    if (
+        !voiceReplyEnabled
+        ||
+        !(
+            "speechSynthesis"
+            in
+            window
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    stopVoiceReply();
+
+
+    const cleanText =
+        String(text || "")
+            .replace(/\*\*/g, "")
+            .replace(/###?/g, "")
+            .replace(/`/g, "")
+            .replace(/^\s*[-*]\s+/gm, "")
+            .trim();
+
+
+    if (!cleanText) {
+        return;
+    }
+
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            cleanText
+        );
+
+
+    utterance.lang = "en-US";
+    utterance.rate = 0.98;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+
+    const voices =
+        window.speechSynthesis.getVoices();
+
+
+    const preferredVoice =
+        voices.find(function(voice) {
+
+            return (
+                voice.lang
+                &&
+                voice.lang
+                    .toLowerCase()
+                    .startsWith("en")
+            );
+
+        });
+
+
+    if (preferredVoice) {
+
+        utterance.voice =
+            preferredVoice;
+
+    }
+
+
+    window.speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+function setupSpeechRecognition() {
+
+    const RecognitionClass =
+        getSpeechRecognitionClass();
+
+
+    if (!RecognitionClass) {
+
+        recognition = null;
+        return false;
+
+    }
+
+
+    recognition =
+        new RecognitionClass();
+
+
+    recognition.lang = "en-US";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+
+    recognition.onstart =
+        function() {
+
+            isListening = true;
+
+            micButton.classList.add(
+                "listening"
+            );
+
+            micButton.textContent =
+                "■";
+
+            setSpeakingStatus(
+                true,
+                "Listening... Speak in English."
+            );
+
+        };
+
+
+    recognition.onresult =
+        function(event) {
+
+            let finalText = "";
+            let interimText = "";
+
+
+            for (
+                let index =
+                    event.resultIndex;
+                index <
+                    event.results.length;
+                index++
+            ) {
+
+                const transcript =
+                    event.results[index][0]
+                        .transcript;
+
+
+                if (
+                    event.results[index]
+                        .isFinal
+                ) {
+
+                    finalText +=
+                        transcript;
+
+                } else {
+
+                    interimText +=
+                        transcript;
+
+                }
+
+            }
+
+
+            const spokenText =
+                (
+                    finalText
+                    ||
+                    interimText
+                ).trim();
+
+
+            if (spokenText) {
+
+                input.value =
+                    spokenText;
+
+                input.dispatchEvent(
+                    new Event(
+                        "input"
+                    )
+                );
+
+            }
+
+
+            if (finalText.trim()) {
+
+                setSpeakingStatus(
+                    true,
+                    "Got it — sending to your AI Teacher..."
+                );
+
+            }
+
+        };
+
+
+    recognition.onerror =
+        function(event) {
+
+            console.error(
+                "Speech recognition error:",
+                event.error
+            );
+
+
+            if (
+                event.error
+                ===
+                "not-allowed"
+            ) {
+
+                setSpeakingStatus(
+                    true,
+                    "Microphone permission was blocked."
+                );
+
+            } else if (
+                event.error
+                ===
+                "no-speech"
+            ) {
+
+                setSpeakingStatus(
+                    true,
+                    "I didn't hear anything. Try again."
+                );
+
+            } else {
+
+                setSpeakingStatus(
+                    true,
+                    "Microphone error. Please try again."
+                );
+
+            }
+
+
+            setTimeout(
+                function() {
+
+                    setSpeakingStatus(
+                        false
+                    );
+
+                },
+                2200
+            );
+
+        };
+
+
+    recognition.onend =
+        async function() {
+
+            const finalMessage =
+                input.value.trim();
+
+
+            isListening = false;
+
+            micButton.classList.remove(
+                "listening"
+            );
+
+            micButton.textContent =
+                "🎤";
+
+
+            if (finalMessage) {
+
+                setSpeakingStatus(
+                    true,
+                    "Sending..."
+                );
+
+                await sendMessage();
+
+            }
+
+
+            setSpeakingStatus(
+                false
+            );
+
+        };
+
+
+    return true;
+
+}
+
+
+function toggleMicrophone() {
+
+    stopVoiceReply();
+
+
+    if (!recognition) {
+
+        const supported =
+            setupSpeechRecognition();
+
+
+        if (!supported) {
+
+            alert(
+                "Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge."
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    if (isListening) {
+
+        recognition.stop();
+        return;
+
+    }
+
+
+    try {
+
+        recognition.start();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =========================================
+   SEND MESSAGE
+   ========================================= */
+
+async function sendMessage() {
+
+    const text =
+        input.value.trim();
+
+
+    if (
+        !text
+        ||
+        isSending
+    ) {
+
+        return;
+
+    }
+
+
+    isSending = true;
+
+
+    if (!currentChatId) {
+
+        await createNewChat();
+
+    }
+
+
+    addMessage(
+        text,
+        "user"
+    );
+
+
+    input.value = "";
+
+
+    const typing =
+        document.createElement(
+            "div"
+        );
+
+
+    typing.className =
+        "message ai";
+
+
+    typing.innerHTML = `
+        <div class="message-avatar">
+            🤖
+        </div>
+
+        <div
+            class="message-bubble typing"
+        >
+            LinguaMind Teacher is thinking...
+        </div>
+    `;
+
+
+    messages.appendChild(
+        typing
+    );
+
+
+    messages.scrollTop =
+        messages.scrollHeight;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ai_teacher",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            message: text,
+
+                            mode:
+                                currentMode,
+
+                            chat_id:
+                                currentChatId
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        typing.remove();
+
+
+        if (
+            !response.ok
+        ) {
+
+            addMessage(
+                data.reply
+                ||
+                data.error
+                ||
+                "Gemini had a temporary problem. Please try again.",
+                "ai"
+            );
+
+            return;
+
+        }
+
+
+        if (data.chat_id) {
+
+            currentChatId =
+                data.chat_id;
+
+        }
+
+
+        addMessage(
+            data.reply,
+            "ai"
+        );
+
+
+        speakAIReply(
+            data.reply
+        );
+
+
+        await refreshHistory();
+
+
+    } catch (error) {
+
+        typing.remove();
+
+
+        addMessage(
+            "I couldn't connect to the AI server.",
+            "ai"
+        );
+
+
+    } finally {
+
+        isSending = false;
+
+        input.focus();
+
+    }
+
+}
+
+
+/* =========================================
+   OLD NEW CHAT BUTTON SUPPORT
+   ========================================= */
+
+function clearChat() {
+
+    stopVoiceReply();
+
+    createNewChat();
+
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,3848 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Scan Text — LinguaMind</title>
+
+    <style>
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --ink: #17182f;
+    --ink-2: #34364f;
+    --muted: #80869e;
+
+    --violet: #684fe7;
+    --violet-2: #8660f3;
+    --violet-3: #b56dff;
+    --violet-soft: #f0ebff;
+
+    --green: #20a566;
+    --green-soft: #e9f9f1;
+
+    --red: #df5365;
+    --red-soft: #fff1f3;
+
+    --amber: #f2a544;
+
+    --line: rgba(92, 76, 184, .14);
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+
+    color: var(--ink);
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(circle at 5% 4%, rgba(105, 76, 235, .34), transparent 28%),
+        radial-gradient(circle at 94% 6%, rgba(190, 91, 255, .28), transparent 27%),
+        radial-gradient(circle at 75% 98%, rgba(66, 127, 255, .18), transparent 31%),
+        radial-gradient(circle at 22% 86%, rgba(125, 94, 241, .13), transparent 28%),
+        linear-gradient(135deg, #e9e5ff 0%, #f8f7ff 41%, #eef3ff 70%, #f4ecff 100%);
+}
+
+/* Premium mesh texture */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    pointer-events: none;
+
+    opacity: .40;
+
+    background:
+        linear-gradient(rgba(255,255,255,.26) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.23) 1px, transparent 1px);
+
+    background-size: 44px 44px;
+
+    mask-image:
+        linear-gradient(to bottom, rgba(0,0,0,.34), transparent 78%);
+}
+
+body::after {
+    content: "";
+    position: fixed;
+
+    width: 520px;
+    height: 520px;
+
+    right: -190px;
+    top: 170px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(175, 93, 255, .16);
+
+    filter: blur(98px);
+
+    pointer-events: none;
+}
+
+button,
+textarea,
+input,
+select,
+a {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+/* =====================================================
+   PAGE
+===================================================== */
+
+.scan-page {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    height: 100vh;
+
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+
+    gap: 15px;
+
+    padding: 16px 22px 20px;
+
+    overflow: hidden;
+}
+
+/* =====================================================
+   PREMIUM TOPBAR
+===================================================== */
+
+.scan-topbar {
+    position: relative;
+    z-index: 20;
+
+    width: 100%;
+    max-width: 1600px;
+    min-height: 96px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 22px;
+
+    padding: 16px 20px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(105, 82, 227, .18);
+    border-radius: 26px;
+
+    background:
+        radial-gradient(circle at 82% 20%, rgba(161, 108, 255, .17), transparent 30%),
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(246,242,255,.88));
+
+    backdrop-filter: blur(26px) saturate(145%);
+    -webkit-backdrop-filter: blur(26px) saturate(145%);
+
+    box-shadow:
+        0 22px 60px rgba(62, 48, 137, .16),
+        inset 0 1px 0 rgba(255,255,255,.86);
+}
+
+.scan-topbar::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 24px;
+    right: 24px;
+
+    height: 4px;
+
+    border-radius: 0 0 20px 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #5c49e4 14%,
+            #825cf3 47%,
+            #bd70ff 78%,
+            transparent
+        );
+
+    box-shadow:
+        0 4px 18px rgba(112, 82, 239, .32);
+}
+
+.scan-topbar::after {
+    content: "";
+
+    position: absolute;
+
+    width: 270px;
+    height: 270px;
+
+    right: 145px;
+    top: -185px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(152, 95, 255, .13);
+
+    filter: blur(22px);
+
+    pointer-events: none;
+}
+
+.scan-brand {
+    position: relative;
+    z-index: 2;
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+}
+
+.scan-brand-icon {
+    position: relative;
+
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(255,255,255,.58);
+    border-radius: 19px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5541db, #7757ed 54%, #a16df9);
+
+    box-shadow:
+        0 13px 30px rgba(88, 67, 215, .34),
+        0 0 0 6px rgba(113, 84, 235, .08);
+
+    font-size: 27px;
+}
+
+.scan-brand-icon::after {
+    content: "";
+
+    position: absolute;
+
+    width: 8px;
+    height: 8px;
+
+    right: 3px;
+    bottom: 3px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+
+    background: #39b980;
+
+    box-shadow:
+        0 0 0 4px rgba(57,185,128,.10);
+}
+
+.scan-brand-copy small {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #684fe4;
+
+    font-size: 10px;
+    font-weight: 950;
+
+    letter-spacing: 1.65px;
+}
+
+.scan-brand-copy h1 {
+    margin: 0;
+
+    color: #16172f;
+
+    font-size: 26px;
+    line-height: 1.15;
+
+    font-weight: 900;
+
+    letter-spacing: -.8px;
+}
+
+.scan-brand-copy p {
+    margin: 6px 0 0;
+
+    color: #777d98;
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.scan-topbar-actions {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.vision-online {
+    min-height: 43px;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 13px;
+
+    border: 1px solid rgba(43,174,112,.18);
+    border-radius: 14px;
+
+    color: #207e52;
+
+    background:
+        linear-gradient(135deg, rgba(239,252,245,.95), rgba(227,249,237,.91));
+
+    box-shadow:
+        0 8px 22px rgba(39,160,98,.09),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    font-size: 11px;
+    font-weight: 850;
+
+    white-space: nowrap;
+}
+
+.vision-online-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+
+    box-shadow:
+        0 0 0 4px rgba(32,165,102,.12),
+        0 0 15px rgba(32,165,102,.35);
+
+    animation:
+        onlinePulse 2s ease-in-out infinite;
+}
+
+@keyframes onlinePulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.18);
+    }
+}
+
+.dashboard-button {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 18px;
+
+    border: 1px solid rgba(255,255,255,.26);
+    border-radius: 15px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5542dc, #7356ec 54%, #976bf7);
+
+    box-shadow:
+        0 13px 30px rgba(89, 67, 217, .30),
+        inset 0 1px 0 rgba(255,255,255,.22);
+
+    text-decoration: none;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.dashboard-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 17px 36px rgba(89, 67, 217, .38),
+        inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+/* =====================================================
+   WORKSPACE
+===================================================== */
+
+.scan-workspace {
+    width: 100%;
+    max-width: 1600px;
+    min-height: 0;
+
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns:
+        minmax(330px, .82fr)
+        minmax(0, 1.18fr);
+
+    gap: 16px;
+
+    overflow: hidden;
+}
+
+.scan-column {
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+
+    overflow: hidden;
+}
+
+.scan-column.right {
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-right: 7px;
+
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+}
+
+/* Keep RESULT and AI VISION cards at their natural height.
+   The right column itself scrolls instead of clipping card content. */
+.scan-column.right > .scan-card,
+.scan-column.right > .vision-section {
+    flex-shrink: 0;
+}
+
+.scan-column.right::-webkit-scrollbar {
+    width: 7px;
+}
+
+.scan-column.right::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scan-column.right::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+
+    background:
+        linear-gradient(180deg, #ad9ff0, #725de0);
+
+    border: 1px solid rgba(255,255,255,.55);
+}
+
+/* =====================================================
+   GLASS CARDS
+===================================================== */
+
+.scan-card,
+.vision-section {
+    position: relative;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(94, 77, 190, .17);
+    border-radius: 25px;
+
+    background:
+        radial-gradient(circle at 10% 0%, rgba(117, 89, 239, .10), transparent 31%),
+        linear-gradient(160deg, rgba(255,255,255,.92), rgba(242,239,255,.88));
+
+    backdrop-filter: blur(23px) saturate(135%);
+    -webkit-backdrop-filter: blur(23px) saturate(135%);
+
+    box-shadow:
+        0 20px 55px rgba(55, 45, 119, .14),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.scan-card::before,
+.vision-section::before {
+    content: "";
+
+    position: absolute;
+    z-index: 5;
+
+    top: 0;
+    left: 26px;
+    right: 26px;
+
+    height: 3px;
+
+    border-radius:
+        0 0 20px 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #604be5,
+            #8760f1,
+            #bd70ff,
+            transparent
+        );
+}
+
+.scan-column.left
+.scan-card {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.card-header {
+    flex-shrink: 0;
+
+    padding: 18px 19px 15px;
+
+    border-bottom:
+        1px solid rgba(90,77,157,.10);
+
+    background:
+        radial-gradient(circle at 88% 10%, rgba(146,101,248,.12), transparent 32%),
+        linear-gradient(135deg, rgba(255,255,255,.96), rgba(242,238,255,.91));
+}
+
+.card-header-row {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+}
+
+.card-mini-icon {
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(117,89,232,.15);
+    border-radius: 13px;
+
+    background:
+        linear-gradient(135deg, #ebe6ff, #f8f5ff);
+
+    box-shadow:
+        0 7px 18px rgba(83,65,179,.08);
+
+    font-size: 19px;
+}
+
+.card-header small {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #6951e5;
+
+    font-size: 9px;
+    font-weight: 950;
+
+    letter-spacing: 1.35px;
+}
+
+.card-header h2 {
+    margin: 0;
+
+    color: #1d1f3a;
+
+    font-size: 17px;
+    font-weight: 900;
+
+    letter-spacing: -.3px;
+}
+
+.card-body {
+    padding: 17px;
+}
+
+.scan-column.left
+.card-body {
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow-y: auto;
+}
+
+.scan-column.left
+.card-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scan-column.left
+.card-body::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+
+    background:
+        linear-gradient(180deg, #c2b8ed, #8d7be8);
+}
+
+/* =====================================================
+   UPLOAD
+===================================================== */
+
+.upload-zone {
+    position: relative;
+
+    flex: 1;
+    min-height: 250px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 22px;
+
+    overflow: hidden;
+
+    border: 1px dashed rgba(102, 82, 214, .31);
+    border-radius: 18px;
+
+    background:
+        radial-gradient(circle at 50% 18%, rgba(111,84,231,.09), transparent 34%),
+        linear-gradient(145deg, rgba(255,255,255,.86), rgba(238,234,255,.84));
+
+    text-align: center;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.88);
+
+    transition: .2s ease;
+}
+
+.upload-zone::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    left: -85px;
+    bottom: -100px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(109, 82, 231, .06);
+}
+
+.upload-zone.dragover {
+    border-color: #6b54e8;
+
+    background:
+        radial-gradient(circle at 50% 18%, rgba(111,84,231,.16), transparent 34%),
+        linear-gradient(145deg, #eeeaff, #f7f4ff);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(107,84,232,.08),
+        0 10px 26px rgba(81,62,180,.09);
+}
+
+.upload-placeholder {
+    position: relative;
+    z-index: 2;
+
+    max-width: 280px;
+}
+
+.upload-icon {
+    width: 67px;
+    height: 67px;
+
+    display: grid;
+    place-items: center;
+
+    margin: 0 auto 15px;
+
+    border: 1px solid rgba(104,79,231,.14);
+    border-radius: 20px;
+
+    background:
+        linear-gradient(135deg, #e8e2ff, #f7f4ff);
+
+    box-shadow:
+        0 12px 26px rgba(77,59,169,.10);
+
+    font-size: 30px;
+}
+
+.upload-placeholder h3 {
+    margin: 0 0 7px;
+
+    color: #24263f;
+
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.upload-placeholder p {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.image-preview {
+    position: relative;
+    z-index: 2;
+
+    width: 100%;
+    max-height: 350px;
+
+    display: none;
+
+    object-fit: contain;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 12px 28px rgba(42,43,85,.10);
+}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+.upload-actions {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 9px;
+
+    margin-top: 12px;
+}
+
+.action-button {
+    min-height: 47px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 13px;
+
+    border-radius: 12px;
+
+    font-size: 11px;
+    font-weight: 850;
+
+    transition: .18s ease;
+}
+
+.secondary-button {
+    border: 1px solid rgba(86,78,136,.14);
+
+    color: #55596d;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(248,247,255,.92));
+
+    box-shadow:
+        0 6px 15px rgba(52,49,91,.04);
+}
+
+.secondary-button:hover {
+    color: #5e49df;
+
+    border-color:
+        rgba(104,79,231,.25);
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 9px 18px rgba(74,57,160,.07);
+}
+
+.primary-button {
+    width: 100%;
+
+    margin-top: 9px;
+
+    border: none;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5541da, #7052e9 54%, #9469f6);
+
+    box-shadow:
+        0 12px 27px rgba(88,66,215,.27),
+        inset 0 1px 0 rgba(255,255,255,.20);
+}
+
+.primary-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 32px rgba(88,66,215,.34);
+}
+
+.primary-button:disabled {
+    cursor: not-allowed;
+
+    opacity: .50;
+
+    transform: none;
+
+    box-shadow:
+        0 7px 16px rgba(88,66,215,.12);
+}
+
+.mp3-button {
+    border: none;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5541da, #7052e9 54%, #9469f6);
+
+    box-shadow:
+        0 10px 22px rgba(88,66,215,.22);
+}
+
+.mp3-button:hover {
+    transform: translateY(-1px);
+}
+
+.mp3-button:disabled {
+    cursor: wait;
+
+    opacity: .65;
+}
+
+.clear-button {
+    width: 100%;
+
+    margin-top: 10px;
+
+    border: 1px solid rgba(86,78,136,.14);
+
+    color: #696d80;
+
+    background:
+        rgba(255,255,255,.88);
+}
+
+.clear-button:hover {
+    color: var(--red);
+
+    border-color:
+        rgba(223,83,101,.18);
+
+    background:
+        #fff6f7;
+}
+
+/* =====================================================
+   RESULT
+===================================================== */
+
+.result-empty {
+    min-height: 350px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.result-empty-inner {
+    max-width: 330px;
+}
+
+.result-empty-icon {
+    width: 66px;
+    height: 66px;
+
+    display: grid;
+    place-items: center;
+
+    margin: 0 auto 15px;
+
+    border: 1px solid rgba(104,79,231,.11);
+    border-radius: 20px;
+
+    color: #7769c8;
+
+    background:
+        linear-gradient(135deg, #ece8ff, #f8f6ff);
+
+    box-shadow:
+        0 10px 24px rgba(72,59,144,.08);
+
+    font-size: 27px;
+}
+
+.result-empty h3 {
+    margin: 0 0 7px;
+
+    color: #25273f;
+
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.result-empty p {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.result-content {
+    display: none;
+}
+
+.result-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 11px;
+}
+
+.result-status {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 7px 10px;
+
+    border: 1px solid rgba(32,165,102,.14);
+    border-radius: 20px;
+
+    color: var(--green);
+
+    background:
+        linear-gradient(135deg, #eaf9f1, #f3fcf7);
+
+    font-size: 10px;
+    font-weight: 850;
+}
+
+.text-count {
+    color: var(--muted);
+
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.result-text {
+    width: 100%;
+    min-height: 280px;
+    height: 320px;
+    max-height: 680px;
+
+    resize: vertical;
+    overflow-y: auto;
+
+    padding: 15px;
+
+    outline: none;
+
+    border: 1px solid rgba(84,78,128,.14);
+    border-radius: 14px;
+
+    color: #303247;
+
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.95), rgba(248,247,255,.93));
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8);
+
+    font-size: 12px;
+    line-height: 1.7;
+
+    transition: .18s ease;
+}
+
+.result-text:focus {
+    border-color: #7b67ec;
+
+    box-shadow:
+        0 0 0 4px rgba(104,79,231,.08),
+        0 8px 19px rgba(72,59,144,.06);
+}
+
+.audio-language {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-top: 13px;
+    margin-bottom: 10px;
+
+    padding: 12px 13px;
+
+    border: 1px solid rgba(86,78,136,.12);
+    border-radius: 13px;
+
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.90), rgba(246,244,255,.88));
+}
+
+.audio-language label {
+    color: #3b3e55;
+
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.audio-language select {
+    height: 39px;
+
+    padding: 0 11px;
+
+    outline: none;
+
+    border: 1px solid rgba(84,78,128,.14);
+    border-radius: 10px;
+
+    color: var(--ink);
+
+    background:
+        rgba(255,255,255,.96);
+
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.audio-language select:focus {
+    border-color: #806bf0;
+}
+
+.result-actions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 9px;
+
+    margin-top: 11px;
+}
+
+.audio-panel {
+    display: none;
+
+    margin-top: 13px;
+    padding: 15px;
+
+    border: 1px solid rgba(104,79,231,.14);
+    border-radius: 15px;
+
+    background:
+        radial-gradient(circle at 90% 5%, rgba(126,91,239,.10), transparent 34%),
+        linear-gradient(135deg, #f5f2ff, #eeebff);
+
+    box-shadow:
+        0 9px 22px rgba(80,62,170,.07);
+}
+
+.audio-panel-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 12px;
+}
+
+.audio-panel-top small {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #6650e5;
+
+    font-size: 8px;
+    font-weight: 950;
+
+    letter-spacing: 1px;
+}
+
+.audio-panel-top strong {
+    display: block;
+
+    color: #2d3048;
+
+    font-size: 12px;
+}
+
+.audio-ready {
+    padding: 6px 9px;
+
+    border: 1px solid rgba(32,165,102,.12);
+    border-radius: 20px;
+
+    color: var(--green);
+
+    background: var(--green-soft);
+
+    font-size: 8px;
+    font-weight: 900;
+}
+
+#audioPlayer {
+    width: 100%;
+    height: 42px;
+}
+
+.download-audio {
+    min-height: 41px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 10px;
+
+    border: 1px solid rgba(104,79,231,.14);
+    border-radius: 11px;
+
+    color: #5e49df;
+
+    background:
+        rgba(255,255,255,.91);
+
+    font-size: 10px;
+    font-weight: 900;
+
+    text-decoration: none;
+
+    transition: .18s ease;
+}
+
+.download-audio:hover {
+    background:
+        #eee9ff;
+
+    transform:
+        translateY(-1px);
+}
+
+/* =====================================================
+   MESSAGES / LOADERS
+===================================================== */
+
+.message {
+    display: none;
+
+    margin-top: 10px;
+
+    padding: 11px 13px;
+
+    border-radius: 11px;
+
+    font-size: 10px;
+    font-weight: 750;
+
+    line-height: 1.5;
+}
+
+.message.error {
+    display: block;
+
+    color: var(--red);
+
+    background: var(--red-soft);
+}
+
+.message.success {
+    display: block;
+
+    color: var(--green);
+
+    background: var(--green-soft);
+}
+
+.spinner,
+.vision-spinner {
+    width: 16px;
+    height: 16px;
+
+    display: none;
+
+    border:
+        2px solid rgba(255,255,255,.35);
+
+    border-top-color: white;
+
+    border-radius: 50%;
+
+    animation:
+        spin .75s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =====================================================
+   AI VISION
+===================================================== */
+
+.vision-section {
+    flex-shrink: 0;
+}
+
+.vision-header {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 17px 18px;
+
+    border-bottom:
+        1px solid rgba(90,77,157,.10);
+
+    background:
+        radial-gradient(circle at 87% 10%, rgba(149,102,250,.14), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,.95), rgba(239,235,255,.91));
+}
+
+.vision-header-icon {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(255,255,255,.5);
+    border-radius: 14px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5844df, #8260f2 60%, #a16ef9);
+
+    box-shadow:
+        0 10px 23px rgba(89,67,218,.25);
+
+    font-size: 20px;
+}
+
+.vision-header small {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #6951e5;
+
+    font-size: 8px;
+    font-weight: 950;
+
+    letter-spacing: 1.2px;
+}
+
+.vision-header h2 {
+    margin: 0 0 4px;
+
+    color: #1d1f3a;
+
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.vision-header p {
+    max-width: 650px;
+
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.vision-badge {
+    margin-left: auto;
+
+    padding: 6px 9px;
+
+    border: 1px solid rgba(104,79,231,.14);
+    border-radius: 20px;
+
+    color: #5f4ae1;
+
+    background:
+        linear-gradient(135deg, #ede8ff, #f8f5ff);
+
+    font-size: 8px;
+    font-weight: 900;
+
+    letter-spacing: .7px;
+}
+
+.vision-body {
+    padding: 16px;
+}
+
+.vision-prompts {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+    margin-bottom: 13px;
+}
+
+.vision-prompts button {
+    min-height: 34px;
+
+    padding: 0 10px;
+
+    border: 1px solid rgba(82,77,127,.12);
+    border-radius: 20px;
+
+    color: #606377;
+
+    background:
+        rgba(255,255,255,.88);
+
+    box-shadow:
+        0 4px 12px rgba(60,54,104,.035);
+
+    font-size: 9px;
+    font-weight: 750;
+
+    transition: .18s ease;
+}
+
+.vision-prompts button:hover {
+    color: #5d48de;
+
+    border-color:
+        rgba(103,82,224,.24);
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 7px 15px rgba(80,62,170,.08);
+}
+
+.vision-label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #36384f;
+
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.vision-prompt {
+    width: 100%;
+    min-height: 86px;
+    max-height: 170px;
+
+    resize: vertical;
+
+    padding: 13px;
+
+    outline: none;
+
+    border: 1px solid rgba(84,78,128,.14);
+    border-radius: 13px;
+
+    color: #303247;
+
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.94), rgba(248,247,255,.92));
+
+    font-size: 11px;
+    line-height: 1.6;
+
+    transition: .18s ease;
+}
+
+.vision-prompt:focus {
+    border-color: #7b67ec;
+
+    box-shadow:
+        0 0 0 4px rgba(104,79,231,.08);
+}
+
+.vision-button {
+    width: 100%;
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-top: 10px;
+
+    border: none;
+    border-radius: 13px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5541da, #7052e9 54%, #9469f6);
+
+    box-shadow:
+        0 12px 26px rgba(88,66,215,.26),
+        inset 0 1px 0 rgba(255,255,255,.20);
+
+    font-size: 11px;
+    font-weight: 900;
+
+    transition: .18s ease;
+}
+
+.vision-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 31px rgba(88,66,215,.34);
+}
+
+.vision-button:disabled {
+    cursor: wait;
+
+    opacity: .65;
+}
+
+.vision-error {
+    display: none;
+
+    margin-top: 10px;
+    padding: 11px 13px;
+
+    border-radius: 11px;
+
+    color: var(--red);
+
+    background: var(--red-soft);
+
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.vision-result {
+    display: none;
+
+    margin-top: 13px;
+    padding: 15px;
+
+    border: 1px solid rgba(104,79,231,.14);
+    border-radius: 15px;
+
+    background:
+        radial-gradient(circle at 92% 5%, rgba(126,91,239,.10), transparent 34%),
+        linear-gradient(135deg, #f5f2ff, #eeebff);
+
+    box-shadow:
+        0 9px 22px rgba(80,62,170,.07);
+}
+
+.vision-result-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-bottom: 11px;
+}
+
+.vision-result-top small {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #6650e5;
+
+    font-size: 8px;
+    font-weight: 950;
+
+    letter-spacing: 1px;
+}
+
+.vision-result-top strong {
+    font-size: 12px;
+}
+
+.vision-result-top > span {
+    padding: 5px 8px;
+
+    border: 1px solid rgba(104,79,231,.12);
+    border-radius: 20px;
+
+    color: #5e49df;
+
+    background:
+        rgba(255,255,255,.87);
+
+    font-size: 8px;
+    font-weight: 900;
+}
+
+.vision-reply {
+    color: #3a3d53;
+
+    font-size: 11px;
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+}
+
+.vision-copy {
+    min-height: 39px;
+
+    margin-top: 12px;
+    padding: 0 12px;
+
+    border: 1px solid rgba(104,79,231,.14);
+    border-radius: 10px;
+
+    color: #5e49df;
+
+    background:
+        rgba(255,255,255,.90);
+
+    font-size: 9px;
+    font-weight: 850;
+
+    transition: .18s ease;
+}
+
+.vision-copy:hover {
+    transform: translateY(-1px);
+
+    background: #ede8ff;
+}
+
+/* =====================================================
+   ENTRY ANIMATION
+===================================================== */
+
+.scan-topbar,
+.scan-card,
+.vision-section {
+    animation:
+        premiumEnter .42s ease both;
+}
+
+.scan-card {
+    animation-delay: .04s;
+}
+
+.vision-section {
+    animation-delay: .08s;
+}
+
+@keyframes premiumEnter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1000px) {
+    .scan-workspace {
+        grid-template-columns:
+            minmax(300px, .75fr)
+            minmax(0, 1.25fr);
+    }
+}
+
+@media (max-width: 850px) {
+    html,
+    body {
+        height: auto;
+        min-height: 100%;
+
+        overflow-y: auto;
+    }
+
+    .scan-page {
+        height: auto;
+        min-height: 100vh;
+
+        display: block;
+
+        padding: 12px;
+
+        overflow: visible;
+    }
+
+    .scan-topbar {
+        margin-bottom: 12px;
+    }
+
+    .scan-workspace {
+        display: block;
+
+        overflow: visible;
+    }
+
+    .scan-column {
+        overflow: visible;
+    }
+
+    .scan-column.left
+    .scan-card {
+        height: auto;
+
+        margin-bottom: 12px;
+    }
+
+    .scan-column.right {
+        overflow: visible;
+    }
+}
+
+@media (max-width: 650px) {
+    .scan-topbar {
+        min-height: 80px;
+
+        align-items: flex-start;
+
+        padding: 12px 13px;
+
+        border-radius: 20px;
+    }
+
+    .scan-brand-icon {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 15px;
+
+        font-size: 23px;
+    }
+
+    .scan-brand-copy h1 {
+        font-size: 20px;
+    }
+
+    .scan-brand-copy p,
+    .vision-online {
+        display: none;
+    }
+
+    .dashboard-button {
+        min-height: 42px;
+
+        padding: 0 12px;
+    }
+
+    .upload-actions,
+    .result-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .upload-zone {
+        min-height: 235px;
+    }
+
+    .vision-header {
+        align-items: flex-start;
+    }
+
+    .vision-badge {
+        display: none;
+    }
+}
+
+    
+    /* =========================================
+       PRO FEATURE BADGES + UPGRADE MODAL
+    ========================================= */
+
+    .pro-feature-button {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pro-mini-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-height: 20px;
+
+        margin-left: 7px;
+        padding: 0 7px;
+
+        border: 1px solid rgba(255, 228, 151, .28);
+        border-radius: 999px;
+
+        color: #fff0b8;
+
+        background:
+            rgba(43, 31, 106, .25);
+
+        font-size: 8px;
+        font-weight: 950;
+        letter-spacing: .7px;
+
+        vertical-align: middle;
+    }
+
+    .pro-upgrade-modal {
+        position: fixed;
+        inset: 0;
+
+        z-index: 999999;
+
+        display: none;
+        align-items: center;
+        justify-content: center;
+
+        padding: 24px;
+
+        background:
+            rgba(12, 15, 35, .58);
+
+        backdrop-filter:
+            blur(10px);
+    }
+
+    .pro-upgrade-modal.show {
+        display: flex;
+    }
+
+    .pro-upgrade-card {
+        width: min(100%, 470px);
+
+        position: relative;
+        overflow: hidden;
+
+        padding: 30px;
+
+        border:
+            1px solid
+            rgba(148, 118, 255, .20);
+
+        border-radius: 26px;
+
+        background:
+            radial-gradient(
+                circle at 100% 0%,
+                rgba(255, 223, 137, .18),
+                transparent 30%
+            ),
+            linear-gradient(
+                145deg,
+                #ffffff,
+                #f6f2ff 60%,
+                #eee8ff
+            );
+
+        box-shadow:
+            0 28px 80px
+            rgba(22, 17, 67, .28);
+    }
+
+    .pro-upgrade-icon {
+        width: 64px;
+        height: 64px;
+
+        display: grid;
+        place-items: center;
+
+        margin-bottom: 18px;
+
+        border-radius: 19px;
+
+        color: #fff2bd;
+
+        background:
+            linear-gradient(
+                135deg,
+                #5440d4,
+                #825cf0 58%,
+                #a879f7
+            );
+
+        box-shadow:
+            0 14px 32px
+            rgba(89, 67, 216, .25);
+
+        font-size: 29px;
+    }
+
+    .pro-upgrade-eyebrow {
+        display: block;
+
+        margin-bottom: 7px;
+
+        color: #6e58e5;
+
+        font-size: 10px;
+        font-weight: 950;
+        letter-spacing: 1.1px;
+    }
+
+    .pro-upgrade-card h3 {
+        margin:
+            0
+            0
+            10px;
+
+        color: #20233d;
+
+        font-size: 27px;
+        line-height: 1.12;
+        letter-spacing: -.65px;
+    }
+
+    .pro-upgrade-card p {
+        margin: 0;
+
+        color: #777d93;
+
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .pro-upgrade-feature {
+        display: inline-flex;
+        align-items: center;
+
+        min-height: 31px;
+
+        margin-top: 17px;
+        padding: 0 11px;
+
+        border:
+            1px solid
+            rgba(102, 82, 220, .12);
+
+        border-radius: 999px;
+
+        color: #6650d8;
+
+        background:
+            rgba(108, 92, 231, .07);
+
+        font-size: 10px;
+        font-weight: 900;
+    }
+
+    .pro-upgrade-actions {
+        display: grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 10px;
+
+        margin-top: 24px;
+    }
+
+    .pro-upgrade-action {
+        min-height: 49px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border: none;
+        border-radius: 13px;
+
+        font-family: inherit;
+
+        font-size: 11px;
+        font-weight: 900;
+
+        text-decoration: none;
+
+        cursor: pointer;
+
+        transition:
+            .18s ease;
+    }
+
+    .pro-upgrade-action:hover {
+        transform:
+            translateY(-2px);
+    }
+
+    .pro-upgrade-action.primary {
+        color: white;
+
+        background:
+            linear-gradient(
+                135deg,
+                #5744d7,
+                #7354e9 54%,
+                #9869f3
+            );
+
+        box-shadow:
+            0 12px 26px
+            rgba(88, 67, 216, .22);
+    }
+
+    .pro-upgrade-action.secondary {
+        color: #65697d;
+
+        background:
+            rgba(255,255,255,.80);
+
+        border:
+            1px solid
+            rgba(75, 68, 115, .12);
+    }
+
+    .pro-upgrade-note {
+        margin-top: 14px;
+
+        color: #999daf;
+
+        font-size: 9px;
+        line-height: 1.55;
+
+        text-align: center;
+    }
+
+    @media (max-width: 560px) {
+
+        .pro-upgrade-card {
+            padding: 24px;
+        }
+
+        .pro-upgrade-card h3 {
+            font-size: 24px;
+        }
+
+        .pro-upgrade-actions {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+</style>
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/midnight_royal_v2.css') }}">
+</head>
+
+<body class="lmx-page lmx-scan {% if session.get('user_id') %}lmx-authenticated{% endif %}">
+{% if session.get('user_id') %}
+    {% include 'app_sidebar.html' %}
+{% endif %}
+
+
+<div class="scan-page">
+
+    <header class="scan-topbar">
+
+        <div class="scan-brand">
+
+            <div class="scan-brand-icon">
+                📷
+            </div>
+
+            <div class="scan-brand-copy">
+                <small>LINGUAMIND VISION</small>
+
+                <h1>
+                    Scan Text
+                </h1>
+
+                <p>
+                    Upload or capture an image, extract editable text, create audio and ask Gemini Vision.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="scan-topbar-actions">
+
+            <div class="vision-online">
+                <span class="vision-online-dot"></span>
+                Vision Ready
+            </div>
+
+            
+
+        </div>
+
+    </header>
+
+
+    <main class="scan-workspace">
+
+        <!-- =========================================
+             LEFT: IMAGE
+        ========================================== -->
+
+        <div class="scan-column left">
+
+            <section class="scan-card">
+
+                <div class="card-header">
+
+                    <div class="card-header-row">
+
+                        <div class="card-mini-icon">
+                            🖼
+                        </div>
+
+                        <div>
+                            <small>IMAGE INPUT</small>
+                            <h2>Upload or take a photo</h2>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <div
+                        id="uploadZone"
+                        class="upload-zone"
+                    >
+
+                        <div
+                            id="uploadPlaceholder"
+                            class="upload-placeholder"
+                        >
+
+                            <div class="upload-icon">
+                                📄
+                            </div>
+
+                            <h3>
+                                Add an image
+                            </h3>
+
+                            <p>
+                                Upload notes, worksheets, screenshots or photographed pages.
+                                JPG, PNG and WEBP are supported.
+                            </p>
+
+                        </div>
+
+
+                        <img
+                            id="imagePreview"
+                            class="image-preview"
+                            alt="Preview"
+                        >
+
+                    </div>
+
+
+                    <input
+                        id="uploadInput"
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                    >
+
+
+                    <input
+                        id="cameraInput"
+                        type="file"
+                        accept="image/*"
+                        capture="environment"
+                    >
+
+
+                    <div class="upload-actions">
+
+                        <button
+                            type="button"
+                            class="action-button secondary-button"
+                            onclick="openUpload()"
+                        >
+                            🖼 Upload Image
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="action-button secondary-button"
+                            onclick="openCamera()"
+                        >
+                            📷 Take Photo
+                        </button>
+
+                    </div>
+
+
+                    <button
+                        id="scanButton"
+                        type="button"
+                        class="action-button primary-button"
+                        onclick="scanText()"
+                        disabled
+                    >
+
+                        <span
+                            id="scanSpinner"
+                            class="spinner"
+                        ></span>
+
+                        <span id="scanButtonText">
+                            ✦ Extract Text
+                        </span>
+
+                    </button>
+
+
+                    <div
+                        id="message"
+                        class="message"
+                    ></div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- =========================================
+             RIGHT: RESULT + VISION
+        ========================================== -->
+
+        <div class="scan-column right">
+
+            <section class="scan-card">
+
+                <div class="card-header">
+
+                    <div class="card-header-row">
+
+                        <div class="card-mini-icon">
+                            ✦
+                        </div>
+
+                        <div>
+                            <small>OCR RESULT</small>
+                            <h2>Extracted text</h2>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <div
+                        id="resultEmpty"
+                        class="result-empty"
+                    >
+
+                        <div class="result-empty-inner">
+
+                            <div class="result-empty-icon">
+                                ✦
+                            </div>
+
+                            <h3>
+                                Your text will appear here
+                            </h3>
+
+                            <p>
+                                Choose an image and press Extract Text.
+                                You can then edit, copy, listen to it or generate an MP3.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="resultContent"
+                        class="result-content"
+                    >
+
+                        <div class="result-toolbar">
+
+                            <span class="result-status">
+                                ✓ Text detected
+                            </span>
+
+                            <span
+                                id="textCount"
+                                class="text-count"
+                            >
+                                0 characters
+                            </span>
+
+                        </div>
+
+
+                        <textarea
+                            id="resultText"
+                            class="result-text"
+                            spellcheck="true"
+                        ></textarea>
+
+                        <div
+                            style="
+                                margin-top:8px;
+                                color:#7e8297;
+                                font-size:9px;
+                                font-weight:750;
+                                line-height:1.45;
+                            "
+                        >
+                            ↓ Audio tools and MP3 are directly below the extracted text.
+                        </div>
+
+
+                        <div class="audio-language">
+
+                            <label for="speechLanguage">
+                                AUDIO LANGUAGE
+                            </label>
+
+                            <select id="speechLanguage">
+                                <option value="en" selected>🇺🇸 English</option>
+                                <option value="uz">🇺🇿 Uzbek</option>
+                                <option value="ru">🇷🇺 Russian</option>
+                            </select>
+
+                        </div>
+
+
+                        <div class="result-actions">
+
+                            <button
+                                type="button"
+                                class="action-button secondary-button"
+                                onclick="copyText()"
+                            >
+                                📋 Copy
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="action-button secondary-button"
+                                onclick="listenText()"
+                            >
+                                🔊 Quick Listen
+                            </button>
+
+
+                            <button
+                                id="mp3Button"
+                                type="button"
+                                class="action-button mp3-button pro-feature-button"
+                                onclick="generateMP3()"
+                            >
+                                🎧 Generate & Download MP3
+                                <span class="pro-mini-badge">PRO</span>
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="audioPanel"
+                            class="audio-panel"
+                        >
+
+                            <div class="audio-panel-top">
+
+                                <div>
+                                    <small>LINGUAMIND AUDIO</small>
+                                    <strong>Your MP3 is ready</strong>
+                                </div>
+
+                                <span class="audio-ready">
+                                    ✓ READY
+                                </span>
+
+                            </div>
+
+
+                            <audio
+                                id="audioPlayer"
+                                controls
+                            ></audio>
+
+
+                            <a
+                                id="downloadAudio"
+                                class="download-audio"
+                                download="linguamind_audio.mp3"
+                            >
+                                ↓ Download MP3
+                            </a>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="action-button clear-button"
+                            onclick="clearResult()"
+                        >
+                            ↻ Clear everything
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 AI VISION
+            ========================================== -->
+
+            <section class="vision-section">
+
+                <div class="vision-header">
+
+                    <div class="vision-header-icon">
+                        ✦
+                    </div>
+
+                    <div>
+                        <small>GEMINI VISION</small>
+
+                        <h2>
+                            Ask AI about your image
+                        </h2>
+
+                        <p>
+                            Explain, translate, check grammar, study vocabulary or generate quiz questions.
+                        </p>
+                    </div>
+
+                    <span class="vision-badge">
+                        AI VISION
+                    </span>
+
+                </div>
+
+
+                <div class="vision-body">
+
+                    <div class="vision-prompts">
+
+                        <button
+                            type="button"
+                            onclick="setVisionPrompt('Explain everything in this image in simple English.')"
+                        >
+                            💡 Explain
+                        </button>
+
+
+                        <button
+                            type="button"
+                            onclick="setVisionPrompt('Translate the text in this image into Uzbek.')"
+                        >
+                            🌐 Translate
+                        </button>
+
+
+                        <button
+                            type="button"
+                            onclick="setVisionPrompt('Find grammar mistakes in this image and explain every correction.')"
+                        >
+                            ✍️ Check Grammar
+                        </button>
+
+
+                        <button
+                            type="button"
+                            onclick="setVisionPrompt('Find the most important English vocabulary in this image and explain each word.')"
+                        >
+                            📚 Vocabulary
+                        </button>
+
+
+                        <button
+                            type="button"
+                            onclick="setVisionPrompt('Create 5 multiple-choice English questions based on this image.')"
+                        >
+                            🧠 Create Quiz
+                        </button>
+
+                    </div>
+
+
+                    <label
+                        for="visionPrompt"
+                        class="vision-label"
+                    >
+                        WHAT DO YOU WANT AI TO DO?
+                    </label>
+
+
+                    <textarea
+                        id="visionPrompt"
+                        class="vision-prompt"
+                        placeholder="For example: Explain this paragraph in simple English..."
+                    ></textarea>
+
+
+                    <button
+                        id="visionButton"
+                        type="button"
+                        class="vision-button pro-feature-button"
+                        onclick="askVisionAI()"
+                    >
+
+                        <span
+                            id="visionSpinner"
+                            class="vision-spinner"
+                        ></span>
+
+                        <span id="visionButtonText">
+                            ✦ Analyze with AI
+                            <span class="pro-mini-badge">PRO</span>
+                        </span>
+
+                    </button>
+
+
+                    <div
+                        id="visionError"
+                        class="vision-error"
+                    ></div>
+
+
+                    <div
+                        id="visionResult"
+                        class="vision-result"
+                    >
+
+                        <div class="vision-result-top">
+
+                            <div>
+                                <small>LINGUAMIND AI</small>
+                                <strong>AI Vision Response</strong>
+                            </div>
+
+                            <span>
+                                ✦ GEMINI
+                            </span>
+
+                        </div>
+
+
+                        <div
+                            id="visionReply"
+                            class="vision-reply"
+                        ></div>
+
+
+                        <button
+                            type="button"
+                            class="vision-copy"
+                            onclick="copyVisionReply()"
+                        >
+                            📋 Copy AI response
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+
+<div
+    id="proUpgradeModal"
+    class="pro-upgrade-modal"
+    onclick="closeProUpgradeModalOnBackdrop(event)"
+>
+    <div
+        class="pro-upgrade-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="proUpgradeTitle"
+    >
+
+        <div class="pro-upgrade-icon">
+            👑
+        </div>
+
+        <span class="pro-upgrade-eyebrow">
+            LINGUAMIND PRO
+        </span>
+
+        <h3 id="proUpgradeTitle">
+            Unlock this premium feature
+        </h3>
+
+        <p>
+            This tool is included with LinguaMind Pro.
+            Upgrade your account to unlock it and the
+            other premium learning features.
+        </p>
+
+        <div
+            id="proUpgradeFeature"
+            class="pro-upgrade-feature"
+        >
+            Premium feature
+        </div>
+
+        <div class="pro-upgrade-actions">
+
+            <button
+                type="button"
+                class="pro-upgrade-action secondary"
+                onclick="closeProUpgradeModal()"
+            >
+                Stay on Free
+            </button>
+
+            <a
+                id="proUpgradePricingLink"
+                href="{{ url_for('pricing') }}"
+                class="pro-upgrade-action primary"
+            >
+                👑 View Pro Plans
+            </a>
+
+        </div>
+
+        <div class="pro-upgrade-note">
+            No payment is processed from this popup.
+            It only opens the LinguaMind pricing page.
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+let selectedFile = null;
+
+
+    const uploadInput =
+        document.getElementById(
+            "uploadInput"
+        );
+
+    const cameraInput =
+        document.getElementById(
+            "cameraInput"
+        );
+
+    const uploadZone =
+        document.getElementById(
+            "uploadZone"
+        );
+
+
+    function openUpload() {
+
+        uploadInput.click();
+
+    }
+
+
+    function openCamera() {
+
+        cameraInput.click();
+
+    }
+
+
+    uploadInput.addEventListener(
+        "change",
+        function() {
+
+            if (this.files.length > 0) {
+
+                handleFile(
+                    this.files[0]
+                );
+
+            }
+
+        }
+    );
+
+
+    cameraInput.addEventListener(
+        "change",
+        function() {
+
+            if (this.files.length > 0) {
+
+                handleFile(
+                    this.files[0]
+                );
+
+            }
+
+        }
+    );
+
+
+    uploadZone.addEventListener(
+        "dragover",
+        function(event) {
+
+            event.preventDefault();
+
+            uploadZone.classList.add(
+                "dragover"
+            );
+
+        }
+    );
+
+
+    uploadZone.addEventListener(
+        "dragleave",
+        function() {
+
+            uploadZone.classList.remove(
+                "dragover"
+            );
+
+        }
+    );
+
+
+    uploadZone.addEventListener(
+        "drop",
+        function(event) {
+
+            event.preventDefault();
+
+            uploadZone.classList.remove(
+                "dragover"
+            );
+
+            if (
+                event.dataTransfer.files.length
+                >
+                0
+            ) {
+
+                handleFile(
+                    event.dataTransfer.files[0]
+                );
+
+            }
+
+        }
+    );
+
+
+    function handleFile(file) {
+
+        const allowedTypes = [
+            "image/jpeg",
+            "image/png",
+            "image/webp"
+        ];
+
+        if (
+            !allowedTypes.includes(
+                file.type
+            )
+        ) {
+
+            showMessage(
+                "Please choose a JPG, PNG or WEBP image.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            file.size
+            >
+            10 * 1024 * 1024
+        ) {
+
+            showMessage(
+                "Image is too large. Maximum size is 10 MB.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        selectedFile = file;
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(event) {
+
+                const preview =
+                    document.getElementById(
+                        "imagePreview"
+                    );
+
+                preview.src =
+                    event.target.result;
+
+                preview.style.display =
+                    "block";
+
+
+                document
+                    .getElementById(
+                        "uploadPlaceholder"
+                    )
+                    .style.display =
+                        "none";
+
+
+                document
+                    .getElementById(
+                        "scanButton"
+                    )
+                    .disabled =
+                        false;
+
+
+                hideMessage();
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+    }
+
+
+    async function scanText() {
+
+        if (!selectedFile) {
+
+            showMessage(
+                "Please choose an image first.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const button =
+            document.getElementById(
+                "scanButton"
+            );
+
+        const spinner =
+            document.getElementById(
+                "scanSpinner"
+            );
+
+        const buttonText =
+            document.getElementById(
+                "scanButtonText"
+            );
+
+
+        button.disabled = true;
+
+        spinner.style.display =
+            "block";
+
+        buttonText.textContent =
+            "Reading image...";
+
+
+        hideMessage();
+
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "image",
+            selectedFile
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/scan_text",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                showMessage(
+                    data.error
+                    ||
+                    "Could not read the image.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const text =
+                data.text || "";
+
+
+            document
+                .getElementById(
+                    "resultText"
+                )
+                .value =
+                    text;
+
+
+            document
+                .getElementById(
+                    "resultEmpty"
+                )
+                .style.display =
+                    "none";
+
+
+            document
+                .getElementById(
+                    "resultContent"
+                )
+                .style.display =
+                    "block";
+
+
+            updateTextCount();
+
+
+            showMessage(
+                "Text extracted successfully.",
+                "success"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+            showMessage(
+                "Could not connect to the server.",
+                "error"
+            );
+
+        } finally {
+
+            button.disabled =
+                false;
+
+            spinner.style.display =
+                "none";
+
+            buttonText.textContent =
+                "✦ Extract Text";
+
+        }
+
+    }
+
+
+    document
+        .getElementById(
+            "resultText"
+        )
+        .addEventListener(
+            "input",
+            updateTextCount
+        );
+
+
+    function updateTextCount() {
+
+        const text =
+            document
+                .getElementById(
+                    "resultText"
+                )
+                .value;
+
+
+        document
+            .getElementById(
+                "textCount"
+            )
+            .textContent =
+                text.length
+                +
+                " characters";
+
+    }
+
+
+    async function copyText() {
+
+        const text =
+            document
+                .getElementById(
+                    "resultText"
+                )
+                .value;
+
+
+        if (!text.trim()) {
+            return;
+        }
+
+
+        try {
+
+            await navigator
+                .clipboard
+                .writeText(
+                    text
+                );
+
+
+            showMessage(
+                "Text copied to clipboard.",
+                "success"
+            );
+
+        } catch (error) {
+
+            showMessage(
+                "Could not copy the text.",
+                "error"
+            );
+
+        }
+
+    }
+
+
+    function listenText() {
+
+        const text =
+            document
+                .getElementById(
+                    "resultText"
+                )
+                .value
+                .trim();
+
+
+        if (!text) {
+
+            showMessage(
+                "There is no text to read.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        window
+            .speechSynthesis
+            .cancel();
+
+
+        const speech =
+            new SpeechSynthesisUtterance(
+                text
+            );
+
+
+        speech.lang =
+            "en-US";
+
+        speech.rate =
+            0.92;
+
+
+        window
+            .speechSynthesis
+            .speak(
+                speech
+            );
+
+    }
+
+let currentAudioUrl = null;
+
+
+/* =========================================
+   GENERATE REAL MP3
+========================================= */
+
+async function generateMP3() {
+
+    const text =
+        document
+            .getElementById(
+                "resultText"
+            )
+            .value
+            .trim();
+
+
+    if (!text) {
+
+        showMessage(
+            "There is no text to convert to MP3.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const language =
+        document
+            .getElementById(
+                "speechLanguage"
+            )
+            .value;
+
+
+    const button =
+        document
+            .getElementById(
+                "mp3Button"
+            );
+
+
+    const originalText =
+        button.textContent;
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "⏳ Generating...";
+
+
+    hideMessage();
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/text_to_speech",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            text: text,
+                            language: language
+                        })
+                }
+            );
+
+
+        if (!response.ok) {
+
+            let message =
+                "Could not generate MP3.";
+
+
+            try {
+
+                const data =
+                    await response.json();
+
+                if (
+                    response.status === 403
+                    &&
+                    data.code === "PRO_REQUIRED"
+                ) {
+
+                    openProUpgradeModal(
+                        data.feature
+                        ||
+                        "MP3 Generation",
+                        data.pricing_url
+                    );
+
+                    return;
+
+                }
+
+                message =
+                    data.error
+                    ||
+                    message;
+
+            } catch (error) {
+            }
+
+
+            showMessage(
+                message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const blob =
+            await response.blob();
+
+
+        if (currentAudioUrl) {
+
+            URL.revokeObjectURL(
+                currentAudioUrl
+            );
+
+        }
+
+
+        currentAudioUrl =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const player =
+            document.getElementById(
+                "audioPlayer"
+            );
+
+
+        const download =
+            document.getElementById(
+                "downloadAudio"
+            );
+
+
+        player.src =
+            currentAudioUrl;
+
+
+        download.href =
+            currentAudioUrl;
+
+
+        document
+            .getElementById(
+                "audioPanel"
+            )
+            .style.display =
+                "block";
+
+
+        showMessage(
+            "MP3 generated successfully.",
+            "success"
+        );
+
+
+        player.play().catch(
+            function() {
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "MP3 ERROR:",
+            error
+        );
+
+
+        showMessage(
+            "Could not connect to the audio service.",
+            "error"
+        );
+
+
+    } finally {
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            originalText;
+
+    }
+
+}
+    function clearResult() {
+        document
+    .getElementById(
+        "visionPrompt"
+    )
+    .value =
+        "";
+
+document
+    .getElementById(
+        "visionReply"
+    )
+    .textContent =
+        "";
+
+document
+    .getElementById(
+        "visionResult"
+    )
+    .style.display =
+        "none";
+
+document
+    .getElementById(
+        "visionError"
+    )
+    .style.display =
+        "none";
+if (currentAudioUrl) {
+
+    URL.revokeObjectURL(
+        currentAudioUrl
+    );
+
+    currentAudioUrl = null;
+
+}
+
+document
+    .getElementById(
+        "audioPlayer"
+    )
+    .src =
+        "";
+
+document
+    .getElementById(
+        "audioPanel"
+    )
+    .style.display =
+        "none";
+        window
+            .speechSynthesis
+            .cancel();
+
+
+        selectedFile =
+            null;
+
+
+        uploadInput.value =
+            "";
+
+        cameraInput.value =
+            "";
+
+
+        const preview =
+            document.getElementById(
+                "imagePreview"
+            );
+
+        preview.src =
+            "";
+
+        preview.style.display =
+            "none";
+
+
+        document
+            .getElementById(
+                "uploadPlaceholder"
+            )
+            .style.display =
+                "block";
+
+
+        document
+            .getElementById(
+                "scanButton"
+            )
+            .disabled =
+                true;
+
+
+        document
+            .getElementById(
+                "resultText"
+            )
+            .value =
+                "";
+
+
+        document
+            .getElementById(
+                "resultContent"
+            )
+            .style.display =
+                "none";
+
+
+        document
+            .getElementById(
+                "resultEmpty"
+            )
+            .style.display =
+                "flex";
+
+
+        hideMessage();
+
+    }
+
+
+    function showMessage(
+        text,
+        type
+    ) {
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        message.textContent =
+            text;
+
+
+        message.className =
+            "message "
+            +
+            type;
+
+    }
+
+
+    function hideMessage() {
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        message.textContent =
+            "";
+
+        message.className =
+            "message";
+
+    }
+
+/* =========================================
+   AI VISION
+========================================= */
+
+function setVisionPrompt(text) {
+
+    document
+        .getElementById(
+            "visionPrompt"
+        )
+        .value =
+            text;
+
+}
+
+
+async function askVisionAI() {
+
+    if (!selectedFile) {
+
+        showVisionError(
+            "Please upload or take a photo first."
+        );
+
+        return;
+
+    }
+
+
+    let prompt =
+        document
+            .getElementById(
+                "visionPrompt"
+            )
+            .value
+            .trim();
+
+
+    if (!prompt) {
+
+        prompt =
+            "Explain this image clearly for an English learner.";
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "visionButton"
+        );
+
+
+    const buttonText =
+        document.getElementById(
+            "visionButtonText"
+        );
+
+
+    const spinner =
+        document.getElementById(
+            "visionSpinner"
+        );
+
+
+    button.disabled =
+        true;
+
+
+    buttonText.textContent =
+        "Analyzing image...";
+
+
+    spinner.style.display =
+        "block";
+
+
+    document
+        .getElementById(
+            "visionError"
+        )
+        .style.display =
+            "none";
+
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "image",
+        selectedFile
+    );
+
+
+    formData.append(
+        "prompt",
+        prompt
+    );
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/ai_vision",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            if (
+                response.status === 403
+                &&
+                data.code === "PRO_REQUIRED"
+            ) {
+
+                openProUpgradeModal(
+                    data.feature
+                    ||
+                    "AI Vision",
+                    data.pricing_url
+                );
+
+                return;
+
+            }
+
+            showVisionError(
+                data.error
+                ||
+                "AI could not analyze the image."
+            );
+
+            return;
+
+        }
+
+
+        document
+            .getElementById(
+                "visionReply"
+            )
+            .textContent =
+                data.reply;
+
+
+        document
+            .getElementById(
+                "visionResult"
+            )
+            .style.display =
+                "block";
+
+
+        document
+            .getElementById(
+                "visionResult"
+            )
+            .scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            });
+
+
+    } catch (error) {
+
+        console.error(
+            "AI VISION ERROR:",
+            error
+        );
+
+
+        showVisionError(
+            "Could not connect to AI Vision."
+        );
+
+
+    } finally {
+
+        button.disabled =
+            false;
+
+
+        buttonText.textContent =
+            "✦ Analyze with AI";
+
+
+        spinner.style.display =
+            "none";
+
+    }
+
+}
+
+
+function showVisionError(message) {
+
+    const box =
+        document.getElementById(
+            "visionError"
+        );
+
+
+    box.textContent =
+        message;
+
+
+    box.style.display =
+        "block";
+
+}
+
+
+async function copyVisionReply() {
+
+    const text =
+        document
+            .getElementById(
+                "visionReply"
+            )
+            .textContent
+            .trim();
+
+
+    if (!text) {
+        return;
+    }
+
+
+    try {
+
+        await navigator
+            .clipboard
+            .writeText(
+                text
+            );
+
+
+        showMessage(
+            "AI response copied.",
+            "success"
+        );
+
+
+    } catch (error) {
+
+        showMessage(
+            "Could not copy AI response.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   PRO UPGRADE MODAL
+========================================= */
+
+function openProUpgradeModal(
+    featureName,
+    pricingUrl
+) {
+
+    const modal =
+        document.getElementById(
+            "proUpgradeModal"
+        );
+
+    const feature =
+        document.getElementById(
+            "proUpgradeFeature"
+        );
+
+    const pricingLink =
+        document.getElementById(
+            "proUpgradePricingLink"
+        );
+
+    feature.textContent =
+        "👑 "
+        +
+        (
+            featureName
+            ||
+            "LinguaMind Pro feature"
+        );
+
+    if (pricingUrl) {
+        pricingLink.href =
+            pricingUrl;
+    }
+
+    modal.classList.add(
+        "show"
+    );
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+function closeProUpgradeModal() {
+
+    const modal =
+        document.getElementById(
+            "proUpgradeModal"
+        );
+
+    modal.classList.remove(
+        "show"
+    );
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+function closeProUpgradeModalOnBackdrop(
+    event
+) {
+
+    if (
+        event.target.id
+        ===
+        "proUpgradeModal"
+    ) {
+
+        closeProUpgradeModal();
+
+    }
+
+}
+
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+            closeProUpgradeModal();
+        }
+
+    }
+);
+
+
+</script>
+
+</body>
+</html>

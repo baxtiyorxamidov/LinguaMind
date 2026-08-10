@@ -1,0 +1,5061 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Smart Quiz — LinguaMind</title>
+
+    <style>
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --ink: #17182f;
+    --ink-2: #34364f;
+    --muted: #7f859d;
+
+    --violet: #684fe7;
+    --violet-2: #865ff3;
+    --violet-3: #b46dff;
+    --violet-soft: #f0ebff;
+
+    --green: #20a566;
+    --green-soft: #eaf9f1;
+
+    --red: #dc5265;
+    --red-soft: #fff0f2;
+
+    --orange: #f0a140;
+    --line: rgba(92, 76, 184, .14);
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    overflow: hidden;
+
+    color: var(--ink);
+
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(circle at 5% 4%, rgba(105, 76, 235, .34), transparent 28%),
+        radial-gradient(circle at 94% 6%, rgba(190, 91, 255, .28), transparent 27%),
+        radial-gradient(circle at 75% 98%, rgba(66, 127, 255, .18), transparent 31%),
+        radial-gradient(circle at 22% 86%, rgba(125, 94, 241, .13), transparent 28%),
+        linear-gradient(135deg, #e9e5ff 0%, #f8f7ff 41%, #eef3ff 70%, #f4ecff 100%);
+}
+
+/* Premium mesh texture */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+
+    opacity: .40;
+
+    background:
+        linear-gradient(rgba(255,255,255,.26) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.23) 1px, transparent 1px);
+
+    background-size: 44px 44px;
+
+    mask-image:
+        linear-gradient(to bottom, rgba(0,0,0,.34), transparent 78%);
+}
+
+body::after {
+    content: "";
+    position: fixed;
+
+    width: 520px;
+    height: 520px;
+
+    right: -190px;
+    top: 170px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(175, 93, 255, .16);
+
+    filter: blur(98px);
+
+    pointer-events: none;
+}
+
+button,
+select,
+a {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.quiz-page {
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    height: 100vh;
+
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+
+    gap: 15px;
+
+    padding: 16px 22px 20px;
+
+    overflow: hidden;
+}
+
+/* =====================================================
+   TOPBAR
+===================================================== */
+
+.quiz-topbar {
+    position: relative;
+    z-index: 20;
+
+    width: 100%;
+    max-width: 1600px;
+    min-height: 96px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+
+    padding: 16px 20px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(105, 82, 227, .18);
+    border-radius: 26px;
+
+    background:
+        radial-gradient(circle at 82% 20%, rgba(161, 108, 255, .17), transparent 30%),
+        linear-gradient(135deg, rgba(255,255,255,.92), rgba(246,242,255,.88));
+
+    backdrop-filter: blur(26px) saturate(145%);
+    -webkit-backdrop-filter: blur(26px) saturate(145%);
+
+    box-shadow:
+        0 22px 60px rgba(62, 48, 137, .16),
+        inset 0 1px 0 rgba(255,255,255,.86);
+}
+
+.quiz-topbar::before {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+
+    height: 4px;
+
+    border-radius: 0 0 20px 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #5c49e4 14%,
+            #825cf3 47%,
+            #bd70ff 78%,
+            transparent
+        );
+
+    box-shadow:
+        0 4px 18px rgba(112, 82, 239, .32);
+}
+
+.quiz-topbar::after {
+    content: "";
+
+    position: absolute;
+
+    width: 260px;
+    height: 260px;
+
+    right: 145px;
+    top: -180px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(152, 95, 255, .13);
+
+    filter: blur(22px);
+
+    pointer-events: none;
+}
+
+.quiz-brand {
+    position: relative;
+    z-index: 2;
+
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.quiz-brand-icon {
+    position: relative;
+
+    width: 58px;
+    height: 58px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(255,255,255,.58);
+    border-radius: 19px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5541db, #7757ed 54%, #a16df9);
+
+    box-shadow:
+        0 13px 30px rgba(88, 67, 215, .34),
+        0 0 0 6px rgba(113, 84, 235, .08);
+
+    font-size: 27px;
+}
+
+.quiz-brand-icon::after {
+    content: "";
+
+    position: absolute;
+
+    width: 8px;
+    height: 8px;
+
+    right: 3px;
+    bottom: 3px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+
+    background: #f4b441;
+
+    box-shadow:
+        0 0 0 4px rgba(244,180,65,.10);
+}
+
+.quiz-brand-copy small {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #684fe4;
+
+    font-size: 10px;
+    font-weight: 950;
+
+    letter-spacing: 1.65px;
+}
+
+.quiz-brand-copy h1 {
+    margin: 0;
+
+    color: #16172f;
+
+    font-size: 26px;
+    line-height: 1.15;
+
+    font-weight: 900;
+
+    letter-spacing: -.8px;
+}
+
+.quiz-brand-copy p {
+    margin: 6px 0 0;
+
+    color: #777d98;
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.quiz-topbar-actions {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.practice-pill {
+    min-height: 43px;
+
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 13px;
+
+    border: 1px solid rgba(244, 180, 65, .22);
+    border-radius: 14px;
+
+    color: #9a6715;
+
+    background:
+        linear-gradient(135deg, rgba(255,249,231,.96), rgba(255,243,211,.92));
+
+    box-shadow:
+        0 8px 22px rgba(194, 137, 32, .08),
+        inset 0 1px 0 rgba(255,255,255,.9);
+
+    font-size: 11px;
+    font-weight: 850;
+
+    white-space: nowrap;
+}
+
+.practice-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #f0a140;
+
+    box-shadow:
+        0 0 0 4px rgba(240,161,64,.12),
+        0 0 15px rgba(240,161,64,.35);
+}
+
+.dashboard-button {
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 18px;
+
+    border: 1px solid rgba(255,255,255,.26);
+    border-radius: 15px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5542dc, #7356ec 54%, #976bf7);
+
+    box-shadow:
+        0 13px 30px rgba(89, 67, 217, .30),
+        inset 0 1px 0 rgba(255,255,255,.22);
+
+    text-decoration: none;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.dashboard-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 17px 36px rgba(89, 67, 217, .38),
+        inset 0 1px 0 rgba(255,255,255,.22);
+}
+
+/* =====================================================
+   WORKSPACE
+===================================================== */
+
+.quiz-workspace {
+    width: 100%;
+    max-width: 1600px;
+    min-height: 0;
+
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 275px minmax(0, 1fr);
+
+    gap: 16px;
+
+    overflow: hidden;
+}
+
+/* =====================================================
+   LEFT RAIL
+===================================================== */
+
+.quiz-rail {
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(94, 77, 190, .17);
+    border-radius: 25px;
+
+    background:
+        radial-gradient(circle at 10% 0%, rgba(117, 89, 239, .13), transparent 32%),
+        linear-gradient(160deg, rgba(255,255,255,.91), rgba(241,238,255,.87));
+
+    backdrop-filter: blur(23px) saturate(135%);
+    -webkit-backdrop-filter: blur(23px) saturate(135%);
+
+    box-shadow:
+        0 20px 55px rgba(55, 45, 119, .14),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+.rail-head {
+    position: relative;
+
+    flex-shrink: 0;
+
+    padding: 19px 17px 16px;
+
+    border-bottom:
+        1px solid rgba(90, 77, 157, .10);
+
+    background:
+        linear-gradient(135deg, rgba(251,249,255,.94), rgba(235,230,255,.90));
+}
+
+.rail-head::after {
+    content: "";
+
+    position: absolute;
+
+    left: 17px;
+    bottom: -1px;
+
+    width: 56px;
+    height: 3px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(90deg, #604be5, #9a67f7);
+}
+
+.rail-head small {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #6951e5;
+
+    font-size: 9px;
+    font-weight: 950;
+
+    letter-spacing: 1.45px;
+}
+
+.rail-head h2 {
+    margin: 0;
+
+    color: #1c1d38;
+
+    font-size: 18px;
+    font-weight: 900;
+
+    letter-spacing: -.35px;
+}
+
+.rail-body {
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+
+    padding: 13px;
+}
+
+.rail-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.rail-body::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+
+    background:
+        linear-gradient(180deg, #c2b8ed, #8d7be8);
+}
+
+.rail-feature {
+    display: flex;
+    align-items: center;
+
+    gap: 11px;
+
+    margin-bottom: 8px;
+
+    padding: 12px;
+
+    border: 1px solid rgba(99, 81, 197, .10);
+    border-radius: 14px;
+
+    background:
+        linear-gradient(135deg, rgba(255,255,255,.73), rgba(240,236,255,.74));
+}
+
+.rail-icon {
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(135deg, #e8e2ff, #f5f2ff);
+
+    font-size: 18px;
+}
+
+.rail-feature strong {
+    display: block;
+
+    color: #30324b;
+
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.rail-feature span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #8c90a4;
+
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.rail-tip {
+    margin-top: 13px;
+
+    padding: 14px;
+
+    border: 1px solid rgba(240,161,64,.16);
+    border-radius: 15px;
+
+    background:
+        linear-gradient(135deg, rgba(255,249,232,.86), rgba(255,244,216,.72));
+}
+
+.rail-tip small {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #ad7720;
+
+    font-size: 9px;
+    font-weight: 900;
+
+    letter-spacing: 1px;
+}
+
+.rail-tip p {
+    margin: 0;
+
+    color: #70654f;
+
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+.rail-footer {
+    flex-shrink: 0;
+
+    padding: 11px;
+
+    border-top:
+        1px solid rgba(90, 77, 157, .10);
+
+    background:
+        rgba(248,247,255,.72);
+}
+
+.rail-footer a {
+    min-height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(91, 81, 147, .10);
+    border-radius: 12px;
+
+    color: #5d6179;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(249,248,255,.90));
+
+    text-decoration: none;
+
+    font-size: 11px;
+    font-weight: 850;
+
+    transition: .18s ease;
+}
+
+.rail-footer a:hover {
+    color: var(--violet);
+
+    border-color:
+        rgba(104,79,231,.20);
+
+    transform:
+        translateY(-1px);
+}
+
+/* =====================================================
+   MAIN STAGE
+===================================================== */
+
+.quiz-stage {
+    position: relative;
+
+    min-width: 0;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 18px;
+
+    border: 1px solid rgba(94, 77, 190, .17);
+    border-radius: 25px;
+
+    background:
+        radial-gradient(circle at 12% 12%, rgba(104, 80, 229, .09), transparent 28%),
+        radial-gradient(circle at 88% 75%, rgba(176, 96, 255, .07), transparent 28%),
+        linear-gradient(150deg, rgba(255,255,255,.93), rgba(244,241,255,.89));
+
+    backdrop-filter: blur(22px) saturate(135%);
+    -webkit-backdrop-filter: blur(22px) saturate(135%);
+
+    box-shadow:
+        0 22px 60px rgba(52, 43, 116, .15),
+        inset 0 1px 0 rgba(255,255,255,.92);
+
+    scroll-behavior: smooth;
+}
+
+.quiz-stage::-webkit-scrollbar {
+    width: 7px;
+}
+
+.quiz-stage::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.quiz-stage::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+
+    background:
+        linear-gradient(180deg, #c2b8ed, #8d7be8);
+}
+
+.quiz-stage::before {
+    content: "";
+
+    position: absolute;
+    z-index: 5;
+
+    top: 0;
+    left: 28px;
+    right: 28px;
+
+    height: 3px;
+
+    border-radius: 0 0 20px 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #604be5,
+            #8760f1,
+            #bd70ff,
+            transparent
+        );
+}
+
+/* =====================================================
+   START SCREEN
+===================================================== */
+
+.start-card {
+    width: 100%;
+    max-width: 1080px;
+
+    margin: 0 auto;
+
+    padding: 8px 2px 2px;
+}
+
+.start-intro {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 18px;
+
+    margin-bottom: 17px;
+}
+
+.start-intro small {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #6c53e7;
+
+    font-size: 9px;
+    font-weight: 950;
+
+    letter-spacing: 1.35px;
+}
+
+.start-intro h2 {
+    margin: 0 0 6px;
+
+    color: #1a1c36;
+
+    font-size: 25px;
+    font-weight: 900;
+
+    letter-spacing: -.55px;
+}
+
+.start-intro p {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.session-chip {
+    flex-shrink: 0;
+
+    padding: 8px 11px;
+
+    border: 1px solid rgba(104,79,231,.16);
+    border-radius: 20px;
+
+    color: #604be0;
+
+    background:
+        linear-gradient(135deg, #eee9ff, #f8f5ff);
+
+    font-size: 9px;
+    font-weight: 900;
+
+    letter-spacing: .5px;
+}
+
+.category-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 15px;
+}
+
+.category-card {
+    position: relative;
+
+    min-height: 142px;
+
+    padding: 17px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(90, 78, 145, .12);
+    border-radius: 18px;
+
+    color: var(--ink);
+
+    background:
+        radial-gradient(circle at 90% 8%, rgba(120,95,236,.06), transparent 34%),
+        linear-gradient(145deg, rgba(255,255,255,.93), rgba(247,245,255,.90));
+
+    box-shadow:
+        0 7px 20px rgba(60, 54, 104, .045);
+
+    text-align: left;
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+}
+
+.category-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 75px;
+    height: 75px;
+
+    right: -28px;
+    bottom: -28px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(107, 80, 231, .055);
+}
+
+.category-card:hover {
+    transform: translateY(-3px);
+
+    border-color:
+        rgba(104,79,231,.23);
+
+    box-shadow:
+        0 13px 28px rgba(72, 56, 161, .09);
+}
+
+.category-card.active {
+    border-color:
+        rgba(104,79,231,.48);
+
+    background:
+        radial-gradient(circle at 90% 8%, rgba(120,95,236,.15), transparent 34%),
+        linear-gradient(145deg, #ece7ff, #f8f5ff);
+
+    box-shadow:
+        0 12px 30px rgba(81, 62, 186, .13),
+        inset 0 0 0 1px rgba(104,79,231,.10);
+}
+
+.category-check {
+    position: absolute;
+
+    top: 12px;
+    right: 12px;
+
+    width: 24px;
+    height: 24px;
+
+    display: none;
+    place-items: center;
+
+    border-radius: 50%;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5d48df, #8a62f2);
+
+    box-shadow:
+        0 7px 15px rgba(93,72,223,.22);
+
+    font-size: 11px;
+}
+
+.category-card.active
+.category-check {
+    display: grid;
+}
+
+.category-icon {
+    width: 43px;
+    height: 43px;
+
+    display: grid;
+    place-items: center;
+
+    margin-bottom: 13px;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(135deg, #ebe6ff, #f8f5ff);
+
+    box-shadow:
+        0 6px 15px rgba(70, 60, 130, .05);
+
+    font-size: 22px;
+}
+
+.category-card strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.category-card small {
+    color: #85899d;
+
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.settings-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+
+    margin-bottom: 13px;
+}
+
+.setting {
+    padding: 13px;
+
+    border: 1px solid rgba(89,78,145,.11);
+    border-radius: 15px;
+
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.90), rgba(246,244,255,.88));
+}
+
+.setting label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #36384f;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: .3px;
+}
+
+.setting select {
+    width: 100%;
+    height: 45px;
+
+    padding: 0 12px;
+
+    outline: none;
+
+    border: 1px solid rgba(85,78,130,.15);
+    border-radius: 11px;
+
+    color: var(--ink);
+
+    background:
+        rgba(255,255,255,.96);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    transition: .18s ease;
+}
+
+.setting select:focus {
+    border-color: #836ff0;
+
+    box-shadow:
+        0 0 0 4px rgba(104,79,231,.08);
+}
+
+.setting-note {
+    margin-top: 6px;
+
+    color: #979bae;
+
+    font-size: 8px;
+    font-weight: 700;
+
+    line-height: 1.45;
+}
+
+.quiz-back-button {
+    min-height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 10px;
+
+    border: 1px solid rgba(104,79,231,.14);
+    border-radius: 10px;
+
+    color: #5f4ae1;
+
+    background:
+        linear-gradient(135deg, #eee9ff, #f8f5ff);
+
+    font-size: 9px;
+    font-weight: 900;
+
+    white-space: nowrap;
+
+    transition: .18s ease;
+}
+
+.quiz-back-button:hover {
+    transform: translateY(-1px);
+
+    border-color:
+        rgba(104,79,231,.26);
+
+    box-shadow:
+        0 7px 16px rgba(82,63,177,.08);
+}
+
+.timer-pill {
+    min-width: 68px;
+
+    padding: 8px 10px;
+
+    border: 1px solid rgba(104,79,231,.13);
+    border-radius: 20px;
+
+    color: #5e49df;
+
+    background:
+        linear-gradient(135deg, #ece7ff, #f7f4ff);
+
+    font-size: 10px;
+    font-weight: 900;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+.timer-pill.warning {
+    color: #b66c16;
+
+    border-color:
+        rgba(240,161,64,.20);
+
+    background:
+        linear-gradient(135deg, #fff5dd, #fffaf0);
+}
+
+.timer-pill.danger {
+    color: #c74761;
+
+    border-color:
+        rgba(220,82,101,.20);
+
+    background:
+        linear-gradient(135deg, #ffecef, #fff6f7);
+
+    animation:
+        timerPulse .72s ease-in-out infinite;
+}
+
+@keyframes timerPulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.start-button {
+    width: 100%;
+    min-height: 52px;
+
+    border: none;
+    border-radius: 14px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5541da, #7052e9 54%, #9469f6);
+
+    box-shadow:
+        0 12px 28px rgba(88, 66, 215, .27),
+        inset 0 1px 0 rgba(255,255,255,.20);
+
+    font-size: 12px;
+    font-weight: 900;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.start-button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 33px rgba(88, 66, 215, .35);
+}
+
+.start-button:disabled {
+    cursor: wait;
+
+    opacity: .76;
+
+    transform: none;
+}
+
+.quiz-generation-status {
+    min-height: 18px;
+
+    margin-top: 8px;
+
+    color: #7d8299;
+
+    font-size: 9px;
+    font-weight: 750;
+
+    text-align: center;
+}
+
+.quiz-generation-status.success {
+    color: #23975f;
+}
+
+.quiz-generation-status.error {
+    color: #c94d67;
+}
+
+/* =====================================================
+   QUIZ SCREEN
+===================================================== */
+
+.quiz-card {
+    display: none;
+
+    width: 100%;
+    max-width: 980px;
+
+    margin: 0 auto;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(90,78,145,.12);
+    border-radius: 21px;
+
+    background:
+        linear-gradient(150deg, rgba(255,255,255,.94), rgba(247,245,255,.92));
+
+    box-shadow:
+        0 15px 40px rgba(60, 50, 130, .09);
+}
+
+.quiz-toolbar {
+    position: sticky;
+    top: -18px;
+
+    z-index: 4;
+
+    display: grid;
+
+    grid-template-columns:
+        auto auto 1fr auto auto;
+
+    align-items: center;
+
+    gap: 18px;
+
+    padding: 17px 20px;
+
+    border-bottom:
+        1px solid rgba(90,77,157,.10);
+
+    background:
+        linear-gradient(135deg, rgba(253,252,255,.97), rgba(242,239,255,.96));
+
+    backdrop-filter: blur(18px);
+}
+
+.question-counter {
+    color: #6250e4;
+
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.progress {
+    height: 7px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background:
+        #e9e8f0;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(90deg, #5944df, #8360f2, #b16aff);
+
+    box-shadow:
+        0 0 14px rgba(112,82,239,.22);
+
+    transition:
+        width .3s ease;
+}
+
+.score-pill {
+    padding: 8px 11px;
+
+    border: 1px solid rgba(104,79,231,.13);
+    border-radius: 20px;
+
+    color: #5e49df;
+
+    background:
+        linear-gradient(135deg, #ece7ff, #f7f4ff);
+
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.quiz-content {
+    max-width: 840px;
+
+    margin: 0 auto;
+
+    padding: 30px 25px 26px;
+}
+
+.question-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 14px;
+}
+
+.category-pill,
+.difficulty-pill {
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 9px;
+    font-weight: 900;
+
+    letter-spacing: .55px;
+
+    text-transform: uppercase;
+}
+
+.category-pill {
+    color: #5d49df;
+
+    background:
+        linear-gradient(135deg, #e9e4ff, #f6f3ff);
+}
+
+.difficulty-pill {
+    color: #70758a;
+
+    background:
+        #f0f1f5;
+}
+
+.question-text {
+    margin: 0 0 22px;
+
+    color: #1c1e38;
+
+    font-size: 22px;
+    line-height: 1.48;
+
+    font-weight: 900;
+
+    letter-spacing: -.35px;
+}
+
+.answers {
+    display: grid;
+
+    gap: 10px;
+}
+
+.answer {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 13px;
+
+    border: 1px solid rgba(83,77,126,.13);
+    border-radius: 14px;
+
+    color: #33364e;
+
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.92), rgba(247,246,255,.90));
+
+    box-shadow:
+        0 5px 14px rgba(60,54,104,.035);
+
+    text-align: left;
+
+    font-size: 12px;
+    line-height: 1.45;
+
+    transition: .18s ease;
+}
+
+.answer:hover:not(:disabled) {
+    transform: translateX(4px);
+
+    border-color:
+        rgba(104,79,231,.28);
+
+    background:
+        linear-gradient(145deg, #f3efff, #fbf9ff);
+
+    box-shadow:
+        0 9px 20px rgba(74,59,154,.07);
+}
+
+.answer-letter {
+    width: 37px;
+    height: 37px;
+
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(83,77,126,.12);
+    border-radius: 11px;
+
+    background: white;
+
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.answer.correct {
+    border-color: #77d09d;
+
+    background:
+        linear-gradient(135deg, #e7f8ef, #f2fcf7);
+}
+
+.answer.correct
+.answer-letter {
+    color: var(--green);
+
+    border-color: #8bd7aa;
+
+    background: #dff6e9;
+}
+
+.answer.wrong {
+    border-color: #eca0ad;
+
+    background:
+        linear-gradient(135deg, #ffedf0, #fff7f8);
+}
+
+.answer.wrong
+.answer-letter {
+    color: var(--red);
+
+    border-color: #eba1ae;
+
+    background: #ffe3e7;
+}
+
+.feedback {
+    display: none;
+
+    margin-top: 18px;
+
+    padding: 16px;
+
+    border: 1px solid rgba(104,79,231,.12);
+    border-left: 4px solid #6b54e8;
+    border-radius: 14px;
+
+    background:
+        linear-gradient(135deg, #f0ecff, #f8f6ff);
+
+    box-shadow:
+        0 8px 20px rgba(76,60,160,.05);
+}
+
+.feedback-title {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 6px;
+
+    color: #5f4ae1;
+
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.feedback p {
+    margin: 0;
+
+    color: #5d6175;
+
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.next-button {
+    display: none;
+
+    width: 100%;
+    min-height: 48px;
+
+    margin-top: 16px;
+
+    border: none;
+    border-radius: 12px;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #242846, #32375d);
+
+    box-shadow:
+        0 10px 22px rgba(30,34,66,.13);
+
+    font-size: 11px;
+    font-weight: 900;
+
+    transition: .18s ease;
+}
+
+.next-button:hover {
+    transform: translateY(-1px);
+}
+
+/* =====================================================
+   RESULT
+===================================================== */
+
+.result-card {
+    display: none;
+
+    width: 100%;
+    max-width: 850px;
+
+    margin: 0 auto;
+
+    padding: 34px 28px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(90,78,145,.12);
+    border-radius: 23px;
+
+    background:
+        radial-gradient(circle at 50% 0%, rgba(126,91,239,.12), transparent 36%),
+        linear-gradient(150deg, rgba(255,255,255,.94), rgba(246,243,255,.92));
+
+    box-shadow:
+        0 16px 45px rgba(62,50,134,.10);
+
+    text-align: center;
+}
+
+.result-icon {
+    width: 82px;
+    height: 82px;
+
+    display: grid;
+    place-items: center;
+
+    margin: 0 auto 17px;
+
+    border: 1px solid rgba(104,79,231,.14);
+    border-radius: 25px;
+
+    background:
+        linear-gradient(135deg, #e7e1ff, #f6f3ff);
+
+    box-shadow:
+        0 13px 28px rgba(79,63,165,.10);
+
+    font-size: 39px;
+}
+
+.result-card h2 {
+    margin: 0 0 7px;
+
+    color: #1c1e38;
+
+    font-size: 27px;
+    font-weight: 900;
+}
+
+.result-card > p {
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+.result-score {
+    margin: 20px 0 5px;
+
+    color: #654ee5;
+
+    font-size: 50px;
+    font-weight: 950;
+
+    letter-spacing: -1.5px;
+}
+
+.result-percent {
+    color: var(--muted);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.result-stats {
+    max-width: 590px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+
+    margin: 23px auto;
+}
+
+.result-stat {
+    padding: 14px;
+
+    border: 1px solid rgba(83,77,126,.11);
+    border-radius: 14px;
+
+    background:
+        linear-gradient(145deg, rgba(255,255,255,.93), rgba(245,243,255,.90));
+}
+
+.result-stat strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #24263e;
+
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.result-stat span {
+    color: #9195a8;
+
+    font-size: 9px;
+    font-weight: 850;
+}
+
+.result-actions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    gap: 9px;
+}
+
+.result-button {
+    min-height: 44px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 17px;
+
+    border-radius: 11px;
+
+    font-size: 11px;
+    font-weight: 900;
+
+    text-decoration: none;
+}
+
+.retry {
+    border: none;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg, #5541da, #7555ec, #9469f6);
+
+    box-shadow:
+        0 10px 22px rgba(88,66,215,.22);
+}
+
+.back {
+    border:
+        1px solid rgba(83,77,126,.13);
+
+    color: #555a70;
+
+    background:
+        rgba(255,255,255,.93);
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1050px) {
+    .quiz-workspace {
+        grid-template-columns:
+            225px
+            minmax(0, 1fr);
+    }
+
+    .category-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    html,
+    body {
+        height: auto;
+        min-height: 100%;
+
+        overflow-y: auto;
+    }
+
+    .quiz-page {
+        height: auto;
+        min-height: 100vh;
+
+        display: block;
+
+        padding: 12px;
+
+        overflow: visible;
+    }
+
+    .quiz-topbar {
+        margin-bottom: 12px;
+    }
+
+    .quiz-workspace {
+        display: block;
+
+        overflow: visible;
+    }
+
+    .quiz-rail {
+        height: auto;
+
+        margin-bottom: 12px;
+    }
+
+    .rail-body {
+        display: grid;
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap: 8px;
+    }
+
+    .rail-feature,
+    .rail-tip {
+        margin: 0;
+    }
+
+    .quiz-stage {
+        overflow: visible;
+    }
+}
+
+@media (max-width: 650px) {
+    .quiz-topbar {
+        min-height: 80px;
+
+        align-items: flex-start;
+
+        padding: 12px 13px;
+
+        border-radius: 20px;
+    }
+
+    .quiz-brand-icon {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 15px;
+
+        font-size: 23px;
+    }
+
+    .quiz-brand-copy h1 {
+        font-size: 20px;
+    }
+
+    .quiz-brand-copy p,
+    .practice-pill {
+        display: none;
+    }
+
+    .dashboard-button {
+        min-height: 42px;
+
+        padding: 0 12px;
+    }
+
+    .rail-body,
+    .category-grid,
+    .settings-grid,
+    .result-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .quiz-back-button {
+        padding: 0 8px;
+
+        font-size: 8px;
+    }
+
+    .timer-pill {
+        min-width: 58px;
+
+        padding: 7px 8px;
+
+        font-size: 9px;
+    }
+
+    .start-intro {
+        align-items: flex-start;
+    }
+
+    .session-chip {
+        display: none;
+    }
+
+    .quiz-toolbar {
+        grid-template-columns:
+            auto 1fr auto auto;
+    }
+
+    .quiz-toolbar
+    .progress {
+        grid-column:
+            1 / -1;
+
+        grid-row: 2;
+    }
+
+    .question-counter {
+        text-align: center;
+    }
+
+    .question-text {
+        font-size: 19px;
+    }
+}
+
+    </style>
+
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/midnight_royal_v2.css') }}">
+</head>
+
+<body class="lmx-page lmx-quiz {% if session.get('user_id') %}lmx-authenticated{% endif %}">
+{% if session.get('user_id') %}
+    {% include 'app_sidebar.html' %}
+{% endif %}
+
+
+<div class="quiz-page">
+
+    <header class="quiz-topbar">
+
+        <div class="quiz-brand">
+
+            <div class="quiz-brand-icon">
+                ✓
+            </div>
+
+            <div class="quiz-brand-copy">
+                <small>LINGUAMIND PRACTICE</small>
+                <h1>Smart Quiz</h1>
+                <p>
+                    Practice, understand your mistakes and improve one question at a time.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="quiz-topbar-actions">
+
+            <div class="practice-pill">
+                <span class="practice-dot"></span>
+                Smart Practice
+            </div>
+
+            
+
+        </div>
+
+    </header>
+
+
+    <main class="quiz-workspace">
+
+        <aside class="quiz-rail">
+
+            <div class="rail-head">
+                <small>PRACTICE HUB</small>
+                <h2>Quiz Center</h2>
+            </div>
+
+
+            <div class="rail-body">
+
+                <div class="rail-feature">
+                    <div class="rail-icon">✍️</div>
+                    <div>
+                        <strong>Grammar</strong>
+                        <span>Tenses, structure and common mistakes.</span>
+                    </div>
+                </div>
+
+                <div class="rail-feature">
+                    <div class="rail-icon">📚</div>
+                    <div>
+                        <strong>Vocabulary</strong>
+                        <span>Meanings, synonyms and words in context.</span>
+                    </div>
+                </div>
+
+                <div class="rail-feature">
+                    <div class="rail-icon">🎯</div>
+                    <div>
+                        <strong>IELTS</strong>
+                        <span>Formal English, linking and academic style.</span>
+                    </div>
+                </div>
+
+                <div class="rail-feature">
+                    <div class="rail-icon">🧠</div>
+                    <div>
+                        <strong>SAT English</strong>
+                        <span>Transitions, conventions and logical writing.</span>
+                    </div>
+                </div>
+
+                <div class="rail-feature">
+                    <div class="rail-icon">∑</div>
+                    <div>
+                        <strong>SAT Math</strong>
+                        <span>Algebra, Advanced Math, Data Analysis and Geometry.</span>
+                    </div>
+                </div>
+
+                <div class="rail-tip">
+                    <small>SMART TIP</small>
+                    <p>
+                        Read every explanation after answering.
+                        Understanding mistakes is where the real progress happens.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="rail-footer">
+                <a href="{{ url_for('dashboard') }}">
+                    ← Back to Dashboard
+                </a>
+            </div>
+
+        </aside>
+
+
+        <section class="quiz-stage" id="quizStage">
+
+            <!-- =========================================
+                 START SCREEN
+            ========================================== -->
+
+            <section
+                id="startScreen"
+                class="start-card"
+            >
+
+                <div class="start-intro">
+
+                    <div>
+                        <small>BUILD YOUR SESSION</small>
+
+                        <h2>
+                            What do you want to practice?
+                        </h2>
+
+                        <p>
+                            Choose a category, difficulty and session length.
+                        </p>
+                    </div>
+
+                    <span class="session-chip">
+                        ✦ PERSONALIZED PRACTICE
+                    </span>
+
+                </div>
+
+
+                <div class="category-grid">
+
+                    <button
+                        type="button"
+                        class="category-card active"
+                        data-category="grammar"
+                        onclick="selectCategory('grammar', this)"
+                    >
+                        <span class="category-check">✓</span>
+                        <span class="category-icon">✍️</span>
+                        <strong>Grammar</strong>
+                        <small>
+                            Tenses, sentence structure, conditionals and common mistakes.
+                        </small>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="category-card"
+                        data-category="vocabulary"
+                        onclick="selectCategory('vocabulary', this)"
+                    >
+                        <span class="category-check">✓</span>
+                        <span class="category-icon">📚</span>
+                        <strong>Vocabulary</strong>
+                        <small>
+                            Meanings, synonyms, phrases and words in context.
+                        </small>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="category-card"
+                        data-category="ielts"
+                        onclick="selectCategory('ielts', this)"
+                    >
+                        <span class="category-check">✓</span>
+                        <span class="category-icon">🎯</span>
+                        <strong>IELTS</strong>
+                        <small>
+                            Academic vocabulary, linking and formal English.
+                        </small>
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="category-card"
+                        data-category="sat"
+                        onclick="selectCategory('sat', this)"
+                    >
+                        <span class="category-check">✓</span>
+                        <span class="category-icon">🧠</span>
+                        <strong>SAT English</strong>
+                        <small>
+                            Transitions, conventions, vocabulary and logical writing.
+                        </small>
+                    </button>
+
+                    <button
+                        type="button"
+                        class="category-card"
+                        data-category="sat_math"
+                        onclick="selectCategory('sat_math', this)"
+                    >
+                        <span class="category-check">✓</span>
+                        <span class="category-icon">∑</span>
+                        <strong>SAT Math</strong>
+                        <small>
+                            Algebra, Advanced Math, Problem Solving, Data Analysis and Geometry.
+                        </small>
+                    </button>
+
+                </div>
+
+
+                <div class="settings-grid">
+
+                    <div class="setting">
+                        <label for="difficulty">
+                            DIFFICULTY
+                        </label>
+
+                        <select id="difficulty">
+                            <option value="mixed">Mixed</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+
+
+                    <div class="setting">
+                        <label for="questionCount">
+                            QUESTIONS
+                        </label>
+
+                        <select id="questionCount">
+                            <option value="5">5 questions</option>
+                            <option value="10" selected>10 questions</option>
+                            <option value="15">15 questions</option>
+                            <option value="30">30 questions</option>
+                            <option value="40">40 questions</option>
+                        </select>
+                    </div>
+
+
+                    <div class="setting">
+                        <label for="timerMode">
+                            TIMER
+                        </label>
+
+                        <select id="timerMode">
+                            <option value="off" selected>Off — No timer</option>
+                            <option value="on">On — Timed mode</option>
+                        </select>
+
+                        <div class="setting-note">
+                            Easy 30s · Medium 45s · Hard 60s
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="startQuizButton"
+                    type="button"
+                    class="start-button"
+                    onclick="startQuiz()"
+                >
+                    Start Smart Practice →
+                </button>
+
+                <div
+                    id="quizGenerationStatus"
+                    class="quiz-generation-status"
+                ></div>
+
+            </section>
+
+
+            <!-- =========================================
+                 QUIZ SCREEN
+            ========================================== -->
+
+            <section
+                id="quizScreen"
+                class="quiz-card"
+            >
+
+                <div class="quiz-toolbar">
+
+                    <button
+                        type="button"
+                        class="quiz-back-button"
+                        onclick="returnToQuizSetup()"
+                        title="Back to quiz setup"
+                    >
+                        ← Quiz Setup
+                    </button>
+
+
+                    <div
+                        id="questionCounter"
+                        class="question-counter"
+                    >
+                        Question 1 of 10
+                    </div>
+
+
+                    <div class="progress">
+                        <div
+                            id="progressBar"
+                            class="progress-bar"
+                        ></div>
+                    </div>
+
+
+                    <div
+                        id="timerPill"
+                        class="timer-pill"
+                    >
+                        ⏱ Off
+                    </div>
+
+
+                    <div
+                        id="scorePill"
+                        class="score-pill"
+                    >
+                        Score 0
+                    </div>
+
+                </div>
+
+
+                <div class="quiz-content">
+
+                    <div class="question-meta">
+
+                        <span
+                            id="categoryPill"
+                            class="category-pill"
+                        >
+                            Grammar
+                        </span>
+
+                        <span
+                            id="difficultyPill"
+                            class="difficulty-pill"
+                        >
+                            Medium
+                        </span>
+
+                    </div>
+
+
+                    <h2
+                        id="questionText"
+                        class="question-text"
+                    ></h2>
+
+
+                    <div
+                        id="answers"
+                        class="answers"
+                    ></div>
+
+
+                    <div
+                        id="feedback"
+                        class="feedback"
+                    >
+
+                        <div
+                            id="feedbackTitle"
+                            class="feedback-title"
+                        >
+                            Explanation
+                        </div>
+
+                        <p id="feedbackText"></p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="nextButton"
+                        class="next-button"
+                        onclick="nextQuestion()"
+                    >
+                        Next Question →
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================================
+                 RESULT SCREEN
+            ========================================== -->
+
+            <section
+                id="resultScreen"
+                class="result-card"
+            >
+
+                <div class="result-icon">
+                    🏆
+                </div>
+
+                <h2 id="resultTitle">
+                    Quiz completed!
+                </h2>
+
+                <p id="resultMessage">
+                    Great work.
+                </p>
+
+
+                <div
+                    id="resultScore"
+                    class="result-score"
+                >
+                    0/10
+                </div>
+
+                <div
+                    id="resultPercent"
+                    class="result-percent"
+                >
+                    0% accuracy
+                </div>
+
+
+                <div class="result-stats">
+
+                    <div class="result-stat">
+                        <strong id="correctStat">0</strong>
+                        <span>CORRECT</span>
+                    </div>
+
+                    <div class="result-stat">
+                        <strong id="wrongStat">0</strong>
+                        <span>INCORRECT</span>
+                    </div>
+
+                    <div class="result-stat">
+                        <strong id="bestStat">0%</strong>
+                        <span>BEST SCORE</span>
+                    </div>
+
+                </div>
+
+
+                <div class="result-actions">
+
+                    <button
+                        type="button"
+                        class="result-button retry"
+                        onclick="restartQuiz()"
+                    >
+                        Try Another Quiz
+                    </button>
+
+                    <a
+                        href="{{ url_for('dashboard') }}"
+                        class="result-button back"
+                    >
+                        Dashboard
+                    </a>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+/* =========================================
+       QUESTION BANK
+    ========================================= */
+
+    const questionBank = {
+
+
+        grammar: [
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "Choose the correct sentence.",
+
+                options: [
+                    "She go to school every day.",
+                    "She goes to school every day.",
+                    "She going to school every day.",
+                    "She gone to school every day."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "With he, she or it in the present simple, the verb normally takes -s or -es."
+            },
+
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "Which sentence is in the past simple?",
+
+                options: [
+                    "I play football.",
+                    "I played football.",
+                    "I am playing football.",
+                    "I will play football."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Played' is the past simple form of the regular verb 'play'."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "I ___ this movie before.",
+
+                options: [
+                    "have seen",
+                    "am seeing",
+                    "will see",
+                    "see yesterday"
+                ],
+
+                answer: 0,
+
+                explanation:
+                    "Present perfect can describe an experience when no specific finished past time is given."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "If I had more free time, I ___ English every day.",
+
+                options: [
+                    "practice",
+                    "will practice",
+                    "would practice",
+                    "practiced"
+                ],
+
+                answer: 2,
+
+                explanation:
+                    "The second conditional uses If + past simple and would + base verb."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Choose the correct negative sentence.",
+
+                options: [
+                    "He doesn't likes coffee.",
+                    "He doesn't like coffee.",
+                    "He don't likes coffee.",
+                    "He not like coffee."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "After 'doesn't', use the base form of the verb: 'like', not 'likes'."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "She has lived here ___ 2022.",
+
+                options: [
+                    "for",
+                    "since",
+                    "during",
+                    "ago"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Since' is used with a starting point in time, such as 2022."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "If she had studied harder, she ___ the exam.",
+
+                options: [
+                    "would pass",
+                    "would have passed",
+                    "will pass",
+                    "has passed"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "The third conditional uses If + past perfect and would have + past participle."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Which passive sentence is correct?",
+
+                options: [
+                    "The book wrote by Orwell.",
+                    "The book was written by Orwell.",
+                    "The book was wrote by Orwell.",
+                    "Orwell was written the book."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "Past passive uses was/were + past participle. The past participle of write is written."
+            },
+
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "Choose the correct comparative form of 'tall'.",
+
+                options: [
+                    "more tall",
+                    "taller",
+                    "tallest",
+                    "most tall"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "Most short adjectives form the comparative with -er: tall → taller."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Neither the teacher nor the students ___ ready.",
+
+                options: [
+                    "is",
+                    "are",
+                    "was",
+                    "be"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "With neither...nor, agreement often follows the nearest subject. 'Students' is plural, so 'are' fits."
+            }
+
+        ],
+
+
+        vocabulary: [
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "What does 'confident' mean?",
+
+                options: [
+                    "Uyatchan",
+                    "O'ziga ishongan",
+                    "Charchagan",
+                    "Xudbin"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Confident' means feeling sure about yourself or your abilities."
+            },
+
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "Which word means 'juda charchagan'?",
+
+                options: [
+                    "Amazed",
+                    "Exhausted",
+                    "Sociable",
+                    "Sudden"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Exhausted' means extremely tired."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Choose the closest synonym for 'discover'.",
+
+                options: [
+                    "hide",
+                    "find",
+                    "forget",
+                    "prevent"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Discover' means to find or learn something that was previously unknown."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "What does 'rely on' mean?",
+
+                options: [
+                    "Depend on",
+                    "Run away",
+                    "Look after",
+                    "Complain about"
+                ],
+
+                answer: 0,
+
+                explanation:
+                    "'Rely on' means to depend on someone or something."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "What does 'prevent' mean?",
+
+                options: [
+                    "Make something happen",
+                    "Stop something from happening",
+                    "Remember something",
+                    "Discuss something"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Prevent' means to stop an action or event from happening."
+            },
+
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "Which word describes someone who enjoys meeting people?",
+
+                options: [
+                    "Selfish",
+                    "Sociable",
+                    "Rude",
+                    "Frightening"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Sociable' describes someone who enjoys spending time and communicating with others."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Which word is closest in meaning to 'concentrate'?",
+
+                options: [
+                    "Focus",
+                    "Travel",
+                    "Mention",
+                    "Move"
+                ],
+
+                answer: 0,
+
+                explanation:
+                    "'Concentrate' means to focus your attention on something."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Which phrase means to handle a difficult situation?",
+
+                options: [
+                    "Set off",
+                    "Deal with",
+                    "Move in",
+                    "Break down"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Deal with' means to handle, manage or take action about a situation."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Choose the best word: The scientist made an ___ discovery.",
+
+                options: [
+                    "extraordinary",
+                    "selfish",
+                    "rude",
+                    "shy"
+                ],
+
+                answer: 0,
+
+                explanation:
+                    "'Extraordinary' means unusual, remarkable or very impressive."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Her sudden decision completely ___ everyone in the room.",
+
+                options: [
+                    "provided",
+                    "amazed",
+                    "relied",
+                    "concentrated"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Amazed' means greatly surprised."
+            }
+
+        ],
+
+
+        ielts: [
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "Which answer is best developed for IELTS Speaking?",
+
+                options: [
+                    "Yes.",
+                    "Good.",
+                    "I like it.",
+                    "Yes, I enjoy it because it helps me relax after studying."
+                ],
+
+                answer: 3,
+
+                explanation:
+                    "IELTS Speaking answers are normally stronger when you develop them with a reason or example."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Which phrase is appropriate for expressing an opinion in formal writing?",
+
+                options: [
+                    "I kinda think",
+                    "In my opinion,",
+                    "You know,",
+                    "Like,"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'In my opinion' is clear and suitable for formal or semi-formal writing."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Choose the best linking word for contrast.",
+
+                options: [
+                    "Moreover",
+                    "However",
+                    "Therefore",
+                    "For example"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'However' introduces a contrasting idea."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Which sentence has the strongest academic style?",
+
+                options: [
+                    "Pollution is really bad.",
+                    "Pollution is a huge thing.",
+                    "Air pollution poses a significant threat to public health.",
+                    "Pollution makes stuff worse."
+                ],
+
+                answer: 2,
+
+                explanation:
+                    "The sentence uses precise and appropriately formal academic vocabulary."
+            },
+
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "If you do not understand an IELTS Speaking question, what can you do?",
+
+                options: [
+                    "Stay silent.",
+                    "Ask the examiner to repeat it.",
+                    "End the test.",
+                    "Answer a different question."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "You can politely ask the examiner to repeat or clarify a question."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Which word is useful for adding another related point?",
+
+                options: [
+                    "Moreover",
+                    "Nevertheless",
+                    "Instead",
+                    "Otherwise"
+                ],
+
+                answer: 0,
+
+                explanation:
+                    "'Moreover' introduces an additional related point."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Choose the grammatically correct complex sentence.",
+
+                options: [
+                    "Although technology is useful, but it can be distracting.",
+                    "Although technology is useful, it can be distracting.",
+                    "Although technology useful, it distracting.",
+                    "Technology although useful but distracting."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "In this structure, do not use 'but' together with 'although'."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Which is the clearest thesis statement?",
+
+                options: [
+                    "There are many things.",
+                    "This essay discusses the advantages and disadvantages of online education.",
+                    "Online education, you know.",
+                    "I will write some stuff about schools."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "A thesis statement should clearly show the topic and purpose of the essay."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Which sentence avoids unnecessary repetition?",
+
+                options: [
+                    "The reason is because the reason is important.",
+                    "The primary reason is its significant impact on students.",
+                    "The reason why is because of the reason.",
+                    "It is important because it is important."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "The second sentence is concise, precise and avoids repeating the same idea."
+            },
+
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "Which is the most formal alternative to 'a lot of' in a suitable academic context?",
+
+                options: [
+                    "loads of",
+                    "tons of",
+                    "numerous",
+                    "kinda many"
+                ],
+
+                answer: 2,
+
+                explanation:
+                    "'Numerous' is a formal alternative when referring to many countable things."
+            }
+
+        ],
+
+
+        sat: [
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "The experiment failed several times. ___, the researchers continued their work.",
+
+                options: [
+                    "For example",
+                    "Nevertheless",
+                    "Similarly",
+                    "Therefore"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Nevertheless' shows contrast between the failures and the decision to continue."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Choose the grammatically correct sentence.",
+
+                options: [
+                    "The students was preparing for the exam.",
+                    "The students were preparing for the exam.",
+                    "The students is preparing for the exam.",
+                    "The students has preparing for the exam."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "The plural subject 'students' requires the plural verb 'were'."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Which transition best indicates a result?",
+
+                options: [
+                    "However",
+                    "For instance",
+                    "Consequently",
+                    "Meanwhile"
+                ],
+
+                answer: 2,
+
+                explanation:
+                    "'Consequently' signals that the following information is a result."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Choose the most concise sentence.",
+
+                options: [
+                    "Due to the fact that it was raining, the game was canceled.",
+                    "Because it was raining, the game was canceled.",
+                    "The game was canceled on account of the fact of rain.",
+                    "Rain being something that occurred caused the game to be canceled."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'Because it was raining' communicates the idea clearly and concisely."
+            },
+
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "The evidence was ___ enough to convince the researchers.",
+
+                options: [
+                    "compelling",
+                    "casual",
+                    "temporary",
+                    "shy"
+                ],
+
+                answer: 0,
+
+                explanation:
+                    "'Compelling' can mean convincing or persuasive."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Choose the sentence with correct punctuation.",
+
+                options: [
+                    "The project had one goal, to reduce waste.",
+                    "The project had one goal: to reduce waste.",
+                    "The project had one goal; to reduce waste.",
+                    "The project had one goal? to reduce waste."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "A colon can introduce an explanation or specification after a complete clause."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "Which sentence maintains subject-verb agreement?",
+
+                options: [
+                    "A collection of rare books were displayed.",
+                    "A collection of rare books was displayed.",
+                    "A collection of rare books are displayed yesterday.",
+                    "A collection of rare books have displayed."
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "The grammatical subject is the singular noun 'collection', so 'was' is correct."
+            },
+
+
+            {
+                difficulty: "medium",
+
+                question:
+                    "Which transition is best for introducing an example?",
+
+                options: [
+                    "Nevertheless",
+                    "For instance",
+                    "Consequently",
+                    "Instead"
+                ],
+
+                answer: 1,
+
+                explanation:
+                    "'For instance' introduces an example."
+            },
+
+
+            {
+                difficulty: "easy",
+
+                question:
+                    "Which word is closest in meaning to 'significant'?",
+
+                options: [
+                    "Important",
+                    "Tiny",
+                    "Unclear",
+                    "Temporary"
+                ],
+
+                answer: 0,
+
+                explanation:
+                    "'Significant' commonly means important, meaningful or notable."
+            },
+
+
+            {
+                difficulty: "hard",
+
+                question:
+                    "The data were incomplete. ___, the researchers collected additional samples.",
+
+                options: [
+                    "Therefore",
+                    "For example",
+                    "Similarly",
+                    "Nevertheless"
+                ],
+
+                answer: 0,
+
+                explanation:
+                    "Collecting more samples is a logical result of having incomplete data, so 'Therefore' is appropriate."
+            }
+
+        ]
+
+    };
+
+
+    /* =========================================
+       STATE
+    ========================================= */
+
+    let selectedCategory =
+        "grammar";
+
+    let quizQuestions =
+        [];
+
+    let currentIndex =
+        0;
+
+    let score =
+        0;
+
+    let answered =
+        false;
+
+
+    let targetQuestionCount =
+        10;
+
+
+    let timerEnabled =
+        false;
+
+
+    let questionTimer =
+        null;
+
+
+    let secondsRemaining =
+        0;
+
+
+    let generationComplete =
+        false;
+
+
+    let questionLoadPromise =
+        null;
+
+
+    let quizSessionToken =
+        0;
+
+
+    /* =========================================
+       CATEGORY
+    ========================================= */
+
+    function selectCategory(
+        category,
+        button
+    ) {
+
+        selectedCategory =
+            category;
+
+
+        document
+            .querySelectorAll(
+                ".category-card"
+            )
+            .forEach(
+                function(card) {
+
+                    card.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+        button.classList.add(
+            "active"
+        );
+
+    }
+
+
+    /* =========================================
+       SHUFFLE
+    ========================================= */
+
+    function shuffle(
+        array
+    ) {
+
+        const copy =
+            [...array];
+
+
+        for (
+            let i =
+                copy.length - 1;
+
+            i > 0;
+
+            i--
+        ) {
+
+            const j =
+                Math.floor(
+                    Math.random()
+                    *
+                    (i + 1)
+                );
+
+
+            [
+                copy[i],
+                copy[j]
+            ] = [
+                copy[j],
+                copy[i]
+            ];
+
+        }
+
+
+        return copy;
+
+    }
+
+
+    /* =========================================
+       AI QUIZ GENERATION
+       Fast first batch + background loading
+    ========================================= */
+
+    async function requestAIQuizBatch(
+        batchCount,
+        difficulty,
+        token
+    ) {
+
+        const avoidQuestions =
+            quizQuestions
+                .map(
+                    function(item) {
+                        return item.question;
+                    }
+                )
+                .slice(-30);
+
+
+        const response =
+            await fetch(
+                "/api/generate_quiz",
+                {
+                    method:
+                        "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            category:
+                                selectedCategory,
+
+                            difficulty:
+                                difficulty,
+
+                            count:
+                                batchCount,
+
+                            avoid_questions:
+                                avoidQuestions
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (
+            token !==
+            quizSessionToken
+        ) {
+
+            return [];
+
+        }
+
+
+        if (
+            !response.ok
+            ||
+            !Array.isArray(
+                data.questions
+            )
+            ||
+            data.questions.length === 0
+        ) {
+
+            throw new Error(
+                data.error
+                ||
+                "AI quiz generation failed."
+            );
+
+        }
+
+
+        return data.questions;
+
+    }
+
+
+    function appendUniqueQuestions(
+        newQuestions
+    ) {
+
+        const existing =
+            new Set(
+                quizQuestions.map(
+                    function(item) {
+                        return item.question
+                            .trim()
+                            .toLowerCase();
+                    }
+                )
+            );
+
+
+        newQuestions.forEach(
+            function(item) {
+
+                const key =
+                    String(
+                        item.question
+                        ||
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                if (
+                    key
+                    &&
+                    !existing.has(
+                        key
+                    )
+                    &&
+                    quizQuestions.length
+                    <
+                    targetQuestionCount
+                ) {
+
+                    quizQuestions.push(
+                        item
+                    );
+
+
+                    existing.add(
+                        key
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    async function loadRemainingQuestions(
+        difficulty,
+        token
+    ) {
+
+        try {
+
+            while (
+                token ===
+                quizSessionToken
+                &&
+                quizQuestions.length
+                <
+                targetQuestionCount
+            ) {
+
+                const remaining =
+                    targetQuestionCount
+                    -
+                    quizQuestions.length;
+
+
+                const batchCount =
+                    Math.min(
+                        10,
+                        remaining
+                    );
+
+
+                const batch =
+                    await requestAIQuizBatch(
+                        batchCount,
+                        difficulty,
+                        token
+                    );
+
+
+                if (
+                    token !==
+                    quizSessionToken
+                ) {
+
+                    return;
+
+                }
+
+
+                const before =
+                    quizQuestions.length;
+
+
+                appendUniqueQuestions(
+                    batch
+                );
+
+
+                if (
+                    quizQuestions.length
+                    ===
+                    before
+                ) {
+
+                    throw new Error(
+                        "No new unique questions returned."
+                    );
+
+                }
+
+            }
+
+
+            if (
+                token ===
+                quizSessionToken
+            ) {
+
+                generationComplete =
+                    true;
+
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                "BACKGROUND QUIZ LOAD ERROR:",
+                error
+            );
+
+
+            if (
+                token ===
+                quizSessionToken
+            ) {
+
+                generationComplete =
+                    true;
+
+            }
+
+        }
+
+    }
+
+
+    function buildFallbackQuestions(
+        count,
+        difficulty
+    ) {
+
+        const bank =
+            questionBank[
+                selectedCategory
+            ];
+
+
+        let preferred =
+            [];
+
+
+        let remaining =
+            [];
+
+
+        if (
+            difficulty ===
+            "mixed"
+        ) {
+
+            preferred =
+                shuffle(
+                    bank
+                );
+
+        } else {
+
+            preferred =
+                shuffle(
+                    bank.filter(
+                        function(item) {
+
+                            return (
+                                item.difficulty
+                                ===
+                                difficulty
+                            );
+
+                        }
+                    )
+                );
+
+
+            remaining =
+                shuffle(
+                    bank.filter(
+                        function(item) {
+
+                            return (
+                                item.difficulty
+                                !==
+                                difficulty
+                            );
+
+                        }
+                    )
+                );
+
+        }
+
+
+        return [
+            ...preferred,
+            ...remaining
+        ].slice(
+            0,
+            Math.min(
+                count,
+                bank.length
+            )
+        );
+
+    }
+
+
+    /* =========================================
+       START QUIZ — FAST AI MODE
+    ========================================= */
+
+    async function startQuiz() {
+
+        const difficulty =
+            document
+                .getElementById(
+                    "difficulty"
+                )
+                .value;
+
+
+        targetQuestionCount =
+            Number(
+                document
+                    .getElementById(
+                        "questionCount"
+                    )
+                    .value
+            );
+
+
+        timerEnabled =
+            document
+                .getElementById(
+                    "timerMode"
+                )
+                .value
+            ===
+            "on";
+
+
+        const startButton =
+            document
+                .getElementById(
+                    "startQuizButton"
+                );
+
+
+        const status =
+            document
+                .getElementById(
+                    "quizGenerationStatus"
+                );
+
+
+        const originalButtonText =
+            startButton.textContent;
+
+
+        quizSessionToken++;
+
+
+        const token =
+            quizSessionToken;
+
+
+        stopQuestionTimer();
+
+
+        quizQuestions =
+            [];
+
+
+        generationComplete =
+            false;
+
+
+        currentIndex =
+            0;
+
+
+        score =
+            0;
+
+
+        answered =
+            false;
+
+
+        startButton.disabled =
+            true;
+
+
+        startButton.textContent =
+            "✦ AI is creating your first questions...";
+
+
+        status.className =
+            "quiz-generation-status";
+
+
+        status.textContent =
+            "Preparing a fresh "
+            +
+            formatCategory(
+                selectedCategory
+            )
+            +
+            " quiz...";
+
+
+        try {
+
+            /*
+                Only 5 questions are generated before the quiz opens.
+                The rest load quietly in the background.
+                This makes the first screen appear much faster.
+            */
+
+            const firstBatchCount =
+                Math.min(
+                    5,
+                    targetQuestionCount
+                );
+
+
+            const firstBatch =
+                await requestAIQuizBatch(
+                    firstBatchCount,
+                    difficulty,
+                    token
+                );
+
+
+            appendUniqueQuestions(
+                firstBatch
+            );
+
+
+            if (
+                quizQuestions.length ===
+                0
+            ) {
+
+                throw new Error(
+                    "No questions generated."
+                );
+
+            }
+
+
+            status.className =
+                "quiz-generation-status success";
+
+
+            status.textContent =
+                "✓ Quiz ready. More questions are loading in the background.";
+
+
+        } catch (error) {
+
+            console.error(
+                "AI QUIZ ERROR:",
+                error
+            );
+
+
+            quizQuestions =
+                buildFallbackQuestions(
+                    Math.min(
+                        targetQuestionCount,
+                        10
+                    ),
+                    difficulty
+                );
+
+
+            targetQuestionCount =
+                quizQuestions.length;
+
+
+            generationComplete =
+                true;
+
+
+            status.className =
+                "quiz-generation-status error";
+
+
+            status.textContent =
+                "AI was unavailable, so backup questions were loaded.";
+
+        } finally {
+
+            startButton.disabled =
+                false;
+
+
+            startButton.textContent =
+                originalButtonText;
+
+        }
+
+
+        if (
+            quizQuestions.length
+            <
+            targetQuestionCount
+            &&
+            !generationComplete
+        ) {
+
+            questionLoadPromise =
+                loadRemainingQuestions(
+                    difficulty,
+                    token
+                );
+
+        } else {
+
+            generationComplete =
+                true;
+
+
+            questionLoadPromise =
+                Promise.resolve();
+
+        }
+
+
+        document
+            .getElementById(
+                "startScreen"
+            )
+            .style.display =
+                "none";
+
+
+        document
+            .getElementById(
+                "resultScreen"
+            )
+            .style.display =
+                "none";
+
+
+        document
+            .getElementById(
+                "quizScreen"
+            )
+            .style.display =
+                "block";
+
+
+        renderQuestion();
+
+    }
+
+
+    /* =========================================
+       RENDER QUESTION
+    ========================================= */
+
+    function renderQuestion() {
+
+        answered =
+            false;
+
+
+        const item =
+            quizQuestions[
+                currentIndex
+            ];
+
+
+        document
+            .getElementById(
+                "questionCounter"
+            )
+            .textContent =
+                "Question "
+                +
+                (
+                    currentIndex + 1
+                )
+                +
+                " of "
+                +
+                targetQuestionCount;
+
+
+        document
+            .getElementById(
+                "scorePill"
+            )
+            .textContent =
+                "Score "
+                +
+                score;
+
+
+        const progress =
+            (
+                (
+                    currentIndex + 1
+                )
+                /
+                targetQuestionCount
+            )
+            *
+            100;
+
+
+        document
+            .getElementById(
+                "progressBar"
+            )
+            .style.width =
+                progress
+                +
+                "%";
+
+
+        document
+            .getElementById(
+                "categoryPill"
+            )
+            .textContent =
+                formatCategory(
+                    selectedCategory
+                );
+
+
+        document
+            .getElementById(
+                "difficultyPill"
+            )
+            .textContent =
+                item.difficulty;
+
+
+        document
+            .getElementById(
+                "questionText"
+            )
+            .textContent =
+                item.question;
+
+
+        const answers =
+            document
+                .getElementById(
+                    "answers"
+                );
+
+
+        answers.innerHTML =
+            "";
+
+
+        const letters =
+            [
+                "A",
+                "B",
+                "C",
+                "D"
+            ];
+
+
+        item.options.forEach(
+            function(
+                option,
+                index
+            ) {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.className =
+                    "answer";
+
+
+                const letter =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                letter.className =
+                    "answer-letter";
+
+
+                letter.textContent =
+                    letters[index];
+
+
+                const text =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                text.textContent =
+                    option;
+
+
+                button.appendChild(
+                    letter
+                );
+
+
+                button.appendChild(
+                    text
+                );
+
+
+                button.onclick =
+                    function() {
+
+                        selectAnswer(
+                            index,
+                            button
+                        );
+
+                    };
+
+
+                answers.appendChild(
+                    button
+                );
+
+            }
+        );
+
+
+        document
+            .getElementById(
+                "feedback"
+            )
+            .style.display =
+                "none";
+
+
+        document
+            .getElementById(
+                "nextButton"
+            )
+            .style.display =
+                "none";
+
+
+        startQuestionTimer(
+            item
+        );
+
+    }
+
+
+    /* =========================================
+       SELECT ANSWER
+    ========================================= */
+
+    function selectAnswer(
+        selectedIndex,
+        selectedButton
+    ) {
+
+        if (answered) {
+
+            return;
+
+        }
+
+
+        answered =
+            true;
+
+
+        stopQuestionTimer();
+
+
+        const item =
+            quizQuestions[
+                currentIndex
+            ];
+
+
+        const buttons =
+            Array.from(
+                document
+                    .querySelectorAll(
+                        ".answer"
+                    )
+            );
+
+
+        buttons.forEach(
+            function(button) {
+
+                button.disabled =
+                    true;
+
+            }
+        );
+
+
+        const correct =
+            selectedIndex
+            ===
+            item.answer;
+
+
+        if (correct) {
+
+            score++;
+
+            selectedButton
+                .classList
+                .add(
+                    "correct"
+                );
+
+        } else {
+
+            selectedButton
+                .classList
+                .add(
+                    "wrong"
+                );
+
+
+            buttons[
+                item.answer
+            ]
+                .classList
+                .add(
+                    "correct"
+                );
+
+        }
+
+
+        document
+            .getElementById(
+                "scorePill"
+            )
+            .textContent =
+                "Score "
+                +
+                score;
+
+
+        document
+            .getElementById(
+                "feedbackTitle"
+            )
+            .textContent =
+                correct
+                ?
+                "✓ Correct"
+                :
+                "✕ Not quite";
+
+
+        document
+            .getElementById(
+                "feedbackText"
+            )
+            .textContent =
+                item.explanation;
+
+
+        document
+            .getElementById(
+                "feedback"
+            )
+            .style.display =
+                "block";
+
+
+        const next =
+            document
+                .getElementById(
+                    "nextButton"
+                );
+
+
+        next.style.display =
+            "block";
+
+
+        if (
+            currentIndex
+            ===
+            targetQuestionCount - 1
+        ) {
+
+            next.textContent =
+                "See Results →";
+
+        } else {
+
+            next.textContent =
+                "Next Question →";
+
+        }
+
+    }
+
+
+    /* =========================================
+       NEXT
+    ========================================= */
+
+    async function nextQuestion() {
+
+        if (!answered) {
+
+            return;
+
+        }
+
+
+        if (
+            currentIndex
+            <
+            quizQuestions.length - 1
+        ) {
+
+            currentIndex++;
+
+            renderQuestion();
+
+            return;
+
+        }
+
+
+        if (
+            currentIndex
+            <
+            targetQuestionCount - 1
+        ) {
+
+            const next =
+                document
+                    .getElementById(
+                        "nextButton"
+                    );
+
+
+            const originalText =
+                next.textContent;
+
+
+            next.disabled =
+                true;
+
+
+            next.textContent =
+                "✦ Loading next questions...";
+
+
+            try {
+
+                if (
+                    questionLoadPromise
+                ) {
+
+                    await questionLoadPromise;
+
+                }
+
+
+            } finally {
+
+                next.disabled =
+                    false;
+
+
+                next.textContent =
+                    originalText;
+
+            }
+
+
+            if (
+                currentIndex
+                <
+                quizQuestions.length - 1
+            ) {
+
+                currentIndex++;
+
+                renderQuestion();
+
+                return;
+
+            }
+
+        }
+
+
+        showResults();
+
+    }
+
+
+    /* =========================================
+       RESULTS
+    ========================================= */
+
+    function showResults() {
+
+        stopQuestionTimer();
+
+
+        document
+            .getElementById(
+                "quizScreen"
+            )
+            .style.display =
+                "none";
+
+
+        document
+            .getElementById(
+                "resultScreen"
+            )
+            .style.display =
+                "block";
+
+
+        const total =
+            quizQuestions.length;
+
+
+        const wrong =
+            total - score;
+
+
+        const percent =
+            Math.round(
+                (
+                    score
+                    /
+                    total
+                )
+                *
+                100
+            );
+
+
+        document
+            .getElementById(
+                "resultScore"
+            )
+            .textContent =
+                score
+                +
+                "/"
+                +
+                total;
+
+
+        document
+            .getElementById(
+                "resultPercent"
+            )
+            .textContent =
+                percent
+                +
+                "% accuracy";
+
+
+        document
+            .getElementById(
+                "correctStat"
+            )
+            .textContent =
+                score;
+
+
+        document
+            .getElementById(
+                "wrongStat"
+            )
+            .textContent =
+                wrong;
+
+
+        const key =
+            "linguamind_best_"
+            +
+            selectedCategory;
+
+
+        const previousBest =
+            Number(
+                localStorage
+                    .getItem(
+                        key
+                    )
+            )
+            ||
+            0;
+
+
+        const best =
+            Math.max(
+                previousBest,
+                percent
+            );
+
+
+        localStorage
+            .setItem(
+                key,
+                best
+            );
+
+
+        document
+            .getElementById(
+                "bestStat"
+            )
+            .textContent =
+                best
+                +
+                "%";
+
+
+        let title =
+            "";
+
+        let message =
+            "";
+
+
+        if (
+            percent >= 90
+        ) {
+
+            title =
+                "Excellent work! 🔥";
+
+            message =
+                "You handled this practice extremely well.";
+
+        } else if (
+            percent >= 70
+        ) {
+
+            title =
+                "Strong result! 👏";
+
+            message =
+                "You are doing well. Review the mistakes and push for an even higher score.";
+
+        } else if (
+            percent >= 50
+        ) {
+
+            title =
+                "Good progress 👍";
+
+            message =
+                "You have a solid start. Use the explanations to strengthen the weak points.";
+
+        } else {
+
+            title =
+                "Keep building 💪";
+
+            message =
+                "Mistakes show exactly what to practice next. Try another round after reviewing.";
+
+        }
+
+
+        document
+            .getElementById(
+                "resultTitle"
+            )
+            .textContent =
+                title;
+
+
+        document
+            .getElementById(
+                "resultMessage"
+            )
+            .textContent =
+                message;
+
+saveQuizResult(
+    score,
+    total,
+    percent
+);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+    }
+
+/* =========================================
+   SAVE QUIZ RESULT
+========================================= */
+
+async function saveQuizResult(
+    finalScore,
+    totalQuestions,
+    percentage
+) {
+
+    const difficulty =
+        document
+            .getElementById(
+                "difficulty"
+            )
+            .value;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/quiz_results",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            category:
+                                selectedCategory,
+
+                            difficulty:
+                                difficulty,
+
+                            score:
+                                finalScore,
+
+                            total_questions:
+                                totalQuestions
+                        })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            console.error(
+                "Could not save quiz:",
+                data
+            );
+
+            return;
+
+        }
+
+
+        console.log(
+            "Quiz result saved:",
+            data
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Quiz save error:",
+            error
+        );
+
+    }
+
+}
+
+    /* =========================================
+       TIMER
+    ========================================= */
+
+    function getQuestionTime(
+        item
+    ) {
+
+        const difficulty =
+            String(
+                item.difficulty
+                ||
+                "medium"
+            )
+            .toLowerCase();
+
+
+        if (
+            difficulty ===
+            "easy"
+        ) {
+
+            return 30;
+
+        }
+
+
+        if (
+            difficulty ===
+            "hard"
+        ) {
+
+            return 60;
+
+        }
+
+
+        return 45;
+
+    }
+
+
+    function updateTimerPill() {
+
+        const pill =
+            document
+                .getElementById(
+                    "timerPill"
+                );
+
+
+        pill.classList.remove(
+            "warning",
+            "danger"
+        );
+
+
+        if (
+            !timerEnabled
+        ) {
+
+            pill.textContent =
+                "⏱ Off";
+
+            return;
+
+        }
+
+
+        pill.textContent =
+            "⏱ "
+            +
+            secondsRemaining
+            +
+            "s";
+
+
+        if (
+            secondsRemaining <=
+            10
+        ) {
+
+            pill.classList.add(
+                "danger"
+            );
+
+        } else if (
+            secondsRemaining <=
+            20
+        ) {
+
+            pill.classList.add(
+                "warning"
+            );
+
+        }
+
+    }
+
+
+    function stopQuestionTimer() {
+
+        if (
+            questionTimer
+        ) {
+
+            clearInterval(
+                questionTimer
+            );
+
+
+            questionTimer =
+                null;
+
+        }
+
+    }
+
+
+    function startQuestionTimer(
+        item
+    ) {
+
+        stopQuestionTimer();
+
+
+        if (
+            !timerEnabled
+        ) {
+
+            secondsRemaining =
+                0;
+
+
+            updateTimerPill();
+
+            return;
+
+        }
+
+
+        secondsRemaining =
+            getQuestionTime(
+                item
+            );
+
+
+        updateTimerPill();
+
+
+        questionTimer =
+            setInterval(
+                function() {
+
+                    secondsRemaining--;
+
+
+                    updateTimerPill();
+
+
+                    if (
+                        secondsRemaining <=
+                        0
+                    ) {
+
+                        stopQuestionTimer();
+
+
+                        handleTimeUp();
+
+                    }
+
+                },
+                1000
+            );
+
+    }
+
+
+    function handleTimeUp() {
+
+        if (
+            answered
+        ) {
+
+            return;
+
+        }
+
+
+        answered =
+            true;
+
+
+        const item =
+            quizQuestions[
+                currentIndex
+            ];
+
+
+        const buttons =
+            Array.from(
+                document
+                    .querySelectorAll(
+                        ".answer"
+                    )
+            );
+
+
+        buttons.forEach(
+            function(button) {
+
+                button.disabled =
+                    true;
+
+            }
+        );
+
+
+        if (
+            buttons[
+                item.answer
+            ]
+        ) {
+
+            buttons[
+                item.answer
+            ]
+                .classList
+                .add(
+                    "correct"
+                );
+
+        }
+
+
+        document
+            .getElementById(
+                "feedbackTitle"
+            )
+            .textContent =
+                "⏱ Time's up";
+
+
+        document
+            .getElementById(
+                "feedbackText"
+            )
+            .textContent =
+                item.explanation;
+
+
+        document
+            .getElementById(
+                "feedback"
+            )
+            .style.display =
+                "block";
+
+
+        const next =
+            document
+                .getElementById(
+                    "nextButton"
+                );
+
+
+        next.style.display =
+            "block";
+
+
+        if (
+            currentIndex
+            ===
+            targetQuestionCount - 1
+        ) {
+
+            next.textContent =
+                "See Results →";
+
+        } else {
+
+            next.textContent =
+                "Next Question →";
+
+        }
+
+    }
+
+
+    /* =========================================
+       BACK TO QUIZ SETUP
+    ========================================= */
+
+    function returnToQuizSetup() {
+
+        stopQuestionTimer();
+
+
+        quizSessionToken++;
+
+
+        generationComplete =
+            true;
+
+
+        questionLoadPromise =
+            null;
+
+
+        quizQuestions =
+            [];
+
+
+        currentIndex =
+            0;
+
+
+        score =
+            0;
+
+
+        answered =
+            false;
+
+
+        document
+            .getElementById(
+                "quizScreen"
+            )
+            .style.display =
+                "none";
+
+
+        document
+            .getElementById(
+                "resultScreen"
+            )
+            .style.display =
+                "none";
+
+
+        document
+            .getElementById(
+                "startScreen"
+            )
+            .style.display =
+                "block";
+
+
+        const status =
+            document
+                .getElementById(
+                    "quizGenerationStatus"
+                );
+
+
+        status.textContent =
+            "";
+
+
+        status.className =
+            "quiz-generation-status";
+
+
+        const timerPill =
+            document
+                .getElementById(
+                    "timerPill"
+                );
+
+
+        timerPill.textContent =
+            "⏱ Off";
+
+
+        timerPill.classList.remove(
+            "warning",
+            "danger"
+        );
+
+
+        scrollQuizStageTop();
+
+    }
+
+
+    /* =========================================
+       RESTART
+    ========================================= */
+
+    function restartQuiz() {
+
+        returnToQuizSetup();
+
+    }
+
+
+    /* =========================================
+       CATEGORY NAME
+    ========================================= */
+
+    function formatCategory(
+        category
+    ) {
+
+        const names = {
+
+            grammar:
+                "Grammar",
+
+            vocabulary:
+                "Vocabulary",
+
+            ielts:
+                "IELTS",
+
+            sat:
+                "SAT English"
+
+        };
+
+
+        return (
+            names[category]
+            ||
+            category
+        );
+
+    }
+
+
+/* =========================================
+   PREMIUM QUIZ UI HELPER
+   Keeps the internal stage aligned to the top.
+========================================= */
+
+function scrollQuizStageTop() {
+    const stage = document.getElementById("quizStage");
+
+    if (stage) {
+        stage.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+}
+
+const originalStartQuiz = startQuiz;
+
+startQuiz = async function() {
+    await originalStartQuiz();
+    scrollQuizStageTop();
+};
+
+/* restartQuiz already returns to setup and scrolls the internal stage. */
+
+</script>
+
+</body>
+</html>
