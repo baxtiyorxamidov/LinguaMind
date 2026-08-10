@@ -6,3 +6,4 @@ Flask-WTF
 email-validator
 python-dotenv
 gunicorn
+google-genai
