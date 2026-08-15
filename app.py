@@ -6973,9 +6973,9 @@ def health_check():
         row = cursor.fetchone()
         conn.close()
         db_ok = bool(row and int(row["ok"]) == 1)
-   except Exception as e:
-    print(f"HEALTH DB ERROR: {type(e).__name__}: {e}", flush=True)
-    db_ok = False
+    except Exception as e:
+        print(f"HEALTH DB ERROR: {type(e).__name__}: {e}", flush=True)
+        db_ok = False
 
     status_code = 200 if db_ok else 503
 
