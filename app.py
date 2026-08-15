@@ -1,10 +1,15 @@
+from psycopg_pool import ConnectionPool
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
 from google import genai
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from gtts import gTTS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_wtf.csrf import CSRFProtect
 
-import sqlite3
+import psycopg
+from psycopg.rows import dict_row
 import os
 import base64
 import io
@@ -49,30 +54,103 @@ print(
 )
 
 app = Flask(__name__)
-app.secret_key = "LinguaMind2026"
 
-DATABASE = "database.db"
+
+# =========================================================
+# SECURITY - SESSION HARDENING
+# =========================================================
+
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
+app.config["SESSION_REFRESH_EACH_REQUEST"] = True
+
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = (
+    os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
+)
+
+app.secret_key = os.getenv("SECRET_KEY")
+
+if not app.secret_key:
+    raise RuntimeError(
+        "SECRET_KEY environment variable is required."
+    )
+
+csrf = CSRFProtect(app)
+
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=(
+        os.getenv(
+            "SESSION_COOKIE_SECURE",
+            "false"
+        ).lower() == "true"
+    ),
+    SESSION_COOKIE_SAMESITE="Lax",
+)
+
+RATE_LIMIT_STORAGE_URI = (
+    os.getenv("REDIS_URL", "").strip()
+    or "memory://"
+)
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=[],
+    storage_uri=RATE_LIMIT_STORAGE_URI,
+    strategy="fixed-window",
+    headers_enabled=True,
+    key_prefix="linguamind",
+    in_memory_fallback_enabled=True,
+)
 
 
 
 # ===========================
-# DATABASE CONNECTION
+# DATABASE CONNECTION POOL
 # ===========================
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is required.")
+
+DB_POOL_MIN = max(1, int(os.getenv("DB_POOL_MIN", "1")))
+DB_POOL_MAX = max(DB_POOL_MIN, int(os.getenv("DB_POOL_MAX", "5")))
+
+db_pool = ConnectionPool(
+    conninfo=DATABASE_URL,
+    min_size=DB_POOL_MIN,
+    max_size=DB_POOL_MAX,
+    kwargs={"row_factory": dict_row},
+    open=True,
+    close_returns=True,
+    timeout=10.0,
+    max_idle=300.0,
+    max_lifetime=1800.0,
+    name="linguamind-db-pool",
+)
+
 
 def get_db():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
+    return db_pool.getconn(timeout=10.0)
+
 
 def create_subscription_system():
     conn = get_db()
     cursor = conn.cursor()
 
+    cursor.execute("""
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'users'
+    """)
+
     columns = {
-        row["name"]
-        for row in cursor.execute(
-            "PRAGMA table_info(users)"
-        ).fetchall()
+        row["column_name"]
+        for row in cursor.fetchall()
     }
 
     if "plan" not in columns:
@@ -120,21 +198,17 @@ def create_core_tables():
     cursor = conn.cursor()
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            full_name TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL,
-            plan TEXT NOT NULL DEFAULT 'free',
-            subscription_status TEXT NOT NULL DEFAULT 'inactive',
-            subscription_started_at TEXT,
-            subscription_expires_at TEXT
-        )
-    """)
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        full_name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )
+""")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS vocabulary (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
             english_word TEXT NOT NULL,
             uzbek_word TEXT NOT NULL,
@@ -202,7 +276,7 @@ def refresh_user_subscription(user_id):
             subscription_started_at,
             subscription_expires_at
         FROM users
-        WHERE id = ?
+        WHERE id = %s
     """, (user_id,)).fetchone()
 
     if not user:
@@ -259,7 +333,7 @@ def refresh_user_subscription(user_id):
                     SET
                         plan = 'free',
                         subscription_status = 'expired'
-                    WHERE id = ?
+                    WHERE id = %s
                 """, (user_id,))
 
                 conn.commit()
@@ -449,7 +523,7 @@ def dev_subscription_switch(
                 subscription_status = 'inactive',
                 subscription_started_at = NULL,
                 subscription_expires_at = NULL
-            WHERE id = ?
+            WHERE id = %s
             """,
             (user_id,)
         )
@@ -473,11 +547,11 @@ def dev_subscription_switch(
             """
             UPDATE users
             SET
-                plan = ?,
+                plan = %s,
                 subscription_status = 'active',
-                subscription_started_at = ?,
-                subscription_expires_at = ?
-            WHERE id = ?
+                subscription_started_at = %s,
+                subscription_expires_at = %s
+            WHERE id = %s
             """,
             (
                 plan_name,
@@ -514,7 +588,7 @@ def create_gamification_tables():
     """)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS xp_events (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
             event_type TEXT NOT NULL,
             event_key TEXT NOT NULL,
@@ -535,19 +609,19 @@ def create_gamification_tables():
 def ensure_user_progress(user_id):
     conn = get_db()
     cursor = conn.cursor()
-    row = cursor.execute("SELECT total_xp FROM user_progress WHERE user_id = ? LIMIT 1", (user_id,)).fetchone()
+    row = cursor.execute("SELECT total_xp FROM user_progress WHERE user_id = %s LIMIT 1", (user_id,)).fetchone()
     if row:
         total_xp = int(row["total_xp"] or 0)
         conn.close()
         return total_xp
 
-    vocabulary_total = cursor.execute("SELECT COUNT(*) AS total FROM vocabulary WHERE user_id = ?", (user_id,)).fetchone()["total"]
-    mastered_total = cursor.execute("SELECT COUNT(*) AS total FROM vocabulary WHERE user_id = ? AND status = 'Mastered'", (user_id,)).fetchone()["total"]
-    quiz_total = cursor.execute("SELECT COUNT(*) AS total FROM quiz_results WHERE user_id = ?", (user_id,)).fetchone()["total"]
-    completed_tasks = cursor.execute("SELECT COUNT(*) AS total FROM study_tasks WHERE user_id = ? AND status = 'completed'", (user_id,)).fetchone()["total"]
+    vocabulary_total = cursor.execute("SELECT COUNT(*) AS total FROM vocabulary WHERE user_id = %s", (user_id,)).fetchone()["total"]
+    mastered_total = cursor.execute("SELECT COUNT(*) AS total FROM vocabulary WHERE user_id = %s AND status = 'Mastered'", (user_id,)).fetchone()["total"]
+    quiz_total = cursor.execute("SELECT COUNT(*) AS total FROM quiz_results WHERE user_id = %s", (user_id,)).fetchone()["total"]
+    completed_tasks = cursor.execute("SELECT COUNT(*) AS total FROM study_tasks WHERE user_id = %s AND status = 'completed'", (user_id,)).fetchone()["total"]
 
     starting_xp = int(vocabulary_total)*5 + int(mastered_total)*12 + int(quiz_total)*45 + int(completed_tasks)*30
-    cursor.execute("INSERT INTO user_progress (user_id, total_xp) VALUES (?, ?)", (user_id, starting_xp))
+    cursor.execute("INSERT INTO user_progress (user_id, total_xp) VALUES (%s, %s)", (user_id, starting_xp))
     conn.commit()
     conn.close()
     return starting_xp
@@ -559,15 +633,16 @@ def award_xp(user_id, amount, event_type, event_key):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT OR IGNORE INTO xp_events (user_id, event_type, event_key, xp)
-        VALUES (?, ?, ?, ?)
-    """, (user_id, event_type, event_key, amount))
+    INSERT INTO xp_events (user_id, event_type, event_key, xp)
+    VALUES (%s, %s, %s, %s)
+    ON CONFLICT DO NOTHING
+""", (user_id, event_type, event_key, amount))
     was_added = cursor.rowcount == 1
     if was_added:
         cursor.execute("""
             UPDATE user_progress
-            SET total_xp = total_xp + ?, updated_at = CURRENT_TIMESTAMP
-            WHERE user_id = ?
+            SET total_xp = total_xp + %s, updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = %s
         """, (amount, user_id))
     conn.commit()
     conn.close()
@@ -607,9 +682,9 @@ def calculate_learning_streak(user_id):
     cursor = conn.cursor()
     activity_dates = set()
     queries = [
-        ("SELECT DISTINCT DATE(created_at) AS activity_date FROM xp_events WHERE user_id = ? AND created_at IS NOT NULL", "created_at"),
-        ("SELECT DISTINCT DATE(created_at) AS activity_date FROM quiz_results WHERE user_id = ? AND created_at IS NOT NULL", "created_at"),
-        ("SELECT DISTINCT DATE(completed_at) AS activity_date FROM study_tasks WHERE user_id = ? AND completed_at IS NOT NULL", "completed_at")
+        ("SELECT DISTINCT DATE(created_at) AS activity_date FROM xp_events WHERE user_id = %s AND created_at IS NOT NULL", "created_at"),
+        ("SELECT DISTINCT DATE(created_at) AS activity_date FROM quiz_results WHERE user_id = %s AND created_at IS NOT NULL", "created_at"),
+        ("SELECT DISTINCT DATE(completed_at) AS activity_date FROM study_tasks WHERE user_id = %s AND completed_at IS NOT NULL", "completed_at")
     ]
     for sql, _ in queries:
         for row in cursor.execute(sql, (user_id,)).fetchall():
@@ -642,7 +717,7 @@ def get_weekly_activity(user_id):
         row = cursor.execute("""
             SELECT COALESCE(SUM(xp), 0) AS xp
             FROM xp_events
-            WHERE user_id = ? AND DATE(created_at) = ?
+            WHERE user_id = %s AND DATE(created_at) = %s
         """, (user_id, day_iso)).fetchone()
         days.append({"date":day_iso, "label":day_value.strftime("%a"), "xp":int(row["xp"] or 0)})
     conn.close()
@@ -656,9 +731,9 @@ def get_daily_missions(user_id):
     today_iso = date.today().isoformat()
     conn = get_db()
     cursor = conn.cursor()
-    quiz_today = cursor.execute("SELECT COUNT(*) AS total FROM quiz_results WHERE user_id = ? AND DATE(created_at) = ?", (user_id, today_iso)).fetchone()["total"]
-    task_today = cursor.execute("SELECT COUNT(*) AS total FROM study_tasks WHERE user_id = ? AND status = 'completed' AND completed_at IS NOT NULL AND DATE(completed_at) = ?", (user_id, today_iso)).fetchone()["total"]
-    mastered_today = cursor.execute("SELECT COUNT(*) AS total FROM xp_events WHERE user_id = ? AND event_type = 'word_mastered' AND DATE(created_at) = ?", (user_id, today_iso)).fetchone()["total"]
+    quiz_today = cursor.execute("SELECT COUNT(*) AS total FROM quiz_results WHERE user_id = %s AND DATE(created_at) = %s", (user_id, today_iso)).fetchone()["total"]
+    task_today = cursor.execute("SELECT COUNT(*) AS total FROM study_tasks WHERE user_id = %s AND status = 'completed' AND completed_at IS NOT NULL AND DATE(completed_at) = %s", (user_id, today_iso)).fetchone()["total"]
+    mastered_today = cursor.execute("SELECT COUNT(*) AS total FROM xp_events WHERE user_id = %s AND event_type = 'word_mastered' AND DATE(created_at) = %s", (user_id, today_iso)).fetchone()["total"]
     conn.close()
     missions = [
         {"key":"quiz","icon":"✓","title":"Complete one quiz","detail":"Grammar, Vocabulary, IELTS or SAT","reward":25,"done":int(quiz_today)>=1},
@@ -676,11 +751,11 @@ def get_gamification_state(user_id):
     missions = get_daily_missions(user_id)
     conn = get_db()
     cursor = conn.cursor()
-    progress_row = cursor.execute("SELECT total_xp FROM user_progress WHERE user_id = ? LIMIT 1", (user_id,)).fetchone()
+    progress_row = cursor.execute("SELECT total_xp FROM user_progress WHERE user_id = %s LIMIT 1", (user_id,)).fetchone()
     total_xp = int(progress_row["total_xp"] if progress_row else 0)
-    word_total = cursor.execute("SELECT COUNT(*) AS total FROM vocabulary WHERE user_id = ?", (user_id,)).fetchone()["total"]
-    mastered_total = cursor.execute("SELECT COUNT(*) AS total FROM vocabulary WHERE user_id = ? AND status = 'Mastered'", (user_id,)).fetchone()["total"]
-    quiz_total = cursor.execute("SELECT COUNT(*) AS total FROM quiz_results WHERE user_id = ?", (user_id,)).fetchone()["total"]
+    word_total = cursor.execute("SELECT COUNT(*) AS total FROM vocabulary WHERE user_id = %s", (user_id,)).fetchone()["total"]
+    mastered_total = cursor.execute("SELECT COUNT(*) AS total FROM vocabulary WHERE user_id = %s AND status = 'Mastered'", (user_id,)).fetchone()["total"]
+    quiz_total = cursor.execute("SELECT COUNT(*) AS total FROM quiz_results WHERE user_id = %s", (user_id,)).fetchone()["total"]
     conn.close()
     streak = calculate_learning_streak(user_id)
     state = level_details(total_xp)
@@ -713,7 +788,7 @@ def create_ai_history_tables():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS ai_chats (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
             title TEXT NOT NULL DEFAULT 'New Chat',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -724,7 +799,7 @@ def create_ai_history_tables():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS ai_messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             chat_id INTEGER NOT NULL,
             user_id INTEGER NOT NULL,
             role TEXT NOT NULL,
@@ -748,13 +823,6 @@ def create_ai_history_tables():
     conn.commit()
     conn.close()
 
-    conn = sqlite3.connect(DATABASE)
-
-    conn.row_factory = sqlite3.Row
-
-    return conn
-
-
 # ===========================
 # QUIZ DATABASE TABLES
 
@@ -769,7 +837,7 @@ def create_study_plan_tables():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS study_profiles (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL UNIQUE,
             main_goal TEXT NOT NULL DEFAULT 'general_english',
             current_level TEXT NOT NULL DEFAULT 'not_sure',
@@ -788,7 +856,7 @@ def create_study_plan_tables():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS study_plans (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
             period_type TEXT NOT NULL,
             title TEXT NOT NULL,
@@ -809,7 +877,7 @@ def create_study_plan_tables():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS study_tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             plan_id INTEGER NOT NULL,
             user_id INTEGER NOT NULL,
             task_date TEXT NOT NULL,
@@ -847,7 +915,6 @@ def create_study_plan_tables():
     conn.commit()
     conn.close()
 
-
 # ===========================
 
 def create_quiz_tables():
@@ -857,7 +924,7 @@ def create_quiz_tables():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS quiz_results (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL,
             category TEXT NOT NULL,
             difficulty TEXT NOT NULL,
@@ -919,7 +986,7 @@ def register():
 
 
         cursor.execute(
-            "SELECT * FROM users WHERE email=?",
+            "SELECT * FROM users WHERE email=%s",
             (email,)
         )
 
@@ -959,7 +1026,7 @@ def register():
             INSERT INTO users
             (full_name,email,password)
 
-            VALUES(?,?,?)
+            VALUES(%s,%s,%s)
             """,
 
             (
@@ -992,56 +1059,47 @@ def register():
 # LOGIN
 
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute", methods=["POST"])
 def login():
-
 
     if request.method == "POST":
 
-
-        email = request.form["email"]
-
+        email = request.form["email"].strip()
         password = request.form["password"]
 
-
-
         conn = get_db()
-
         cursor = conn.cursor()
 
-
-
-        cursor.execute(
-            "SELECT * FROM users WHERE email=?",
-            (email,)
-        )
-
+        cursor.execute("""
+            SELECT *
+            FROM users
+            WHERE LOWER(email) = LOWER(%s)
+            LIMIT 1
+        """, (email,))
 
         user = cursor.fetchone()
-
-
-
         conn.close()
-
-
 
         if user and check_password_hash(
             user["password"],
             password
         ):
-
-
-
             session["user_id"] = user["id"]
-
+            session.permanent = True
             session["username"] = user["full_name"]
 
-
+            if (
+                bool(user.get("is_admin"))
+                and user["email"].lower()
+                == "baxtiyorxamidov941@gmail.com"
+            ):
+                return redirect(
+                    url_for("admin_dashboard")
+                )
 
             return redirect(
                 url_for("dashboard")
             )
-
-
 
         return render_template(
             "auth_notice.html",
@@ -1058,10 +1116,9 @@ def login():
             secondary_url=url_for("register")
         )
 
-
-
     return render_template("login.html")
-    # ===========================
+
+
 # DASHBOARD
 # ===========================
 
@@ -1092,7 +1149,7 @@ def dashboard():
         """
         SELECT COUNT(*) AS total
         FROM vocabulary
-        WHERE user_id = ?
+        WHERE user_id = %s
         """,
         (user_id,)
     )
@@ -1104,7 +1161,7 @@ def dashboard():
         """
         SELECT COUNT(*) AS total
         FROM vocabulary
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND status = 'New'
         """,
         (user_id,)
@@ -1117,7 +1174,7 @@ def dashboard():
         """
         SELECT COUNT(*) AS total
         FROM vocabulary
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND status = 'Learning'
         """,
         (user_id,)
@@ -1130,7 +1187,7 @@ def dashboard():
         """
         SELECT COUNT(*) AS total
         FROM vocabulary
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND status = 'Mastered'
         """,
         (user_id,)
@@ -1143,7 +1200,7 @@ def dashboard():
         """
         SELECT COUNT(*) AS total
         FROM vocabulary
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND favorite = 1
         """,
         (user_id,)
@@ -1183,7 +1240,7 @@ def dashboard():
                 0
             ) AS best_score
         FROM quiz_results
-        WHERE user_id = ?
+        WHERE user_id = %s
         """,
         (user_id,)
     )
@@ -1212,7 +1269,7 @@ def dashboard():
             percentage,
             created_at
         FROM quiz_results
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY id DESC
         LIMIT 1
         """,
@@ -1238,7 +1295,7 @@ def dashboard():
             exam_date,
             target_score
         FROM study_plans
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND status = 'active'
         ORDER BY id DESC
         LIMIT 1
@@ -1268,9 +1325,9 @@ def dashboard():
                     0
                 ) AS done
             FROM study_tasks
-            WHERE user_id = ?
-            AND plan_id = ?
-            AND task_date = ?
+            WHERE user_id = %s
+            AND plan_id = %s
+            AND task_date = %s
             """,
             (
                 user_id,
@@ -1374,7 +1431,7 @@ def vocabulary():
                 example_sentence
             )
 
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
             """,
             (
                 session["user_id"],
@@ -1396,13 +1453,13 @@ def vocabulary():
 
             FROM vocabulary
 
-            WHERE user_id=?
+            WHERE user_id=%s
 
             AND
             (
-                english_word LIKE ?
+                english_word LIKE %s
                 OR
-                uzbek_word LIKE ?
+                uzbek_word LIKE %s
             )
 
             ORDER BY id DESC
@@ -1422,7 +1479,7 @@ def vocabulary():
 
             FROM vocabulary
 
-            WHERE user_id=?
+            WHERE user_id=%s
 
             ORDER BY id DESC
             """,
@@ -1456,7 +1513,7 @@ def delete_word(word_id):
     cursor.execute(
         """
         DELETE FROM vocabulary
-        WHERE id=? AND user_id=?
+        WHERE id=%s AND user_id=%s
         """,
         (word_id, session["user_id"])
     )
@@ -1484,7 +1541,7 @@ def favorite(word_id):
             WHEN favorite = 1 THEN 0
             ELSE 1
         END
-        WHERE id=? AND user_id=?
+        WHERE id=%s AND user_id=%s
         """,
         (word_id, session["user_id"])
     )
@@ -1535,9 +1592,9 @@ def set_status(
     cursor.execute(
         """
         UPDATE vocabulary
-        SET status = ?
-        WHERE id = ?
-        AND user_id = ?
+        SET status = %s
+        WHERE id = %s
+        AND user_id = %s
         """,
         (
             status,
@@ -1586,8 +1643,8 @@ def edit_word(
         """
         SELECT *
         FROM vocabulary
-        WHERE id = ?
-        AND user_id = ?
+        WHERE id = %s
+        AND user_id = %s
         LIMIT 1
         """,
         (
@@ -1662,12 +1719,12 @@ def edit_word(
             """
             UPDATE vocabulary
             SET
-                english_word = ?,
-                uzbek_word = ?,
-                example_sentence = ?,
-                status = ?
-            WHERE id = ?
-            AND user_id = ?
+                english_word = %s,
+                uzbek_word = %s,
+                example_sentence = %s,
+                status = %s
+            WHERE id = %s
+            AND user_id = %s
             """,
             (
                 english_word,
@@ -1751,7 +1808,8 @@ def add_word():
                 example_sentence,
                 status
             )
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s)
+RETURNING id
             """,
             (
                 session["user_id"],
@@ -1762,7 +1820,7 @@ def add_word():
             )
         )
 
-        word_id = cursor.lastrowid
+        word_id = cursor.fetchone()["id"]
 
         conn.commit()
         conn.close()
@@ -1843,7 +1901,7 @@ def ai_chats_api():
                 created_at,
                 updated_at
             FROM ai_chats
-            WHERE user_id = ?
+            WHERE user_id = %s
             ORDER BY updated_at DESC, id DESC
             """,
             (user_id,)
@@ -1882,7 +1940,8 @@ def ai_chats_api():
                 user_id,
                 title
             )
-            VALUES (?, ?)
+            VALUES (%s, %s)
+RETURNING id
             """,
             (
                 user_id,
@@ -1890,7 +1949,7 @@ def ai_chats_api():
             )
         )
 
-        chat_id = cursor.lastrowid
+        chat_id = cursor.fetchone()["id"]
 
         conn.commit()
         conn.close()
@@ -1917,7 +1976,7 @@ def ai_chats_api():
             WHERE chat_id IN (
                 SELECT id
                 FROM ai_chats
-                WHERE user_id = ?
+                WHERE user_id = %s
             )
             """,
             (user_id,)
@@ -1926,7 +1985,7 @@ def ai_chats_api():
         cursor.execute(
             """
             DELETE FROM ai_chats
-            WHERE user_id = ?
+            WHERE user_id = %s
             """,
             (user_id,)
         )
@@ -1963,8 +2022,8 @@ def ai_single_chat_api(chat_id):
         """
         SELECT id, title
         FROM ai_chats
-        WHERE id = ?
-        AND user_id = ?
+        WHERE id = %s
+        AND user_id = %s
         """,
         (
             chat_id,
@@ -1998,8 +2057,8 @@ def ai_single_chat_api(chat_id):
                 content,
                 created_at
             FROM ai_messages
-            WHERE chat_id = ?
-            AND user_id = ?
+            WHERE chat_id = %s
+            AND user_id = %s
             ORDER BY id ASC
             """,
             (
@@ -2041,8 +2100,8 @@ def ai_single_chat_api(chat_id):
         cursor.execute(
             """
             DELETE FROM ai_messages
-            WHERE chat_id = ?
-            AND user_id = ?
+            WHERE chat_id = %s
+            AND user_id = %s
             """,
             (
                 chat_id,
@@ -2053,8 +2112,8 @@ def ai_single_chat_api(chat_id):
         cursor.execute(
             """
             DELETE FROM ai_chats
-            WHERE id = ?
-            AND user_id = ?
+            WHERE id = %s
+            AND user_id = %s
             """,
             (
                 chat_id,
@@ -2174,8 +2233,8 @@ def ai_teacher_api():
             """
             SELECT id, title
             FROM ai_chats
-            WHERE id = ?
-            AND user_id = ?
+            WHERE id = %s
+            AND user_id = %s
             LIMIT 1
             """,
             (
@@ -2199,7 +2258,8 @@ def ai_teacher_api():
                 user_id,
                 title
             )
-            VALUES (?, ?)
+            VALUES (%s, %s)
+RETURNING id
             """,
             (
                 user_id,
@@ -2207,7 +2267,7 @@ def ai_teacher_api():
             )
         )
 
-        chat_id = cursor.lastrowid
+        chat_id = cursor.fetchone()["id"]
         chat_title = "New Chat"
         created_new_chat = True
 
@@ -2218,8 +2278,8 @@ def ai_teacher_api():
         """
         SELECT role, content
         FROM ai_messages
-        WHERE chat_id = ?
-        AND user_id = ?
+        WHERE chat_id = %s
+        AND user_id = %s
         ORDER BY id DESC
         LIMIT 8
         """,
@@ -2374,8 +2434,8 @@ when guided practice is more useful.
             FROM study_tasks AS st
             JOIN study_plans AS sp
                 ON sp.id = st.plan_id
-            WHERE st.id = ?
-            AND st.user_id = ?
+            WHERE st.id = %s
+            AND st.user_id = %s
             AND sp.status = 'active'
             LIMIT 1
             """,
@@ -2441,8 +2501,8 @@ is General or SAT.
             FROM study_tasks AS st
             JOIN study_plans AS sp
                 ON sp.id = st.plan_id
-            WHERE st.user_id = ?
-            AND st.task_date = ?
+            WHERE st.user_id = %s
+            AND st.task_date = %s
             AND st.status != 'completed'
             AND sp.status = 'active'
             ORDER BY
@@ -2571,7 +2631,7 @@ Answer now as LinguaMind AI Teacher.
                 role,
                 content
             )
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
             """,
             (
                 chat_id,
@@ -2590,7 +2650,7 @@ Answer now as LinguaMind AI Teacher.
                 role,
                 content
             )
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
             """,
             (
                 chat_id,
@@ -2620,9 +2680,9 @@ Answer now as LinguaMind AI Teacher.
             cursor.execute(
                 """
                 UPDATE ai_chats
-                SET title = ?
-                WHERE id = ?
-                AND user_id = ?
+                SET title = %s
+                WHERE id = %s
+                AND user_id = %s
                 """,
                 (
                     title,
@@ -2638,8 +2698,8 @@ Answer now as LinguaMind AI Teacher.
             """
             UPDATE ai_chats
             SET updated_at = CURRENT_TIMESTAMP
-            WHERE id = ?
-            AND user_id = ?
+            WHERE id = %s
+            AND user_id = %s
             """,
             (
                 chat_id,
@@ -2684,8 +2744,8 @@ Answer now as LinguaMind AI Teacher.
                 cleanup_cursor.execute(
                     """
                     DELETE FROM ai_messages
-                    WHERE chat_id = ?
-                    AND user_id = ?
+                    WHERE chat_id = %s
+                    AND user_id = %s
                     """,
                     (
                         chat_id,
@@ -2696,8 +2756,8 @@ Answer now as LinguaMind AI Teacher.
                 cleanup_cursor.execute(
                     """
                     DELETE FROM ai_chats
-                    WHERE id = ?
-                    AND user_id = ?
+                    WHERE id = %s
+                    AND user_id = %s
                     """,
                     (
                         chat_id,
@@ -2824,7 +2884,7 @@ def profile():
             full_name,
             email
         FROM users
-        WHERE id = ?
+        WHERE id = %s
         LIMIT 1
     """, (user_id,)).fetchone()
 
@@ -2846,7 +2906,7 @@ def profile():
                 END
             ) AS favorites
         FROM vocabulary
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,)).fetchone()
 
     total_words = int(
@@ -2890,7 +2950,7 @@ def profile():
                 0
             ) AS best_score
         FROM quiz_results
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,)).fetchone()
 
     quiz_attempts = int(
@@ -2919,7 +2979,7 @@ def profile():
                 END
             ) AS completed
         FROM study_tasks
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,)).fetchone()
 
     study_tasks_total = int(
@@ -3184,7 +3244,7 @@ def analytics():
             SUM(CASE WHEN status='Learning' THEN 1 ELSE 0 END) AS learning_count,
             SUM(CASE WHEN status='Mastered' THEN 1 ELSE 0 END) AS mastered_count
         FROM vocabulary
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,)).fetchone()
 
     vocabulary_total = int(vocab["total"] or 0)
@@ -3203,7 +3263,7 @@ def analytics():
             COALESCE(ROUND(AVG(percentage)), 0) AS average_score,
             COALESCE(MAX(percentage), 0) AS best_score
         FROM quiz_results
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,)).fetchone()
 
     quiz_attempts = int(quiz_summary["attempts"] or 0)
@@ -3217,7 +3277,7 @@ def analytics():
             COALESCE(ROUND(AVG(percentage)), 0) AS average_score,
             COALESCE(MAX(percentage), 0) AS best_score
         FROM quiz_results
-        WHERE user_id = ?
+        WHERE user_id = %s
         GROUP BY category
     """, (user_id,)).fetchall()
 
@@ -3280,7 +3340,7 @@ def analytics():
             percentage,
             created_at
         FROM quiz_results
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY id DESC
         LIMIT 8
     """, (user_id,)).fetchall()
@@ -3290,7 +3350,7 @@ def analytics():
             COUNT(*) AS total,
             SUM(CASE WHEN status='completed' THEN 1 ELSE 0 END) AS completed
         FROM study_tasks
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,)).fetchone()
 
     study_tasks_total = int(study["total"] or 0)
@@ -3481,7 +3541,8 @@ def quiz_results_api():
                 total_questions,
                 percentage
             )
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s)
+RETURNING id
             """,
             (
                 user_id,
@@ -3493,8 +3554,7 @@ def quiz_results_api():
             )
         )
 
-        result_id = cursor.lastrowid
-
+        result_id = cursor.fetchone()["id"]
         conn.commit()
         conn.close()
 
@@ -3535,7 +3595,7 @@ def quiz_results_api():
                 percentage,
                 created_at
             FROM quiz_results
-            WHERE user_id = ?
+            WHERE user_id = %s
             ORDER BY id DESC
             LIMIT 50
             """,
@@ -3580,7 +3640,7 @@ def quiz_results_api():
         cursor.execute(
             """
             DELETE FROM quiz_results
-            WHERE user_id = ?
+            WHERE user_id = %s
             """,
             (user_id,)
         )
@@ -3617,8 +3677,8 @@ def delete_quiz_result(result_id):
     cursor.execute(
         """
         DELETE FROM quiz_results
-        WHERE id = ?
-        AND user_id = ?
+        WHERE id = %s
+        AND user_id = %s
         """,
         (
             result_id,
@@ -4065,7 +4125,7 @@ def study_plan():
         """
         SELECT *
         FROM study_profiles
-        WHERE user_id = ?
+        WHERE user_id = %s
         LIMIT 1
         """,
         (user_id,)
@@ -4077,7 +4137,7 @@ def study_plan():
         """
         SELECT *
         FROM study_plans
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND status = 'active'
         ORDER BY id DESC
         LIMIT 1
@@ -4100,8 +4160,8 @@ def study_plan():
             """
             SELECT *
             FROM study_tasks
-            WHERE user_id = ?
-            AND plan_id = ?
+            WHERE user_id = %s
+            AND plan_id = %s
             ORDER BY
                 task_date ASC,
                 sort_order ASC,
@@ -4469,7 +4529,7 @@ def generate_study_plan_api():
                 0
             ) AS mastered_count
         FROM vocabulary
-        WHERE user_id = ?
+        WHERE user_id = %s
         """,
         (user_id,)
     )
@@ -4486,7 +4546,7 @@ def generate_study_plan_api():
             percentage,
             created_at
         FROM quiz_results
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY id DESC
         LIMIT 12
         """,
@@ -4528,7 +4588,7 @@ def generate_study_plan_api():
         FROM study_tasks AS st
         JOIN study_plans AS sp
             ON sp.id = st.plan_id
-        WHERE st.user_id = ?
+        WHERE st.user_id = %s
         AND sp.status = 'active'
         ORDER BY st.id DESC
         LIMIT 12
@@ -5201,7 +5261,7 @@ Return EXACTLY this JSON structure:
                 target_score,
                 weak_areas
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT(user_id)
             DO UPDATE SET
                 main_goal = excluded.main_goal,
@@ -5236,7 +5296,7 @@ Return EXACTLY this JSON structure:
             SET
                 status = 'archived',
                 updated_at = CURRENT_TIMESTAMP
-            WHERE user_id = ?
+            WHERE user_id = %s
             AND status = 'active'
             """,
             (user_id,)
@@ -5258,7 +5318,8 @@ Return EXACTLY this JSON structure:
                 plan_json,
                 status
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'active')
+RETURNING id
             """,
             (
                 user_id,
@@ -5278,7 +5339,7 @@ Return EXACTLY this JSON structure:
             )
         )
 
-        plan_id = cursor.lastrowid
+        plan_id = cursor.fetchone()["id"]
 
         for task in clean_tasks:
 
@@ -5298,7 +5359,7 @@ Return EXACTLY this JSON structure:
                     status,
                     sort_order
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'pending', %s)
                 """,
                 (
                     plan_id,
@@ -5376,8 +5437,8 @@ def toggle_study_task_api(
             id,
             status
         FROM study_tasks
-        WHERE id = ?
-        AND user_id = ?
+        WHERE id = %s
+        AND user_id = %s
         LIMIT 1
         """,
         (
@@ -5413,10 +5474,10 @@ def toggle_study_task_api(
         """
         UPDATE study_tasks
         SET
-            status = ?,
-            completed_at = ?
-        WHERE id = ?
-        AND user_id = ?
+            status = %s,
+            completed_at = %s
+        WHERE id = %s
+        AND user_id = %s
         """,
         (
             new_status,
@@ -5443,12 +5504,12 @@ def toggle_study_task_api(
                 0
             ) AS done
         FROM study_tasks
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND plan_id = (
             SELECT plan_id
             FROM study_tasks
-            WHERE id = ?
-            AND user_id = ?
+            WHERE id = %s
+            AND user_id = %s
             LIMIT 1
         )
         """,
@@ -5566,8 +5627,8 @@ def start_study_task(
         FROM study_tasks AS st
         JOIN study_plans AS sp
             ON sp.id = st.plan_id
-        WHERE st.id = ?
-        AND st.user_id = ?
+        WHERE st.id = %s
+        AND st.user_id = %s
         LIMIT 1
         """,
         (
@@ -5651,7 +5712,7 @@ def favorites():
         """
         SELECT *
         FROM vocabulary
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND favorite = 1
         ORDER BY created_at DESC, id DESC
         """,
@@ -5678,8 +5739,8 @@ def remove_favorite(word_id):
         """
         UPDATE vocabulary
         SET favorite = 0
-        WHERE id = ?
-        AND user_id = ?
+        WHERE id = %s
+        AND user_id = %s
         """,
         (
             word_id,
@@ -6215,18 +6276,719 @@ def dev_preview_500():
 # PRODUCTION DATABASE SETUP
 # ===========================
 
-create_core_tables()
-create_ai_history_tables()
-create_quiz_tables()
-create_study_plan_tables()
-create_subscription_system()
-create_gamification_tables()
 
-print("LinguaMind database ready!")
+
+# =========================================================
+# INSTAGRAM PROMO
+# =========================================================
+
+@app.route("/instagram-promo")
+def instagram_promo():
+
+    if "user_id" not in session:
+        return redirect(
+            url_for("login")
+        )
+
+    user_id = session["user_id"]
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            full_name,
+            email,
+            instagram_promo_claimed,
+            instagram_promo_claimed_at,
+            instagram_username,
+            instagram_promo_status,
+            instagram_promo_requested_at,
+            subscription_status,
+            subscription_expires_at
+        FROM users
+        WHERE id = %s
+        LIMIT 1
+    """, (user_id,))
+
+    user = cursor.fetchone()
+    conn.close()
+
+    if not user:
+        return redirect(
+            url_for("dashboard")
+        )
+
+    return render_template(
+        "instagram_promo.html",
+        user=user
+    )
+
+
+@app.route(
+    "/instagram-promo/request",
+    methods=["POST"]
+)
+def request_instagram_promo():
+
+    if "user_id" not in session:
+        return redirect(
+            url_for("login")
+        )
+
+    user_id = session["user_id"]
+
+    instagram_username = str(
+        request.form.get(
+            "instagram_username",
+            ""
+        )
+    ).strip()
+
+    if instagram_username.startswith("@"):
+        instagram_username = instagram_username[1:]
+
+    if not instagram_username:
+        return redirect(
+            url_for("instagram_promo")
+        )
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            instagram_promo_claimed,
+            instagram_promo_status
+        FROM users
+        WHERE id = %s
+        LIMIT 1
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return jsonify({
+            "error": "User not found."
+        }), 404
+
+    if user["instagram_promo_claimed"]:
+        conn.close()
+        return redirect(
+            url_for("instagram_promo")
+        )
+
+    if user["instagram_promo_status"] == "pending":
+        conn.close()
+        return redirect(
+            url_for("instagram_promo")
+        )
+
+    cursor.execute("""
+        UPDATE users
+        SET
+            instagram_username = %s,
+            instagram_promo_status = 'pending',
+            instagram_promo_requested_at = CURRENT_TIMESTAMP
+        WHERE id = %s
+          AND instagram_promo_claimed = FALSE
+    """, (
+        instagram_username,
+        user_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for("instagram_promo")
+    )
+
+
+# =========================================================
+# ADMIN PANEL
+# =========================================================
+
+ADMIN_EMAIL = "baxtiyorxamidov941@gmail.com"
+
+
+def get_current_admin():
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return None
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            full_name,
+            email,
+            is_admin
+        FROM users
+        WHERE id = %s
+        LIMIT 1
+    """, (user_id,))
+
+    admin = cursor.fetchone()
+    conn.close()
+
+    if not admin:
+        return None
+
+    if not admin["is_admin"]:
+        return None
+
+    if admin["email"].lower() != ADMIN_EMAIL:
+        return None
+
+    return admin
+
+
+@app.route("/admin")
+def admin_dashboard():
+
+    admin = get_current_admin()
+
+    if not admin:
+        return redirect(
+            url_for("dashboard")
+        )
+
+    search = str(
+        request.args.get("search", "")
+    ).strip()
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT COUNT(*) AS total
+        FROM users
+    """)
+    total_users = cursor.fetchone()["total"]
+
+    cursor.execute("""
+        SELECT COUNT(*) AS total
+        FROM users
+        WHERE subscription_status = 'active'
+          AND plan IN (
+              'pro_monthly',
+              'pro_yearly'
+          )
+    """)
+    pro_users = cursor.fetchone()["total"]
+
+    free_users = total_users - pro_users
+
+    cursor.execute("""
+        SELECT COUNT(*) AS total
+        FROM users
+        WHERE is_admin = TRUE
+          AND LOWER(email) = LOWER(%s)
+    """, (ADMIN_EMAIL,))
+    admin_users = cursor.fetchone()["total"]
+
+    if search:
+        like_search = "%" + search + "%"
+
+        cursor.execute("""
+            SELECT
+                id,
+                full_name,
+                email,
+                plan,
+                subscription_status,
+                subscription_started_at,
+                subscription_expires_at,
+                is_admin,
+                created_at,
+                instagram_promo_claimed,
+                instagram_promo_claimed_at,
+                instagram_username,
+                instagram_promo_status,
+                instagram_promo_requested_at
+            FROM users
+            WHERE
+                full_name ILIKE %s
+                OR email ILIKE %s
+            ORDER BY id DESC
+        """, (
+            like_search,
+            like_search
+        ))
+
+    else:
+        cursor.execute("""
+            SELECT
+                id,
+                full_name,
+                email,
+                plan,
+                subscription_status,
+                subscription_started_at,
+                subscription_expires_at,
+                is_admin,
+                created_at,
+                instagram_promo_claimed,
+                instagram_promo_claimed_at,
+                instagram_username,
+                instagram_promo_status,
+                instagram_promo_requested_at
+            FROM users
+            ORDER BY id DESC
+        """)
+
+    users = cursor.fetchall()
+    conn.close()
+
+    return render_template(
+        "admin.html",
+        admin=admin,
+        users=users,
+        search=search,
+        total_users=total_users,
+        pro_users=pro_users,
+        free_users=free_users,
+        admin_users=admin_users
+    )
+
+
+# =========================================================
+# ADMIN - GIVE 1 MONTH PRO
+# =========================================================
+
+@app.route(
+    "/admin/user/<int:user_id>/give-pro",
+    methods=["POST"]
+)
+def admin_give_pro(user_id):
+
+    admin = get_current_admin()
+
+    if not admin:
+        return jsonify({
+            "error": "Admin access required."
+        }), 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            subscription_status,
+            subscription_expires_at
+        FROM users
+        WHERE id = %s
+        LIMIT 1
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return jsonify({
+            "error": "User not found."
+        }), 404
+
+    now = datetime.utcnow().replace(
+        microsecond=0
+    )
+
+    start_from = now
+    current_expiry = user["subscription_expires_at"]
+
+    if (
+        user["subscription_status"] == "active"
+        and current_expiry
+    ):
+        try:
+            expiry_dt = datetime.fromisoformat(
+                str(current_expiry)
+            )
+            if expiry_dt > now:
+                start_from = expiry_dt
+        except ValueError:
+            pass
+
+    new_expiry = add_calendar_month(start_from)
+
+    cursor.execute("""
+        UPDATE users
+        SET
+            plan = 'pro_monthly',
+            subscription_status = 'active',
+            subscription_started_at = %s,
+            subscription_expires_at = %s
+        WHERE id = %s
+    """, (
+        now.isoformat(),
+        new_expiry.isoformat(),
+        user_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for("admin_dashboard")
+    )
+
+
+# =========================================================
+# ADMIN - GIVE 1 YEAR PRO
+# =========================================================
+
+@app.route(
+    "/admin/user/<int:user_id>/give-pro-year",
+    methods=["POST"]
+)
+def admin_give_pro_year(user_id):
+
+    admin = get_current_admin()
+
+    if not admin:
+        return jsonify({
+            "error": "Admin access required."
+        }), 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            subscription_status,
+            subscription_expires_at
+        FROM users
+        WHERE id = %s
+        LIMIT 1
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return jsonify({
+            "error": "User not found."
+        }), 404
+
+    now = datetime.utcnow().replace(
+        microsecond=0
+    )
+
+    start_from = now
+    current_expiry = user["subscription_expires_at"]
+
+    if (
+        user["subscription_status"] == "active"
+        and current_expiry
+    ):
+        try:
+            expiry_dt = datetime.fromisoformat(
+                str(current_expiry)
+            )
+            if expiry_dt > now:
+                start_from = expiry_dt
+        except ValueError:
+            pass
+
+    new_expiry = add_calendar_year(start_from)
+
+    cursor.execute("""
+        UPDATE users
+        SET
+            plan = 'pro_yearly',
+            subscription_status = 'active',
+            subscription_started_at = %s,
+            subscription_expires_at = %s
+        WHERE id = %s
+    """, (
+        now.isoformat(),
+        new_expiry.isoformat(),
+        user_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for("admin_dashboard")
+    )
+
+
+# =========================================================
+# ADMIN - APPROVE INSTAGRAM PROMO
+# =========================================================
+
+@app.route(
+    "/admin/user/<int:user_id>/instagram-approve",
+    methods=["POST"]
+)
+def admin_instagram_approve(user_id):
+
+    admin = get_current_admin()
+
+    if not admin:
+        return jsonify({
+            "error": "Admin access required."
+        }), 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            plan,
+            instagram_promo_claimed,
+            instagram_promo_status,
+            instagram_username,
+            subscription_status,
+            subscription_expires_at
+        FROM users
+        WHERE id = %s
+        LIMIT 1
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return jsonify({
+            "error": "User not found."
+        }), 404
+
+    if user["instagram_promo_claimed"]:
+        conn.close()
+        return redirect(
+            url_for("admin_dashboard")
+        )
+
+    if user["instagram_promo_status"] != "pending":
+        conn.close()
+        return redirect(
+            url_for("admin_dashboard")
+        )
+
+    now = datetime.utcnow().replace(
+        microsecond=0
+    )
+
+    start_from = now
+    current_expiry = user["subscription_expires_at"]
+
+    if (
+        user["subscription_status"] == "active"
+        and current_expiry
+    ):
+        try:
+            expiry_dt = datetime.fromisoformat(
+                str(current_expiry)
+            )
+            if expiry_dt > now:
+                start_from = expiry_dt
+        except ValueError:
+            pass
+
+    new_expiry = add_calendar_month(start_from)
+
+    new_plan = "pro_monthly"
+
+    if (
+        user["subscription_status"] == "active"
+        and user["plan"] in {
+            "pro_monthly",
+            "pro_yearly"
+        }
+    ):
+        new_plan = user["plan"]
+
+    cursor.execute("""
+        UPDATE users
+        SET
+            plan = %s,
+            subscription_status = 'active',
+            subscription_started_at = %s,
+            subscription_expires_at = %s,
+            instagram_promo_status = 'approved',
+            instagram_promo_claimed = TRUE,
+            instagram_promo_claimed_at = CURRENT_TIMESTAMP
+        WHERE id = %s
+          AND instagram_promo_claimed = FALSE
+          AND instagram_promo_status = 'pending'
+    """, (
+        new_plan,
+        now.isoformat(),
+        new_expiry.isoformat(),
+        user_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for("admin_dashboard")
+    )
+
+
+# =========================================================
+# ADMIN - REJECT INSTAGRAM PROMO
+# =========================================================
+
+@app.route(
+    "/admin/user/<int:user_id>/instagram-reject",
+    methods=["POST"]
+)
+def admin_instagram_reject(user_id):
+
+    admin = get_current_admin()
+
+    if not admin:
+        return jsonify({
+            "error": "Admin access required."
+        }), 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE users
+        SET
+            instagram_promo_status = 'rejected'
+        WHERE id = %s
+          AND instagram_promo_claimed = FALSE
+          AND instagram_promo_status = 'pending'
+    """, (user_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for("admin_dashboard")
+    )
+
+
+# =========================================================
+# ADMIN - REMOVE PRO
+# =========================================================
+
+@app.route(
+    "/admin/user/<int:user_id>/remove-pro",
+    methods=["POST"]
+)
+def admin_remove_pro(user_id):
+
+    admin = get_current_admin()
+
+    if not admin:
+        return jsonify({
+            "error": "Admin access required."
+        }), 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE users
+        SET
+            plan = 'free',
+            subscription_status = 'inactive',
+            subscription_started_at = NULL,
+            subscription_expires_at = NULL
+        WHERE id = %s
+    """, (user_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(
+        url_for("admin_dashboard")
+    )
+
+
+
+# =========================================================
+# SECURITY - RESPONSE HEADERS
+# =========================================================
+
+@app.after_request
+def add_security_headers(response):
+
+    response.headers["X-Content-Type-Options"] = "nosniff"
+
+    response.headers["X-Frame-Options"] = "DENY"
+
+    response.headers["Referrer-Policy"] = (
+        "strict-origin-when-cross-origin"
+    )
+
+    response.headers["Permissions-Policy"] = (
+        "camera=(self), "
+        "microphone=(self), "
+        "geolocation=(), "
+        "payment=()"
+    )
+
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "img-src 'self' data: https:; "
+        "style-src 'self' 'unsafe-inline'; "
+        "script-src 'self' 'unsafe-inline'; "
+        "font-src 'self' data: https:; "
+        "connect-src 'self' https:; "
+        "media-src 'self' data: blob: https:; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self';"
+    )
+
+    if app.config.get("SESSION_COOKIE_SECURE"):
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
+
+    return response
+
+
+
+# =========================================================
+# INFRASTRUCTURE HEALTH
+# =========================================================
+
+@app.route("/health")
+@limiter.exempt
+def health_check():
+    db_ok = False
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 AS ok")
+        row = cursor.fetchone()
+        conn.close()
+        db_ok = bool(row and int(row["ok"]) == 1)
+    except Exception:
+        db_ok = False
+
+    status_code = 200 if db_ok else 503
+
+    return jsonify({
+        "status": "ok" if db_ok else "degraded",
+        "database": db_ok,
+        "rate_limit_storage": (
+            "redis" if RATE_LIMIT_STORAGE_URI.startswith(("redis://", "rediss://")) else "memory"
+        )
+    }), status_code
 
 
 if __name__ == "__main__":
     app.run(
-        debug=True,
+        debug=False,
         port=8000
     )

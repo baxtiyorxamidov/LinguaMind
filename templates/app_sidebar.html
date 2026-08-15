@@ -71,6 +71,15 @@
                 <span class="lmx-nav-arrow">›</span>
             </a>
 
+<a
+    href="{{ url_for('instagram_promo') }}"
+    class="lmx-nav-item {% if ep == 'instagram_promo' %}active{% endif %}"
+>
+    <span class="lmx-nav-icon pink">📸</span>
+    <span class="lmx-nav-text">Instagram Promo</span>
+    <span class="lmx-nav-arrow">›</span>
+</a>
+
             <a
                 href="{{ url_for('quiz') }}"
                 class="lmx-nav-item {% if ep == 'quiz' %}active{% endif %}"

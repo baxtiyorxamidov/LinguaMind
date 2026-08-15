@@ -2,674 +2,443 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Create Account — LinguaMind</title>
-    
-<style>
-    * { box-sizing: border-box; }
 
-    :root {
-        --bg: #040612;
-        --bg2: #070a1d;
-        --card: rgba(10, 14, 39, .94);
-        --card2: rgba(14, 18, 48, .90);
-        --line: rgba(139, 98, 236, .19);
-        --line2: rgba(255,255,255,.07);
-        --text: #f7f4ff;
-        --muted: #8892b4;
-        --purple: #8754ff;
-        --violet: #b45fff;
-        --blue: #4e83ff;
-        --pink: #ff5fc4;
-        --gold: #ffc85c;
-        --green: #51d39b;
-    }
-
-    html {
-        scroll-behavior: smooth;
-        background: var(--bg);
-    }
-
-    body {
-        margin: 0;
-        min-height: 100vh;
-        color: var(--text);
-        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background:
-            radial-gradient(circle at 8% 4%, rgba(121, 65, 255, .20), transparent 24%),
-            radial-gradient(circle at 92% 8%, rgba(64, 111, 255, .14), transparent 24%),
-            radial-gradient(circle at 68% 92%, rgba(225, 69, 195, .07), transparent 27%),
-            linear-gradient(145deg, #040612 0%, #07091b 47%, #080c23 100%);
-        background-attachment: fixed;
-    }
-
-    body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        z-index: -1;
-        pointer-events: none;
-        opacity: .20;
-        background-image: radial-gradient(rgba(255,255,255,.25) .55px, transparent .7px);
-        background-size: 28px 28px;
-        mask-image: linear-gradient(to bottom, black, transparent 82%);
-    }
-
-    a { color: inherit; }
-
-    .lm-public-nav {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        height: 82px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        padding: 0 clamp(22px, 6vw, 92px);
-        border-bottom: 1px solid rgba(145, 100, 239, .14);
-        background: rgba(5, 8, 25, .82);
-        backdrop-filter: blur(24px);
-        box-shadow: 0 14px 34px rgba(0,0,0,.18);
-    }
-
-    .lm-brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 11px;
-        text-decoration: none;
-    }
-
-    .lm-brand-icon {
-        width: 46px;
-        height: 46px;
-        display: grid;
-        place-items: center;
-        border: 1px solid rgba(255,255,255,.09);
-        border-radius: 15px;
-        background:
-            radial-gradient(circle at 28% 18%, rgba(255,255,255,.22), transparent 30%),
-            linear-gradient(135deg, #7045e6, #9858ff 54%, #4c86ff);
-        box-shadow: 0 13px 28px rgba(98, 55, 219, .30);
-        font-size: 21px;
-    }
-
-    .lm-brand-copy strong {
-        display: block;
-        font-size: 19px;
-        font-weight: 950;
-        letter-spacing: -.55px;
-    }
-
-    .lm-brand-copy strong span {
-        color: #a96dff;
-    }
-
-    .lm-brand-copy small {
-        display: block;
-        margin-top: 2px;
-        color: #707b9e;
-        font-size: 7px;
-        font-weight: 900;
-        letter-spacing: 1.25px;
-    }
-
-    .lm-nav-links {
-        display: flex;
-        align-items: center;
-        gap: 30px;
-    }
-
-    .lm-nav-links a {
-        color: #929bb9;
-        font-size: 11px;
-        font-weight: 800;
-        text-decoration: none;
-        transition: .18s ease;
-    }
-
-    .lm-nav-links a:hover {
-        color: #fff;
-    }
-
-    .lm-nav-actions {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .lm-link-button,
-    .lm-primary-button,
-    .lm-secondary-button {
-        min-height: 42px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        padding: 0 15px;
-        border-radius: 12px;
-        font-size: 10.5px;
-        font-weight: 900;
-        text-decoration: none;
-        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    }
-
-    .lm-link-button {
-        color: #c6cde3;
-        border: 1px solid transparent;
-    }
-
-    .lm-link-button:hover {
-        color: #fff;
-        border-color: rgba(141, 95, 235, .18);
-        background: rgba(255,255,255,.025);
-    }
-
-    .lm-primary-button {
-        color: #fff;
-        border: 1px solid rgba(173, 119, 255, .38);
-        background:
-            radial-gradient(circle at 90% 8%, rgba(255, 204, 102, .12), transparent 30%),
-            linear-gradient(135deg, #5528bb, #7540db 54%, #4657bf);
-        box-shadow: 0 13px 29px rgba(79, 38, 180, .27), 0 0 22px rgba(132, 73, 255, .08);
-    }
-
-    .lm-primary-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 17px 35px rgba(79, 38, 180, .34), 0 0 27px rgba(132, 73, 255, .12);
-    }
-
-    .lm-secondary-button {
-        color: #dce1f1;
-        border: 1px solid rgba(122, 98, 204, .18);
-        background: linear-gradient(145deg, rgba(13,18,49,.94), rgba(8,12,34,.94));
-    }
-
-    .lm-secondary-button:hover {
-        transform: translateY(-2px);
-        border-color: rgba(151, 96, 255, .35);
-        color: #fff;
-    }
-
-    .lm-kicker {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        min-height: 31px;
-        padding: 0 11px;
-        border: 1px solid rgba(147, 92, 255, .22);
-        border-radius: 999px;
-        color: #b897ff;
-        background: rgba(68, 37, 135, .24);
-        font-size: 9px;
-        font-weight: 950;
-        letter-spacing: .6px;
-    }
-
-    .lm-glow-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--gold);
-        box-shadow: 0 0 13px rgba(255,200,92,.55);
-    }
-
-    .lm-footer {
-        padding: 26px clamp(22px, 6vw, 92px) 34px;
-        border-top: 1px solid rgba(255,255,255,.05);
-        color: #687394;
-        font-size: 9px;
-    }
-
-    @media (max-width: 820px) {
-        .lm-public-nav {
-            height: auto;
-            min-height: 72px;
-            padding: 12px 16px;
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .lm-nav-links { display: none; }
+        body {
+            min-height: 100vh;
 
-        .lm-brand-copy small { display: none; }
+            font-family:
+                Inter,
+                Arial,
+                sans-serif;
 
-        .lm-nav-actions .lm-link-button { display: none; }
-    }
-</style>
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(108, 92, 231, 0.22),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at bottom right,
+                    rgba(232, 67, 147, 0.14),
+                    transparent 35%
+                ),
+                #0f1224;
 
-    
-<style>
-    .auth-page-shell {
-        min-height: calc(100vh - 82px);
-        display: grid;
-        grid-template-columns: minmax(0, 1.02fr) minmax(430px, .98fr);
-        padding: 24px clamp(22px, 6vw, 92px) 42px;
-        gap: clamp(38px, 6vw, 82px);
-        align-items: center;
-    }
+            color: white;
 
-    .auth-story {
-        position: relative;
-        min-height: 620px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: clamp(24px, 4vw, 54px);
-        overflow: hidden;
-        border: 1px solid rgba(145, 91, 255, .18);
-        border-radius: 30px;
-        background:
-            radial-gradient(circle at 82% 18%, rgba(77, 112, 255, .17), transparent 26%),
-            radial-gradient(circle at 15% 84%, rgba(139, 65, 255, .22), transparent 31%),
-            linear-gradient(145deg, rgba(11,15,44,.96), rgba(7,11,31,.98));
-        box-shadow: 0 28px 70px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.025);
-    }
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    .auth-story::before {
-        content: "";
-        position: absolute;
-        right: -5%;
-        bottom: -10%;
-        width: 66%;
-        height: 70%;
-        opacity: .56;
-        clip-path: polygon(50% 0, 100% 100%, 0 100%);
-        background: linear-gradient(145deg, transparent, rgba(121, 66, 255, .40) 48%, rgba(55, 89, 189, .14) 49%, transparent);
-        filter: drop-shadow(0 0 28px rgba(128, 68, 255, .26));
-    }
-
-    .auth-story-content {
-        position: relative;
-        z-index: 2;
-        max-width: 650px;
-    }
-
-    .auth-story h1 {
-        margin: 20px 0 17px;
-        font-size: clamp(46px, 5vw, 76px);
-        line-height: .98;
-        letter-spacing: -3px;
-        font-weight: 970;
-    }
-
-    .auth-story h1 span {
-        color: transparent;
-        background: linear-gradient(90deg, #a36eff, #775fff 49%, #4b84ff);
-        -webkit-background-clip: text;
-        background-clip: text;
-    }
-
-    .auth-story p {
-        max-width: 580px;
-        margin: 0;
-        color: #8a94b5;
-        font-size: 13px;
-        line-height: 1.72;
-    }
-
-    .auth-benefits {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-        margin-top: 29px;
-    }
-
-    .auth-benefit {
-        min-height: 95px;
-        padding: 13px;
-        border: 1px solid rgba(116, 94, 194, .14);
-        border-radius: 15px;
-        background: rgba(7,12,34,.68);
-    }
-
-    .auth-benefit b {
-        display: block;
-        color: #f3f4ff;
-        font-size: 10px;
-    }
-
-    .auth-benefit span {
-        display: block;
-        margin-top: 6px;
-        color: #707b9e;
-        font-size: 8.5px;
-        line-height: 1.5;
-    }
-
-    .auth-form-panel {
-        width: min(500px, 100%);
-        justify-self: center;
-        padding: clamp(25px, 4vw, 37px);
-        border: 1px solid rgba(144, 94, 237, .21);
-        border-radius: 28px;
-        background:
-            radial-gradient(circle at 92% 5%, rgba(255, 83, 191, .075), transparent 28%),
-            linear-gradient(145deg, rgba(12,17,47,.97), rgba(7,11,32,.98));
-        box-shadow: 0 30px 78px rgba(0,0,0,.36), 0 0 48px rgba(118,61,255,.07), inset 0 1px 0 rgba(255,255,255,.03);
-    }
-
-    .auth-icon {
-        width: 54px;
-        height: 54px;
-        display: grid;
-        place-items: center;
-        border: 1px solid rgba(255,255,255,.08);
-        border-radius: 17px;
-        background: linear-gradient(135deg, #6d43dd, #8d51ed 53%, #4b6fd0);
-        box-shadow: 0 12px 26px rgba(87,50,196,.23);
-        font-size: 22px;
-    }
-
-    .auth-form-panel h2 {
-        margin: 17px 0 7px;
-        color: #fff;
-        font-size: 30px;
-        letter-spacing: -1px;
-    }
-
-    .auth-subtitle {
-        margin: 0 0 23px;
-        color: #7f8aad;
-        font-size: 10.5px;
-        line-height: 1.55;
-    }
-
-    .auth-field {
-        display: block;
-        margin-bottom: 13px;
-    }
-
-    .auth-field > span {
-        display: block;
-        margin: 0 0 6px 2px;
-        color: #aab3cf;
-        font-size: 8.5px;
-        font-weight: 900;
-        letter-spacing: .35px;
-    }
-
-    .auth-input-wrap {
-        position: relative;
-    }
-
-    .auth-input-wrap input {
-        width: 100%;
-        height: 50px;
-        padding: 0 44px 0 14px;
-        border: 1px solid rgba(118, 95, 196, .19);
-        border-radius: 13px;
-        outline: none;
-        color: #f3f5ff;
-        background: rgba(5,10,28,.94);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,.018);
-        font: inherit;
-        font-size: 10.5px;
-        transition: .18s ease;
-    }
-
-    .auth-input-wrap input::placeholder {
-        color: #5f6a8c;
-    }
-
-    .auth-input-wrap input:focus {
-        border-color: rgba(151, 95, 255, .51);
-        box-shadow: 0 0 0 3px rgba(126,66,255,.10), 0 0 22px rgba(126,66,255,.055);
-    }
-
-    .auth-field-icon {
-        position: absolute;
-        right: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #7e88a7;
-        font-size: 13px;
-        pointer-events: none;
-    }
-
-    .password-toggle {
-        position: absolute;
-        right: 7px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 35px;
-        height: 35px;
-        border: 0;
-        border-radius: 9px;
-        color: #8e98b6;
-        background: transparent;
-        cursor: pointer;
-    }
-
-    .password-toggle:hover {
-        color: #fff;
-        background: rgba(255,255,255,.04);
-    }
-
-    .auth-submit {
-        width: 100%;
-        min-height: 50px;
-        margin-top: 5px;
-        border: 1px solid rgba(169, 115, 255, .38);
-        border-radius: 13px;
-        color: #fff;
-        background:
-            radial-gradient(circle at 90% 8%, rgba(255,205,107,.12), transparent 30%),
-            linear-gradient(135deg, #5528bb, #7540db 54%, #4657bf);
-        box-shadow: 0 13px 29px rgba(79,38,180,.27);
-        font-size: 10.5px;
-        font-weight: 950;
-        cursor: pointer;
-        transition: .18s ease;
-    }
-
-    .auth-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 17px 35px rgba(79,38,180,.34), 0 0 24px rgba(132,73,255,.09);
-    }
-
-    .auth-switch {
-        margin-top: 18px;
-        padding-top: 17px;
-        border-top: 1px solid rgba(255,255,255,.055);
-        color: #707b9d;
-        font-size: 9.5px;
-        text-align: center;
-    }
-
-    .auth-switch a {
-        color: #a77cff;
-        font-weight: 900;
-        text-decoration: none;
-    }
-
-    .auth-switch a:hover {
-        color: #c5a5ff;
-    }
-
-    .auth-safe-note {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 7px;
-        margin-top: 14px;
-        color: #626e90;
-        font-size: 8px;
-    }
-
-    @media (max-width: 980px) {
-        .auth-page-shell {
-            grid-template-columns: 1fr;
+            padding: 24px;
         }
 
-        .auth-story {
-            min-height: 430px;
+        .register-wrapper {
+            width: 100%;
+            max-width: 460px;
         }
 
-        .auth-form-panel {
-            width: min(620px, 100%);
+        .brand {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .brand-logo {
+            width: 66px;
+            height: 66px;
+
+            margin: 0 auto 14px;
+
+            border-radius: 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 30px;
+            font-weight: 900;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6c5ce7,
+                    #8e44ad,
+                    #e84393
+                );
+
+            box-shadow:
+                0 16px 40px
+                rgba(108, 92, 231, 0.3);
+        }
+
+        .brand h1 {
+            font-size: 28px;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .brand p {
+            color: #9ea3ba;
+            font-size: 14px;
+        }
+
+        .register-card {
+            background:
+                rgba(25, 29, 55, 0.92);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.08);
+
+            border-radius: 26px;
+
+            padding: 32px;
+
+            box-shadow:
+                0 25px 70px
+                rgba(0, 0, 0, 0.35);
+
+            backdrop-filter: blur(18px);
+        }
+
+        .register-card h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #9ea3ba;
+            font-size: 14px;
+            margin-bottom: 26px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            color: #d9dced;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 15px;
+
+            border-radius: 14px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.1);
+
+            background: #151832;
+            color: white;
+
+            outline: none;
+            font-size: 15px;
+
+            transition: 0.2s ease;
+        }
+
+        input::placeholder {
+            color: #72778f;
+        }
+
+        input:focus {
+            border-color: #7c6cf2;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(108, 92, 231, 0.12);
+        }
+
+        .register-btn {
+            width: 100%;
+
+            border: none;
+
+            padding: 14px 18px;
+
+            border-radius: 14px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6c5ce7,
+                    #8e44ad
+                );
+
+            color: white;
+
+            font-size: 15px;
+            font-weight: 900;
+
+            cursor: pointer;
+
+            margin-top: 6px;
+
+            transition: 0.2s ease;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 30px
+                rgba(108, 92, 231, 0.28);
+        }
+
+        .bottom-text {
+            margin-top: 22px;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            color: #9297af;
+        }
+
+        .bottom-text a {
+            color: #a99cff;
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        .bottom-text a:hover {
+            text-decoration: underline;
+        }
+
+        .security-note {
+            margin-top: 18px;
+
+            text-align: center;
+
+            color: #72778f;
+
+            font-size: 12px;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 16px;
+            }
+
+            .register-card {
+                padding: 24px 20px;
+            }
+
+            .brand h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+
+<!-- LINGUAMIND_GLOBAL_CSRF_BEGIN -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<script>
+(function () {
+    "use strict";
+    const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS", "TRACE"]);
+    function csrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute("content") : "";
+    }
+    function isSameOrigin(url) {
+        try {
+            return new URL(url, window.location.href).origin === window.location.origin;
+        } catch (error) {
+            return true;
         }
     }
-
-    @media (max-width: 640px) {
-        .auth-page-shell {
-            padding: 16px;
-        }
-
-        .auth-story {
-            min-height: 370px;
-            padding: 27px;
-        }
-
-        .auth-story h1 {
-            font-size: 45px;
-            letter-spacing: -2.2px;
-        }
-
-        .auth-benefits {
-            grid-template-columns: 1fr;
-        }
+    if (window.fetch) {
+        const originalFetch = window.fetch.bind(window);
+        window.fetch = function (input, init) {
+            init = init || {};
+            const method = (init.method || (input instanceof Request ? input.method : "GET") || "GET").toUpperCase();
+            const url = input instanceof Request ? input.url : input;
+            if (!SAFE_METHODS.has(method) && isSameOrigin(url)) {
+                const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined) || {});
+                if (!headers.has("X-CSRFToken")) {
+                    headers.set("X-CSRFToken", csrfToken());
+                }
+                init.headers = headers;
+            }
+            return originalFetch(input, init);
+        };
     }
-</style>
+    if (window.XMLHttpRequest) {
+        const originalOpen = XMLHttpRequest.prototype.open;
+        const originalSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.open = function (method, url) {
+            this.__lmMethod = (method || "GET").toUpperCase();
+            this.__lmUrl = url;
+            return originalOpen.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.send = function () {
+            const method = this.__lmMethod || "GET";
+            const url = this.__lmUrl || window.location.href;
+            if (!SAFE_METHODS.has(method) && isSameOrigin(url)) {
+                try {
+                    this.setRequestHeader("X-CSRFToken", csrfToken());
+                } catch (error) {
+                    console.warn("LinguaMind CSRF header error:", error);
+                }
+            }
+            return originalSend.apply(this, arguments);
+        };
+    }
+})();
+</script>
+<!-- LINGUAMIND_GLOBAL_CSRF_END -->
 
 </head>
+
 <body>
 
-<nav class="lm-public-nav">
-    <a class="lm-brand" href="{{ url_for('home') }}">
-        <div class="lm-brand-icon">🧠</div>
-        <div class="lm-brand-copy">
-            <strong>Lingua<span>Mind</span></strong>
-            <small>AI LANGUAGE LEARNING</small>
-        </div>
-    </a>
+    <div class="register-wrapper">
 
-    <div class="lm-nav-actions">
-        <a class="lm-link-button" href="{{ url_for('home') }}">Home</a>
-        <a class="lm-primary-button" href="{{ url_for('login') }}">Sign in →</a>
-    </div>
-</nav>
+        <div class="brand">
 
-<main class="auth-page-shell">
-
-    <section class="auth-story">
-        <div class="auth-story-content">
-            <div class="lm-kicker">
-                <span class="lm-glow-dot"></span>
-                START YOUR LINGUAMIND JOURNEY
+            <div class="brand-logo">
+                L
             </div>
 
             <h1>
-                Build a smarter
-                <span>learning system.</span>
+                LinguaMind
             </h1>
 
             <p>
-                Create your account and keep vocabulary, AI practice, quizzes,
-                study plans and progress connected from your first session.
+                Start your smarter learning journey.
             </p>
 
-            <div class="auth-benefits">
-                <div class="auth-benefit">
-                    <b>▣ Save Vocabulary</b>
-                    <span>Build a personal word bank with learning statuses and favorites.</span>
-                </div>
-
-                <div class="auth-benefit">
-                    <b>🏆 Practice Smarter</b>
-                    <span>Use focused quizzes for Grammar, IELTS, SAT English and SAT Math.</span>
-                </div>
-
-                <div class="auth-benefit">
-                    <b>▥ Track Progress</b>
-                    <span>Build XP, streaks and achievements as you study.</span>
-                </div>
-            </div>
         </div>
-    </section>
 
-    <section class="auth-form-panel">
-        <div class="auth-icon">◆</div>
 
-        <h2>Create account</h2>
-        <p class="auth-subtitle">Start with a free LinguaMind account. You can upgrade later.</p>
+        <div class="register-card">
 
-        <form method="POST" action="{{ url_for('register') }}" autocomplete="on">
+            <h2>
+                Create your account 🚀
+            </h2>
 
-            <label class="auth-field">
-                <span>FULL NAME</span>
-                <div class="auth-input-wrap">
+            <p class="subtitle">
+                Join LinguaMind and start improving
+                your English with AI-powered learning tools.
+            </p>
+
+
+            <form method="POST">
+
+                <!-- CSRF SECURITY -->
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+
+                <div class="form-group">
+
+                    <label for="full_name">
+                        Full name
+                    </label>
+
                     <input
                         type="text"
+                        id="full_name"
                         name="full_name"
                         placeholder="Your full name"
                         autocomplete="name"
                         required
                     >
-                    <span class="auth-field-icon">◉</span>
-                </div>
-            </label>
 
-            <label class="auth-field">
-                <span>EMAIL</span>
-                <div class="auth-input-wrap">
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email address
+                    </label>
+
                     <input
                         type="email"
+                        id="email"
                         name="email"
-                        placeholder="you@example.com"
+                        placeholder="your@email.com"
                         autocomplete="email"
                         required
                     >
-                    <span class="auth-field-icon">✉</span>
-                </div>
-            </label>
 
-            <label class="auth-field">
-                <span>PASSWORD</span>
-                <div class="auth-input-wrap">
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
                     <input
-                        id="registerPassword"
                         type="password"
+                        id="password"
                         name="password"
                         placeholder="Create a password"
                         autocomplete="new-password"
-                        minlength="6"
+                        minlength="8"
                         required
                     >
-                    <button
-                        type="button"
-                        class="password-toggle"
-                        data-target="registerPassword"
-                        aria-label="Show or hide password"
-                    >◉</button>
+
                 </div>
-            </label>
 
-            <button class="auth-submit" type="submit">
-                Create my account →
-            </button>
 
-        </form>
+                <button
+                    type="submit"
+                    class="register-btn"
+                >
+                    Create Account →
+                </button>
 
-        <div class="auth-switch">
-            Already have an account?
-            <a href="{{ url_for('login') }}">Sign in</a>
+            </form>
+
+
+            <div class="bottom-text">
+
+                Already have an account?
+
+                <a href="{{ url_for('login') }}">
+                    Sign in
+                </a>
+
+            </div>
+
+
+            <div class="security-note">
+                🔒 Protected registration with CSRF security
+            </div>
+
         </div>
 
-        <div class="auth-safe-note">
-            ◈ Free account · no payment required.
-        </div>
-    </section>
-
-</main>
-
-<script>
-    document.querySelectorAll(".password-toggle").forEach(function(button) {
-        button.addEventListener("click", function() {
-            const input = document.getElementById(this.dataset.target);
-            input.type = input.type === "password" ? "text" : "password";
-            this.textContent = input.type === "password" ? "◉" : "◎";
-        });
-    });
-</script>
+    </div>
 
 </body>
 </html>

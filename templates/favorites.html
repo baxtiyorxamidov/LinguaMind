@@ -1676,6 +1676,65 @@
 
     </style>
 
+
+<!-- LINGUAMIND_GLOBAL_CSRF_BEGIN -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<script>
+(function () {
+    "use strict";
+    const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS", "TRACE"]);
+    function csrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute("content") : "";
+    }
+    function isSameOrigin(url) {
+        try {
+            return new URL(url, window.location.href).origin === window.location.origin;
+        } catch (error) {
+            return true;
+        }
+    }
+    if (window.fetch) {
+        const originalFetch = window.fetch.bind(window);
+        window.fetch = function (input, init) {
+            init = init || {};
+            const method = (init.method || (input instanceof Request ? input.method : "GET") || "GET").toUpperCase();
+            const url = input instanceof Request ? input.url : input;
+            if (!SAFE_METHODS.has(method) && isSameOrigin(url)) {
+                const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined) || {});
+                if (!headers.has("X-CSRFToken")) {
+                    headers.set("X-CSRFToken", csrfToken());
+                }
+                init.headers = headers;
+            }
+            return originalFetch(input, init);
+        };
+    }
+    if (window.XMLHttpRequest) {
+        const originalOpen = XMLHttpRequest.prototype.open;
+        const originalSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.open = function (method, url) {
+            this.__lmMethod = (method || "GET").toUpperCase();
+            this.__lmUrl = url;
+            return originalOpen.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.send = function () {
+            const method = this.__lmMethod || "GET";
+            const url = this.__lmUrl || window.location.href;
+            if (!SAFE_METHODS.has(method) && isSameOrigin(url)) {
+                try {
+                    this.setRequestHeader("X-CSRFToken", csrfToken());
+                } catch (error) {
+                    console.warn("LinguaMind CSRF header error:", error);
+                }
+            }
+            return originalSend.apply(this, arguments);
+        };
+    }
+})();
+</script>
+<!-- LINGUAMIND_GLOBAL_CSRF_END -->
+
 </head>
 
 

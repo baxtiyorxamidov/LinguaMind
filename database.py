@@ -1,13 +1,18 @@
-import sqlite3
+import os
+import psycopg
 
-DATABASE = "database.db"
+from dotenv import load_dotenv
+from psycopg.rows import dict_row
 
+load_dotenv()
 
+DATABASE_URL = os.getenv("DATABASE_URL")
 def get_db():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
+    conn = psycopg.connect(
+        DATABASE_URL,
+        row_factory=dict_row
+    )
     return conn
-
 
 def create_tables():
 
@@ -17,7 +22,7 @@ def create_tables():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS users (
 
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
 
         full_name TEXT NOT NULL,
 
@@ -31,7 +36,7 @@ def create_tables():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS vocabulary (
 
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
 
         user_id INTEGER NOT NULL,
 

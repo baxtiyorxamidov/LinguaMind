@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Panel — LinguaMind</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #090b16;
+            --panel: #111426;
+            --panel-2: #171b31;
+            --panel-3: #1d223c;
+
+            --purple: #6c5ce7;
+            --purple-2: #8e44ad;
+            --pink: #e84393;
+            --blue: #4f8cff;
+            --green: #2ed573;
+            --orange: #ffa502;
+            --red: #ff4757;
+
+            --text: #ffffff;
+            --muted: #969bb5;
+            --border: rgba(255,255,255,0.07);
+
+            --radius: 22px;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(108, 92, 231, 0.14),
+                    transparent 28%
+                ),
+                radial-gradient(
+                    circle at bottom right,
+                    rgba(232, 67, 147, 0.10),
+                    transparent 30%
+                ),
+                var(--bg);
+
+            color: var(--text);
+        }
+
+        a {
+            color: inherit;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .admin-shell {
+            width: 100%;
+            min-height: 100vh;
+
+            display: grid;
+            grid-template-columns: 260px 1fr;
+        }
+
+        /* =========================================
+           SIDEBAR
+        ========================================= */
+
+        .sidebar {
+            position: sticky;
+            top: 0;
+
+            height: 100vh;
+
+            padding: 24px 18px;
+
+            background:
+                rgba(14, 17, 34, 0.96);
+
+            border-right:
+                1px solid var(--border);
+
+            backdrop-filter: blur(18px);
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin-bottom: 32px;
+
+            padding: 0 6px;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--purple-2),
+                    var(--pink)
+                );
+
+            font-size: 22px;
+            font-weight: 900;
+
+            box-shadow:
+                0 12px 28px
+                rgba(108, 92, 231, 0.30);
+        }
+
+        .brand-text strong {
+            display: block;
+
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .brand-text span {
+            color: var(--muted);
+
+            font-size: 11px;
+            letter-spacing: 1.1px;
+            font-weight: 800;
+        }
+
+        .nav-label {
+            color: #646b89;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            letter-spacing: 1.3px;
+
+            margin:
+                0 9px
+                10px;
+        }
+
+        .nav {
+            display: grid;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            text-decoration: none;
+
+            padding: 13px 14px;
+
+            border-radius: 14px;
+
+            color: #afb4ca;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            transition: 0.2s ease;
+        }
+
+        .nav-item:hover {
+            color: white;
+
+            background:
+                rgba(255,255,255,0.05);
+        }
+
+        .nav-item.active {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(108,92,231,0.22),
+                    rgba(232,67,147,0.10)
+                );
+
+            border:
+                1px solid
+                rgba(108,92,231,0.23);
+        }
+
+        .nav-icon {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 11px;
+
+            background: #1d223c;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+
+            border-top:
+                1px solid var(--border);
+
+            padding-top: 18px;
+        }
+
+        .admin-mini {
+            padding: 14px;
+
+            border-radius: 16px;
+
+            background:
+                rgba(255,255,255,0.035);
+
+            border:
+                1px solid var(--border);
+
+            margin-bottom: 12px;
+        }
+
+        .admin-mini strong {
+            display: block;
+
+            font-size: 13px;
+
+            margin-bottom: 4px;
+        }
+
+        .admin-mini span {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* =========================================
+           MAIN
+        ========================================= */
+
+        .main {
+            width: 100%;
+            min-width: 0;
+
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 28px;
+        }
+
+        .topbar-left h1 {
+            font-size: 30px;
+            font-weight: 950;
+
+            margin-bottom: 6px;
+        }
+
+        .topbar-left p {
+            color: var(--muted);
+
+            font-size: 14px;
+        }
+
+        .dashboard-btn {
+            text-decoration: none;
+
+            padding: 11px 16px;
+
+            border-radius: 13px;
+
+            background:
+                rgba(255,255,255,0.05);
+
+            border:
+                1px solid var(--border);
+
+            color: #d7daea;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            transition: 0.2s ease;
+        }
+
+        .dashboard-btn:hover {
+            background:
+                rgba(255,255,255,0.08);
+
+            transform:
+                translateY(-1px);
+        }
+
+        /* =========================================
+           STATS
+        ========================================= */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 16px;
+
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            position: relative;
+
+            overflow: hidden;
+
+            min-height: 145px;
+
+            padding: 20px;
+
+            border-radius: var(--radius);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(24,28,51,0.98),
+                    rgba(17,20,38,0.98)
+                );
+
+            border:
+                1px solid var(--border);
+
+            box-shadow:
+                0 20px 45px
+                rgba(0,0,0,0.18);
+        }
+
+        .stat-card::after {
+            content: "";
+
+            position: absolute;
+
+            width: 100px;
+            height: 100px;
+
+            border-radius: 50%;
+
+            right: -35px;
+            top: -35px;
+
+            filter: blur(2px);
+
+            opacity: 0.18;
+        }
+
+        .stat-card.users::after {
+            background: var(--blue);
+        }
+
+        .stat-card.pro::after {
+            background: var(--purple);
+        }
+
+        .stat-card.free::after {
+            background: var(--orange);
+        }
+
+        .stat-card.admins::after {
+            background: var(--green);
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 13px;
+
+            background:
+                rgba(255,255,255,0.06);
+
+            margin-bottom: 16px;
+
+            font-size: 19px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 800;
+
+            margin-bottom: 4px;
+        }
+
+        .stat-number {
+            font-size: 31px;
+            font-weight: 950;
+        }
+
+        /* =========================================
+           PANEL
+        ========================================= */
+
+        .panel {
+            background:
+                rgba(17,20,38,0.96);
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                var(--radius);
+
+            overflow: hidden;
+
+            box-shadow:
+                0 20px 55px
+                rgba(0,0,0,0.20);
+        }
+
+        .panel-header {
+            padding: 20px;
+
+            border-bottom:
+                1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 18px;
+        }
+
+        .panel-title h2 {
+            font-size: 19px;
+            font-weight: 900;
+
+            margin-bottom: 4px;
+        }
+
+        .panel-title p {
+            color: var(--muted);
+
+            font-size: 12px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 8px;
+
+            width: min(430px, 100%);
+        }
+
+        .search-form input {
+            flex: 1;
+            min-width: 0;
+
+            padding: 11px 13px;
+
+            border-radius: 12px;
+
+            border:
+                1px solid var(--border);
+
+            background: #0d1020;
+
+            color: white;
+
+            outline: none;
+        }
+
+        .search-form input:focus {
+            border-color:
+                rgba(108,92,231,0.65);
+
+            box-shadow:
+                0 0 0 4px
+                rgba(108,92,231,0.10);
+        }
+
+        .search-btn {
+            border: none;
+
+            padding: 11px 15px;
+
+            border-radius: 12px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--purple-2)
+                );
+
+            color: white;
+
+            font-weight: 900;
+
+            cursor: pointer;
+        }
+
+        /* =========================================
+           TABLE
+        ========================================= */
+
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 1180px;
+        }
+
+        th {
+            text-align: left;
+
+            padding: 14px 16px;
+
+            background:
+                rgba(255,255,255,0.025);
+
+            border-bottom:
+                1px solid var(--border);
+
+            color: #777e9d;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+            letter-spacing: 0.9px;
+        }
+
+        td {
+            padding: 16px;
+
+            border-bottom:
+                1px solid
+                rgba(255,255,255,0.045);
+
+            vertical-align: middle;
+
+            font-size: 13px;
+        }
+
+        tbody tr {
+            transition: 0.18s ease;
+        }
+
+        tbody tr:hover {
+            background:
+                rgba(255,255,255,0.025);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .user-box {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .avatar {
+            width: 39px;
+            height: 39px;
+
+            min-width: 39px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--purple),
+                    var(--pink)
+                );
+
+            font-weight: 900;
+        }
+
+        .user-meta strong {
+            display: block;
+
+            font-size: 13px;
+
+            margin-bottom: 3px;
+        }
+
+        .user-meta span {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 6px 9px;
+
+            border-radius: 999px;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            letter-spacing: 0.4px;
+        }
+
+        .badge-free {
+            color: #c2c6d7;
+
+            background:
+                rgba(255,255,255,0.065);
+        }
+
+        .badge-pro {
+            color: #d9d2ff;
+
+            background:
+                rgba(108,92,231,0.18);
+
+            border:
+                1px solid
+                rgba(108,92,231,0.25);
+        }
+
+        .badge-admin {
+            color: #89f5bd;
+
+            background:
+                rgba(46,213,115,0.13);
+
+            border:
+                1px solid
+                rgba(46,213,115,0.18);
+        }
+
+        .badge-pending {
+            color: #ffd77a;
+
+            background:
+                rgba(255,165,2,0.13);
+
+            border:
+                1px solid
+                rgba(255,165,2,0.18);
+        }
+
+        .badge-rejected {
+            color: #ff98a1;
+
+            background:
+                rgba(255,71,87,0.13);
+
+            border:
+                1px solid
+                rgba(255,71,87,0.18);
+        }
+
+        .badge-active {
+            color: #89f5bd;
+
+            background:
+                rgba(46,213,115,0.13);
+        }
+
+        .badge-inactive {
+            color: #aeb3c8;
+
+            background:
+                rgba(255,255,255,0.055);
+        }
+
+        .date-text {
+            color: #aeb3c8;
+
+            line-height: 1.55;
+
+            font-size: 11px;
+        }
+
+        /* =========================================
+           ACTIONS
+        ========================================= */
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 7px;
+        }
+
+        .action-form {
+            margin: 0;
+        }
+
+        .action-btn {
+            border: none;
+
+            padding: 8px 10px;
+
+            border-radius: 10px;
+
+            color: white;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            cursor: pointer;
+
+            transition: 0.18s ease;
+
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            transform:
+                translateY(-1px);
+
+            filter: brightness(1.08);
+        }
+
+        .month-btn {
+            background:
+                linear-gradient(
+                    135deg,
+                    #5865f2,
+                    #6c5ce7
+                );
+        }
+
+        .year-btn {
+            background:
+                linear-gradient(
+                    135deg,
+                    #20bf6b,
+                    #26de81
+                );
+        }
+
+        .remove-btn {
+            background:
+                linear-gradient(
+                    135deg,
+                    #eb3b5a,
+                    #ff4757
+                );
+        }
+
+        .approve-btn {
+            background:
+                linear-gradient(
+                    135deg,
+                    #20bf6b,
+                    #26de81
+                );
+        }
+
+        .reject-btn {
+            background:
+                linear-gradient(
+                    135deg,
+                    #eb3b5a,
+                    #ff4757
+                );
+        }
+
+        .promo-user {
+            display: block;
+
+            color: #cfc9ff;
+
+            margin-top: 6px;
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .promo-time {
+            display: block;
+
+            color: #747b98;
+
+            margin-top: 3px;
+
+            font-size: 10px;
+        }
+
+        .promo-actions {
+            display: flex;
+            gap: 6px;
+
+            margin-top: 9px;
+        }
+
+        .empty-state {
+            text-align: center;
+
+            padding: 42px 20px !important;
+
+            color: var(--muted);
+        }
+
+        /* =========================================
+           MOBILE
+        ========================================= */
+
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .admin-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: relative;
+
+                width: 100%;
+                height: auto;
+
+                border-right: none;
+                border-bottom:
+                    1px solid var(--border);
+            }
+
+            .nav {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .sidebar-bottom {
+                display: none;
+            }
+
+            .main {
+                padding: 20px;
+            }
+
+            .panel-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .search-form {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main {
+                padding: 15px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .topbar-left h1 {
+                font-size: 25px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                min-height: 125px;
+            }
+        }
+    </style>
+
+<!-- LINGUAMIND_GLOBAL_CSRF_BEGIN -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<script>
+(function () {
+    "use strict";
+    const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS", "TRACE"]);
+    function csrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute("content") : "";
+    }
+    function isSameOrigin(url) {
+        try {
+            return new URL(url, window.location.href).origin === window.location.origin;
+        } catch (error) {
+            return true;
+        }
+    }
+    if (window.fetch) {
+        const originalFetch = window.fetch.bind(window);
+        window.fetch = function (input, init) {
+            init = init || {};
+            const method = (init.method || (input instanceof Request ? input.method : "GET") || "GET").toUpperCase();
+            const url = input instanceof Request ? input.url : input;
+            if (!SAFE_METHODS.has(method) && isSameOrigin(url)) {
+                const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined) || {});
+                if (!headers.has("X-CSRFToken")) {
+                    headers.set("X-CSRFToken", csrfToken());
+                }
+                init.headers = headers;
+            }
+            return originalFetch(input, init);
+        };
+    }
+    if (window.XMLHttpRequest) {
+        const originalOpen = XMLHttpRequest.prototype.open;
+        const originalSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.open = function (method, url) {
+            this.__lmMethod = (method || "GET").toUpperCase();
+            this.__lmUrl = url;
+            return originalOpen.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.send = function () {
+            const method = this.__lmMethod || "GET";
+            const url = this.__lmUrl || window.location.href;
+            if (!SAFE_METHODS.has(method) && isSameOrigin(url)) {
+                try {
+                    this.setRequestHeader("X-CSRFToken", csrfToken());
+                } catch (error) {
+                    console.warn("LinguaMind CSRF header error:", error);
+                }
+            }
+            return originalSend.apply(this, arguments);
+        };
+    }
+})();
+</script>
+<!-- LINGUAMIND_GLOBAL_CSRF_END -->
+
+</head>
+
+<body>
+
+<div class="admin-shell">
+
+    <!-- =========================================
+         SIDEBAR
+    ========================================= -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                L
+            </div>
+
+            <div class="brand-text">
+                <strong>
+                    LinguaMind
+                </strong>
+
+                <span>
+                    ADMIN CONTROL
+                </span>
+            </div>
+
+        </div>
+
+
+        <div class="nav-label">
+            MANAGEMENT
+        </div>
+
+        <nav class="nav">
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="nav-item active"
+            >
+                <span class="nav-icon">
+                    📊
+                </span>
+
+                Admin Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">
+                    🧠
+                </span>
+
+                User Dashboard
+            </a>
+
+
+            <a
+                href="{{ url_for('instagram_promo') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">
+                    📸
+                </span>
+
+                Instagram Promo
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="admin-mini">
+
+                <strong>
+                    {{ admin.full_name }}
+                </strong>
+
+                <span>
+                    {{ admin.email }}
+                </span>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="nav-item"
+            >
+                <span class="nav-icon">
+                    ←
+                </span>
+
+                Exit Admin Panel
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =========================================
+         MAIN
+    ========================================= -->
+
+    <main class="main">
+
+        <div class="topbar">
+
+            <div class="topbar-left">
+
+                <h1>
+                    Admin Dashboard
+                </h1>
+
+                <p>
+                    Manage users, subscriptions and
+                    Instagram promo requests.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="dashboard-btn"
+            >
+                Open LinguaMind →
+            </a>
+
+        </div>
+
+
+        <!-- =========================================
+             STATS
+        ========================================= -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card users">
+
+                <div class="stat-icon">
+                    👥
+                </div>
+
+                <div class="stat-label">
+                    TOTAL USERS
+                </div>
+
+                <div class="stat-number">
+                    {{ total_users }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card pro">
+
+                <div class="stat-icon">
+                    👑
+                </div>
+
+                <div class="stat-label">
+                    PRO USERS
+                </div>
+
+                <div class="stat-number">
+                    {{ pro_users }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card free">
+
+                <div class="stat-icon">
+                    ⚡
+                </div>
+
+                <div class="stat-label">
+                    FREE USERS
+                </div>
+
+                <div class="stat-number">
+                    {{ free_users }}
+                </div>
+
+            </div>
+
+
+            <div class="stat-card admins">
+
+                <div class="stat-icon">
+                    🛡️
+                </div>
+
+                <div class="stat-label">
+                    ADMINS
+                </div>
+
+                <div class="stat-number">
+                    {{ admin_users }}
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             USERS PANEL
+        ========================================= -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div class="panel-title">
+
+                    <h2>
+                        User Management
+                    </h2>
+
+                    <p>
+                        Search users, manage PRO access
+                        and review promo requests.
+                    </p>
+
+                </div>
+
+
+                <form
+                    method="GET"
+                    action="{{ url_for('admin_dashboard') }}"
+                    class="search-form"
+                >
+
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ search }}"
+                        placeholder="Search name or email..."
+                    >
+
+                    <button
+                        type="submit"
+                        class="search-btn"
+                    >
+                        Search
+                    </button>
+
+                </form>
+
+            </div>
+
+
+            <div class="table-wrap">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>User</th>
+                            <th>Plan</th>
+                            <th>Status</th>
+                            <th>Expires</th>
+                            <th>Joined</th>
+                            <th>Instagram Promo</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                    {% if users %}
+
+                        {% for user in users %}
+
+                        <tr>
+
+                            <!-- USER -->
+                            <td>
+
+                                <div class="user-box">
+
+                                    <div class="avatar">
+                                        {{ user.full_name[0]|upper }}
+                                    </div>
+
+                                    <div class="user-meta">
+
+                                        <strong>
+                                            {{ user.full_name }}
+
+                                            {% if user.is_admin %}
+                                                <span
+                                                    class="badge badge-admin"
+                                                    style="margin-left:5px;"
+                                                >
+                                                    ADMIN
+                                                </span>
+                                            {% endif %}
+                                        </strong>
+
+                                        <span>
+                                            {{ user.email }}
+                                        </span>
+
+                                        <span>
+                                            ID #{{ user.id }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <!-- PLAN -->
+                            <td>
+
+                                {% if user.plan == 'pro_yearly' %}
+
+                                    <span class="badge badge-pro">
+                                        PRO YEARLY
+                                    </span>
+
+                                {% elif user.plan == 'pro_monthly' %}
+
+                                    <span class="badge badge-pro">
+                                        PRO MONTHLY
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge badge-free">
+                                        FREE
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- STATUS -->
+                            <td>
+
+                                {% if user.subscription_status == 'active' %}
+
+                                    <span class="badge badge-active">
+                                        ACTIVE
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge badge-inactive">
+                                        INACTIVE
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- EXPIRES -->
+                            <td>
+
+                                {% if user.subscription_expires_at %}
+
+                                    <span class="date-text">
+                                        {{ user.subscription_expires_at }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="date-text">
+                                        —
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- JOINED -->
+                            <td>
+
+                                {% if user.created_at %}
+
+                                    <span class="date-text">
+                                        {{ user.created_at }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="date-text">
+                                        —
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- INSTAGRAM PROMO -->
+                            <td>
+
+                                {% if user.instagram_promo_claimed %}
+
+                                    <span class="badge badge-admin">
+                                        APPROVED
+                                    </span>
+
+                                    {% if user.instagram_username %}
+                                        <span class="promo-user">
+                                            @{{ user.instagram_username }}
+                                        </span>
+                                    {% endif %}
+
+                                    {% if user.instagram_promo_claimed_at %}
+                                        <span class="promo-time">
+                                            {{ user.instagram_promo_claimed_at }}
+                                        </span>
+                                    {% endif %}
+
+
+                                {% elif user.instagram_promo_status == 'pending' %}
+
+                                    <span class="badge badge-pending">
+                                        PENDING
+                                    </span>
+
+                                    {% if user.instagram_username %}
+                                        <span class="promo-user">
+                                            @{{ user.instagram_username }}
+                                        </span>
+                                    {% endif %}
+
+                                    {% if user.instagram_promo_requested_at %}
+                                        <span class="promo-time">
+                                            {{ user.instagram_promo_requested_at }}
+                                        </span>
+                                    {% endif %}
+
+
+                                    <div class="promo-actions">
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'admin_instagram_approve',
+                                                user_id=user.id
+                                            ) }}"
+                                            class="action-form"
+                                        >
+
+                                            <input
+                                                type="hidden"
+                                                name="csrf_token"
+                                                value="{{ csrf_token() }}"
+                                            >
+
+                                            <button
+                                                type="submit"
+                                                class="action-btn approve-btn"
+                                            >
+                                                Approve
+                                            </button>
+
+                                        </form>
+
+
+                                        <form
+                                            method="POST"
+                                            action="{{ url_for(
+                                                'admin_instagram_reject',
+                                                user_id=user.id
+                                            ) }}"
+                                            class="action-form"
+                                        >
+
+                                            <input
+                                                type="hidden"
+                                                name="csrf_token"
+                                                value="{{ csrf_token() }}"
+                                            >
+
+                                            <button
+                                                type="submit"
+                                                class="action-btn reject-btn"
+                                            >
+                                                Reject
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+
+                                {% elif user.instagram_promo_status == 'rejected' %}
+
+                                    <span class="badge badge-rejected">
+                                        REJECTED
+                                    </span>
+
+                                    {% if user.instagram_username %}
+                                        <span class="promo-user">
+                                            @{{ user.instagram_username }}
+                                        </span>
+                                    {% endif %}
+
+
+                                {% else %}
+
+                                    <span class="badge badge-free">
+                                        NOT REQUESTED
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <!-- ACTIONS -->
+                            <td>
+
+                                {% if not user.is_admin %}
+
+                                <div class="actions">
+
+
+                                    <!-- + 1 MONTH -->
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'admin_give_pro',
+                                            user_id=user.id
+                                        ) }}"
+                                        class="action-form"
+                                    >
+
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="action-btn month-btn"
+                                        >
+                                            +1 Month
+                                        </button>
+
+                                    </form>
+
+
+                                    <!-- + 1 YEAR -->
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'admin_give_pro_year',
+                                            user_id=user.id
+                                        ) }}"
+                                        class="action-form"
+                                    >
+
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="action-btn year-btn"
+                                        >
+                                            +1 Year
+                                        </button>
+
+                                    </form>
+
+
+                                    <!-- REMOVE PRO -->
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'admin_remove_pro',
+                                            user_id=user.id
+                                        ) }}"
+                                        class="action-form"
+                                    >
+
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="action-btn remove-btn"
+                                        >
+                                            Remove PRO
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                                {% else %}
+
+                                    <span class="badge badge-admin">
+                                        OWNER
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+
+                    {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="empty-state"
+                            >
+                                No users found.
+                            </td>
+
+                        </tr>
+
+                    {% endif %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

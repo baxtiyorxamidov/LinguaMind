@@ -8,3 +8,9 @@ python-dotenv
 gunicorn
 google-genai
 gTTS
+psycopg[binary]
+Flask-Limiter[redis]
+pyotp
+qrcode[pil]
+cryptography
+psycopg_pool

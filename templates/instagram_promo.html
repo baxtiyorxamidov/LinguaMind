@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Instagram Promo — LinguaMind</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family:
+                Inter,
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at top left,
+                    rgba(108, 92, 231, 0.22),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at bottom right,
+                    rgba(232, 67, 147, 0.16),
+                    transparent 35%
+                ),
+                #0f1224;
+
+            color: white;
+
+            padding: 30px 18px;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 760px;
+
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 28px;
+            gap: 14px;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 900;
+        }
+
+        .back-btn {
+            text-decoration: none;
+
+            color: white;
+
+            background:
+                rgba(255, 255, 255, 0.07);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.09);
+
+            padding: 10px 15px;
+
+            border-radius: 12px;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            transition: 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background:
+                rgba(255, 255, 255, 0.11);
+        }
+
+        .promo-card {
+            background:
+                rgba(25, 29, 55, 0.94);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.08);
+
+            border-radius: 28px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 28px 80px
+                rgba(0, 0, 0, 0.35);
+        }
+
+        .hero {
+            padding: 34px 32px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6c5ce7,
+                    #8e44ad,
+                    #e84393
+                );
+        }
+
+        .hero-badge {
+            display: inline-block;
+
+            background:
+                rgba(255, 255, 255, 0.16);
+
+            padding: 7px 11px;
+
+            border-radius: 999px;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 17px;
+        }
+
+        .hero h1 {
+            font-size: 34px;
+            line-height: 1.15;
+
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color:
+                rgba(255, 255, 255, 0.88);
+
+            line-height: 1.7;
+
+            font-size: 15px;
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        .steps {
+            display: grid;
+            gap: 14px;
+
+            margin-bottom: 28px;
+        }
+
+        .step {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+
+            padding: 16px;
+
+            border-radius: 16px;
+
+            background: #151832;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.06);
+        }
+
+        .step-number {
+            min-width: 34px;
+            height: 34px;
+
+            border-radius: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6c5ce7,
+                    #e84393
+                );
+
+            font-weight: 900;
+        }
+
+        .step strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .step span {
+            color: #9297af;
+
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .instagram-link {
+            display: inline-flex;
+
+            align-items: center;
+
+            text-decoration: none;
+
+            color: white;
+
+            font-weight: 900;
+
+            margin-bottom: 22px;
+
+            padding: 12px 16px;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #833ab4,
+                    #fd1d1d,
+                    #fcb045
+                );
+
+            transition: 0.2s ease;
+        }
+
+        .instagram-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-top: 18px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 9px;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            color: #d9dced;
+        }
+
+        input[type="text"] {
+            width: 100%;
+
+            padding: 14px 15px;
+
+            border-radius: 14px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.1);
+
+            background: #101329;
+
+            color: white;
+
+            outline: none;
+
+            font-size: 15px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #7c6cf2;
+
+            box-shadow:
+                0 0 0 4px
+                rgba(108, 92, 231, 0.12);
+        }
+
+        .submit-btn {
+            width: 100%;
+
+            border: none;
+
+            padding: 14px 18px;
+
+            border-radius: 14px;
+
+            margin-top: 15px;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6c5ce7,
+                    #8e44ad
+                );
+
+            font-size: 15px;
+            font-weight: 900;
+
+            cursor: pointer;
+
+            transition: 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 14px 30px
+                rgba(108, 92, 231, 0.25);
+        }
+
+        .status-box {
+            padding: 22px;
+
+            border-radius: 18px;
+
+            text-align: center;
+
+            background: #151832;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.07);
+        }
+
+        .status-title {
+            font-size: 21px;
+            font-weight: 900;
+
+            margin-bottom: 8px;
+        }
+
+        .status-text {
+            color: #969bb2;
+
+            line-height: 1.7;
+
+            font-size: 14px;
+        }
+
+        .status-approved {
+            color: #48d597;
+        }
+
+        .status-pending {
+            color: #ffc75f;
+        }
+
+        .status-rejected {
+            color: #ff7f8c;
+        }
+
+        .username {
+            margin-top: 10px;
+
+            font-weight: 900;
+
+            color: #b8adff;
+        }
+
+        .warning {
+            margin-top: 18px;
+
+            font-size: 12px;
+
+            color: #777d97;
+
+            line-height: 1.7;
+        }
+
+        @media (max-width: 650px) {
+            .hero {
+                padding: 28px 22px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .content {
+                padding: 24px 20px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+        }
+    </style>
+
+<!-- LINGUAMIND_GLOBAL_CSRF_BEGIN -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<script>
+(function () {
+    "use strict";
+    const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS", "TRACE"]);
+    function csrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute("content") : "";
+    }
+    function isSameOrigin(url) {
+        try {
+            return new URL(url, window.location.href).origin === window.location.origin;
+        } catch (error) {
+            return true;
+        }
+    }
+    if (window.fetch) {
+        const originalFetch = window.fetch.bind(window);
+        window.fetch = function (input, init) {
+            init = init || {};
+            const method = (init.method || (input instanceof Request ? input.method : "GET") || "GET").toUpperCase();
+            const url = input instanceof Request ? input.url : input;
+            if (!SAFE_METHODS.has(method) && isSameOrigin(url)) {
+                const headers = new Headers(init.headers || (input instanceof Request ? input.headers : undefined) || {});
+                if (!headers.has("X-CSRFToken")) {
+                    headers.set("X-CSRFToken", csrfToken());
+                }
+                init.headers = headers;
+            }
+            return originalFetch(input, init);
+        };
+    }
+    if (window.XMLHttpRequest) {
+        const originalOpen = XMLHttpRequest.prototype.open;
+        const originalSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.open = function (method, url) {
+            this.__lmMethod = (method || "GET").toUpperCase();
+            this.__lmUrl = url;
+            return originalOpen.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.send = function () {
+            const method = this.__lmMethod || "GET";
+            const url = this.__lmUrl || window.location.href;
+            if (!SAFE_METHODS.has(method) && isSameOrigin(url)) {
+                try {
+                    this.setRequestHeader("X-CSRFToken", csrfToken());
+                } catch (error) {
+                    console.warn("LinguaMind CSRF header error:", error);
+                }
+            }
+            return originalSend.apply(this, arguments);
+        };
+    }
+})();
+</script>
+<!-- LINGUAMIND_GLOBAL_CSRF_END -->
+
+</head>
+
+<body>
+
+    <div class="page">
+
+        <div class="topbar">
+
+            <div class="brand">
+                LinguaMind
+            </div>
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="back-btn"
+            >
+                ← Dashboard
+            </a>
+
+        </div>
+
+
+        <div class="promo-card">
+
+            <div class="hero">
+
+                <div class="hero-badge">
+                    LIMITED PROMO
+                </div>
+
+                <h1>
+                    Get 1 Month PRO
+                </h1>
+
+                <p>
+                    Follow our official Instagram page,
+                    send us your Instagram username,
+                    and receive 1 month of LinguaMind PRO
+                    after admin approval.
+                </p>
+
+            </div>
+
+
+            <div class="content">
+
+                <div class="steps">
+
+                    <div class="step">
+
+                        <div class="step-number">
+                            1
+                        </div>
+
+                        <div>
+                            <strong>
+                                Follow our Instagram
+                            </strong>
+
+                            <span>
+                                Open our official Instagram page
+                                and follow @_linguamind_.
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="step">
+
+                        <div class="step-number">
+                            2
+                        </div>
+
+                        <div>
+                            <strong>
+                                Enter your username
+                            </strong>
+
+                            <span>
+                                Send the Instagram username
+                                you used to follow us.
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="step">
+
+                        <div class="step-number">
+                            3
+                        </div>
+
+                        <div>
+                            <strong>
+                                Wait for approval
+                            </strong>
+
+                            <span>
+                                Admin checks your follow status.
+                                If approved, your account gets
+                                1 month of PRO.
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="https://www.instagram.com/_linguamind_/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="instagram-link"
+                >
+                    📸 Follow @_linguamind_
+                </a>
+
+
+                {% if user.instagram_promo_claimed %}
+
+                    <div class="status-box">
+
+                        <div
+                            class="status-title status-approved"
+                        >
+                            ✓ Promo Approved
+                        </div>
+
+                        <div class="status-text">
+                            Your Instagram promo has already
+                            been approved.
+                            You received your 1 month PRO reward.
+                        </div>
+
+                        {% if user.instagram_username %}
+                            <div class="username">
+                                @{{ user.instagram_username }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                {% elif user.instagram_promo_status == 'pending' %}
+
+                    <div class="status-box">
+
+                        <div
+                            class="status-title status-pending"
+                        >
+                            ⏳ Approval Pending
+                        </div>
+
+                        <div class="status-text">
+                            Your request has been sent.
+                            Admin will check whether this account
+                            follows @_linguamind_.
+                        </div>
+
+                        {% if user.instagram_username %}
+                            <div class="username">
+                                @{{ user.instagram_username }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                {% elif user.instagram_promo_status == 'rejected' %}
+
+                    <div class="status-box">
+
+                        <div
+                            class="status-title status-rejected"
+                        >
+                            Request Not Approved
+                        </div>
+
+                        <div class="status-text">
+                            We could not confirm the follow.
+                            Make sure you follow @_linguamind_
+                            and send your correct Instagram
+                            username again.
+                        </div>
+
+                    </div>
+
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('request_instagram_promo') }}"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="{{ csrf_token() }}"
+                        >
+
+                        <div class="form-group">
+
+                            <label for="instagram_username">
+                                Instagram username
+                            </label>
+
+                            <input
+                                type="text"
+                                id="instagram_username"
+                                name="instagram_username"
+                                placeholder="@your_username"
+                                maxlength="30"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="submit-btn"
+                        >
+                            Send Request Again →
+                        </button>
+
+                    </form>
+
+
+                {% else %}
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('request_instagram_promo') }}"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="{{ csrf_token() }}"
+                        >
+
+                        <div class="form-group">
+
+                            <label for="instagram_username">
+                                Instagram username
+                            </label>
+
+                            <input
+                                type="text"
+                                id="instagram_username"
+                                name="instagram_username"
+                                placeholder="@your_username"
+                                maxlength="30"
+                                autocomplete="off"
+                                required
+                            >
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="submit-btn"
+                        >
+                            Send Promo Request →
+                        </button>
+
+                    </form>
+
+                {% endif %}
+
+
+                <div class="warning">
+                    The PRO reward is not granted automatically.
+                    Your Instagram follow must first be verified
+                    by the LinguaMind admin.
+                    Each LinguaMind account can receive this
+                    promotion only once.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
