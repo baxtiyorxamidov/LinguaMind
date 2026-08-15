@@ -1,4 +1,3 @@
-from psycopg_pool import ConnectionPool
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
 from google import genai
 from dotenv import load_dotenv
@@ -106,35 +105,8 @@ limiter = Limiter(
 )
 
 
-
-# ===========================
-# DATABASE CONNECTION POOL
-# ===========================
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL environment variable is required.")
-
-DB_POOL_MIN = max(1, int(os.getenv("DB_POOL_MIN", "1")))
-DB_POOL_MAX = max(DB_POOL_MIN, int(os.getenv("DB_POOL_MAX", "5")))
-
-db_pool = ConnectionPool(
-    conninfo=DATABASE_URL,
-    min_size=DB_POOL_MIN,
-    max_size=DB_POOL_MAX,
-    kwargs={"row_factory": dict_row},
-    open=True,
-    close_returns=True,
-    timeout=10.0,
-    max_idle=300.0,
-    max_lifetime=1800.0,
-    name="linguamind-db-pool",
-)
-
-
 def get_db():
-    return db_pool.getconn(timeout=10.0)
+    return psycopg.connect(DATABASE_URL, row_factory=dict_row)
 
 
 def create_subscription_system():
