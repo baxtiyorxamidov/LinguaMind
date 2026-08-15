@@ -1,11 +1,12 @@
+from PIL import Image, UnidentifiedImageError
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_wtf.csrf import CSRFProtect
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_file
 from google import genai
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from gtts import gTTS
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from flask_wtf.csrf import CSRFProtect
 
 import psycopg
 from psycopg.rows import dict_row
@@ -28,7 +29,7 @@ ENV_PATH = os.path.join(
 
 load_dotenv(
     dotenv_path=ENV_PATH,
-    override=True
+    override=False
 )
 
 GEMINI_API_KEY = os.getenv(
@@ -55,6 +56,25 @@ print(
 app = Flask(__name__)
 
 
+
+
+# =========================================================
+# SECURITY - PROFESSIONAL RESOURCE LIMITS
+# =========================================================
+
+app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
+app.config["MAX_FORM_MEMORY_SIZE"] = 1024 * 1024
+app.config["MAX_FORM_PARTS"] = 100
+
+_allowed_hosts_raw = os.getenv("ALLOWED_HOSTS", "").strip()
+
+if _allowed_hosts_raw:
+    app.config["TRUSTED_HOSTS"] = [
+        host.strip()
+        for host in _allowed_hosts_raw.split(",")
+        if host.strip()
+    ]
+
 # =========================================================
 # SECURITY - SESSION HARDENING
 # =========================================================
@@ -68,30 +88,10 @@ app.config["SESSION_COOKIE_SECURE"] = (
     os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
 )
 
-app.secret_key = os.getenv("SECRET_KEY")
-
-if not app.secret_key:
-    raise RuntimeError(
-        "SECRET_KEY environment variable is required."
-    )
-
 csrf = CSRFProtect(app)
 
-app.config.update(
-    SESSION_COOKIE_HTTPONLY=True,
-    SESSION_COOKIE_SECURE=(
-        os.getenv(
-            "SESSION_COOKIE_SECURE",
-            "false"
-        ).lower() == "true"
-    ),
-    SESSION_COOKIE_SAMESITE="Lax",
-)
 
-RATE_LIMIT_STORAGE_URI = (
-    os.getenv("REDIS_URL", "").strip()
-    or "memory://"
-)
+RATE_LIMIT_STORAGE_URI = os.getenv("REDIS_URL", "").strip() or "memory://"
 
 limiter = Limiter(
     key_func=get_remote_address,
@@ -104,10 +104,42 @@ limiter = Limiter(
     in_memory_fallback_enabled=True,
 )
 
+app.secret_key = os.getenv("SECRET_KEY")
+
+if not app.secret_key:
+    raise RuntimeError("SECRET_KEY environment variable is not set")
+
+app.config.update(
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SECURE=(
+        os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true"
+    ),
+    SESSION_COOKIE_SAMESITE="Lax",
+)
+
+
+
+
+# ===========================
+# DATABASE CONNECTION
+# ===========================
+
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is required.")
+
 
 def get_db():
-    return psycopg.connect(DATABASE_URL, row_factory=dict_row)
-
+    return psycopg.connect(
+        DATABASE_URL,
+        row_factory=dict_row,
+        connect_timeout=10,
+        keepalives=1,
+        keepalives_idle=30,
+        keepalives_interval=10,
+        keepalives_count=5,
+    )
 
 def create_subscription_system():
     conn = get_db()
@@ -1056,6 +1088,8 @@ def login():
             user["password"],
             password
         ):
+            # LINGUAMIND_SESSION_FIXATION_PROTECTION
+            session.clear()
             session["user_id"] = user["id"]
             session.permanent = True
             session["username"] = user["full_name"]
@@ -1846,6 +1880,7 @@ def ai_teacher():
 # ===========================
 
 @app.route("/api/ai_chats", methods=["GET", "POST", "DELETE"])
+@limiter.limit("30 per minute; 300 per hour", methods=["POST", "DELETE"])
 def ai_chats_api():
 
     if "user_id" not in session:
@@ -2106,6 +2141,7 @@ def ai_single_chat_api(chat_id):
 # ===========================
 
 @app.route("/api/ai_teacher", methods=["POST"])
+@limiter.limit("10 per minute; 100 per hour", methods=["POST"])
 def ai_teacher_api():
 
     if "user_id" not in session:
@@ -3679,6 +3715,7 @@ def scan_text():
 
 
 @app.route("/api/scan_text", methods=["POST"])
+@limiter.limit("8 per minute; 60 per hour", methods=["POST"])
 def scan_text_api():
 
     if "user_id" not in session:
@@ -3801,6 +3838,7 @@ Rules:
 # ===========================
 
 @app.route("/api/text_to_speech", methods=["POST"])
+@limiter.limit("15 per minute; 120 per hour", methods=["POST"])
 def text_to_speech_api():
 
     if "user_id" not in session:
@@ -4220,6 +4258,7 @@ def study_plan():
     "/api/study_plan/generate",
     methods=["POST"]
 )
+@limiter.limit("5 per minute; 30 per hour", methods=["POST"])
 def generate_study_plan_api():
 
     if "user_id" not in session:
@@ -5728,6 +5767,7 @@ def remove_favorite(word_id):
     )
 
 @app.route("/api/generate_quiz", methods=["POST"])
+@limiter.limit("10 per minute; 80 per hour", methods=["POST"])
 def generate_quiz_api():
 
     if "user_id" not in session:
@@ -6931,6 +6971,115 @@ def add_security_headers(response):
 
 
 # =========================================================
+# SECURITY - IMAGE UPLOAD VALIDATION
+# =========================================================
+
+_ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP"}
+_ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+
+
+def _security_validate_image_upload(file_storage):
+
+    if not file_storage or not file_storage.filename:
+        return None
+
+    filename = str(file_storage.filename).strip()
+
+    if len(filename) > 180:
+        return "Filename is too long."
+
+    suffix = os.path.splitext(filename)[1].lower()
+
+    if suffix not in _ALLOWED_IMAGE_EXTENSIONS:
+        return "Unsupported image type. Use JPG, JPEG, PNG or WEBP."
+
+    try:
+        file_storage.stream.seek(0, 2)
+        size = file_storage.stream.tell()
+        file_storage.stream.seek(0)
+
+        if size <= 0:
+            return "The uploaded image is empty."
+
+        if size > 6 * 1024 * 1024:
+            return "Image is too large. Maximum size is 6 MB."
+
+        image = Image.open(file_storage.stream)
+        detected_format = str(image.format or "").upper()
+
+        if detected_format not in _ALLOWED_IMAGE_FORMATS:
+            file_storage.stream.seek(0)
+            return "The file is not a supported image."
+
+        image.verify()
+        file_storage.stream.seek(0)
+
+    except (UnidentifiedImageError, OSError, ValueError):
+        try:
+            file_storage.stream.seek(0)
+        except Exception:
+            pass
+
+        return "Invalid or corrupted image."
+
+    return None
+
+
+@app.before_request
+def professional_upload_security_gate():
+
+    if request.endpoint not in {"scan_text_api", "ai_vision_api"}:
+        return None
+
+    image = request.files.get("image")
+
+    if not image:
+        return None
+
+    error = _security_validate_image_upload(image)
+
+    if error:
+        return jsonify({"error": error}), 400
+
+    return None
+
+
+
+# =========================================================
+# SECURITY - ERROR + CACHE HARDENING
+# =========================================================
+
+@app.errorhandler(413)
+def request_too_large(error):
+
+    if request.path.startswith("/api/"):
+        return jsonify({"error": "Request is too large."}), 413
+
+    return "Request is too large.", 413
+
+
+@app.after_request
+def sensitive_page_cache_control(response):
+
+    sensitive_prefixes = (
+        "/admin",
+        "/login",
+        "/register",
+        "/instagram-promo",
+    )
+
+    if request.path.startswith(sensitive_prefixes):
+        response.headers["Cache-Control"] = (
+            "no-store, no-cache, must-revalidate, private"
+        )
+        response.headers["Pragma"] = "no-cache"
+
+    return response
+
+
+
+
+# =========================================================
 # INFRASTRUCTURE HEALTH
 # =========================================================
 
@@ -6940,24 +7089,27 @@ def health_check():
     db_ok = False
     try:
         conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1 AS ok")
-        row = cursor.fetchone()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT 1 AS ok")
+            row = cursor.fetchone()
         conn.close()
         db_ok = bool(row and int(row["ok"]) == 1)
-    except Exception as e:
-        print(f"HEALTH DB ERROR: {type(e).__name__}: {e}", flush=True)
+    except Exception as exc:
+        print(
+            f"HEALTH DB ERROR: {type(exc).__name__}: {exc}",
+            flush=True,
+        )
         db_ok = False
-
-    status_code = 200 if db_ok else 503
 
     return jsonify({
         "status": "ok" if db_ok else "degraded",
         "database": db_ok,
         "rate_limit_storage": (
-            "redis" if RATE_LIMIT_STORAGE_URI.startswith(("redis://", "rediss://")) else "memory"
-        )
-    }), status_code
+            "redis"
+            if RATE_LIMIT_STORAGE_URI.startswith(("redis://", "rediss://"))
+            else "memory"
+        ),
+    }), (200 if db_ok else 503)
 
 
 if __name__ == "__main__":
