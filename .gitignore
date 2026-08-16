@@ -9,3 +9,20 @@ database.db
 backup_before_route_repair/
 app_STABLE_BACKUP.py
 test_gemini.py
+# Local backups
+_*_backup_*/
+
+# Local maintenance / migration scripts
+app_before_pg_placeholders.py
+apply_admin_2fa.py
+apply_linguamind_security.py
+apply_professional_security.py
+apply_redis_db.py
+apply_session_headers_security.py
+check_users_columns.py
+convert_sql_placeholders.py
+init_db.py
+migrate_users.py
+set_admin_password.py
+setup_admin.py
+setup_instagram_promo.py
